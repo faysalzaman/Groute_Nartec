@@ -6,7 +6,7 @@ class AppNavigator {
   AppNavigator._();
 
   // Default transition duration
-  static const Duration _defaultDuration = Duration(milliseconds: 500);
+  static const Duration _defaultDuration = Duration(milliseconds: 300);
 
   /// Navigate to a new screen with fade transition
   static Future<T?> push<T>(
@@ -17,7 +17,7 @@ class AppNavigator {
     return Navigator.push(
       context,
       PageTransition(
-        type: PageTransitionType.leftToRightWithFade,
+        type: PageTransitionType.rightToLeftWithFade,
         child: screen,
         duration: duration,
       ),
@@ -33,7 +33,7 @@ class AppNavigator {
     return Navigator.pushAndRemoveUntil(
       context,
       PageTransition(
-        type: PageTransitionType.leftToRightWithFade,
+        type: PageTransitionType.rightToLeftWithFade,
         child: screen,
         duration: duration,
       ),
@@ -50,7 +50,7 @@ class AppNavigator {
     return Navigator.pushReplacement(
       context,
       PageTransition(
-        type: PageTransitionType.leftToRightWithFade,
+        type: PageTransitionType.rightToLeftWithFade,
         child: screen,
         duration: duration,
       ),
