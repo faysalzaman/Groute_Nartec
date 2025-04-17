@@ -3,13 +3,14 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/themes/custom_scaffold.dart';
 import 'package:groute_nartec/view/widgets/menu_card.dart';
+import 'package:groute_nartec/view/widgets/rectangle_card.dart'
+    show RectangleCard;
 
 class ParametersScreen extends StatelessWidget {
   const ParametersScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return CustomScaffold(
       title: "Parameters",
       automaticallyImplyLeading: true,
@@ -17,56 +18,11 @@ class ParametersScreen extends StatelessWidget {
         child: Column(
           children: [
             // Top header with parameters summary
-            Container(
-              margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color:
-                    isDark
-                        ? AppColors.darkBackground
-                        : AppColors.lightBackground,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.grey400.withValues(alpha: 0.1),
-                    spreadRadius: 2,
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryBlue.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const FaIcon(
-                      FontAwesomeIcons.gears,
-                      color: AppColors.primaryBlue,
-                      size: 28,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'System Parameters',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.primaryBlue,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            // This is a placeholder for the top header. You can replace it with your own widget.
+            RectangleCard(
+              title: "Parameters Overview",
+              icon: FontAwesomeIcons.cogs,
+              color: AppColors.primaryBlue,
             ),
             // Main menu options
             Padding(
