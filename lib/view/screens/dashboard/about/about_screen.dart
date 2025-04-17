@@ -1,20 +1,19 @@
-// lib/view/screens/route_plan/route_plan_screen.dart
 import 'package:flutter/material.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/themes/custom_scaffold.dart';
 import 'package:groute_nartec/view/widgets/menu_card.dart';
 
-class RoutePlanScreen extends StatelessWidget {
-  const RoutePlanScreen({super.key});
+class AboutScreen extends StatelessWidget {
+  const AboutScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      title: "Route Plan Management",
+      title: "About",
       automaticallyImplyLeading: true,
       body: Column(
         children: [
-          // Top header with route summary
+          // Top header with about icon
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -34,14 +33,10 @@ class RoutePlanScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryBlue.withValues(alpha: 0.1),
+                    color: Colors.orange.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(
-                    Icons.route,
-                    color: AppColors.primaryBlue,
-                    size: 32,
-                  ),
+                  child: const Icon(Icons.info, color: Colors.orange, size: 32),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -49,7 +44,7 @@ class RoutePlanScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Today\'s Route',
+                        'App Information',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -70,33 +65,27 @@ class RoutePlanScreen extends StatelessWidget {
               mainAxisSpacing: 16,
               crossAxisSpacing: 16,
               childAspectRatio: 0.8,
+              padding: const EdgeInsets.all(16),
               children: [
                 MenuCard(
-                  icon: Icons.map,
-                  title: 'Plan Route',
-                  description: 'Create and modify route plans',
+                  icon: Icons.phone_android,
+                  title: 'Application Version',
+                  description: 'Current version and build information',
                   color: Colors.blue,
                   onTap: () {},
                 ),
                 MenuCard(
-                  icon: Icons.checklist_rtl,
-                  title: 'Route Check',
-                  description: 'Verify and optimize routes',
+                  icon: Icons.system_update,
+                  title: 'New Updates',
+                  description: 'Check for available updates',
                   color: Colors.green,
                   onTap: () {},
                 ),
                 MenuCard(
-                  icon: Icons.analytics,
-                  title: 'Route Statistics',
-                  description: 'View performance metrics',
-                  color: Colors.orange,
-                  onTap: () {},
-                ),
-                MenuCard(
-                  icon: Icons.history,
-                  title: 'Route History',
-                  description: 'Past routes and analytics',
-                  color: Colors.purple,
+                  icon: Icons.new_releases,
+                  title: 'New Release',
+                  description: 'Latest features and improvements',
+                  color: Colors.red,
                   onTap: () {},
                 ),
               ],

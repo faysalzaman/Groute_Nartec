@@ -1,6 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
+import 'package:groute_nartec/core/themes/custom_scaffold.dart';
+import 'package:groute_nartec/core/utils/app_navigator.dart';
+import 'package:groute_nartec/view/screens/dashboard/about/about_screen.dart';
+import 'package:groute_nartec/view/screens/dashboard/inventory/inventory_management_screen.dart';
+import 'package:groute_nartec/view/screens/dashboard/parameters/parameters_screen.dart';
+import 'package:groute_nartec/view/screens/dashboard/promotions/dynamic_promotions_screen.dart';
+import 'package:groute_nartec/view/screens/dashboard/returns/items_returns_screen.dart';
 import 'package:groute_nartec/view/screens/dashboard/route_plane/route_plan_screen.dart';
+import 'package:groute_nartec/view/screens/dashboard/sales_invoice/sales_invoice_screen.dart';
+import 'package:groute_nartec/view/screens/dashboard/sales_order/sales_order_management_screen.dart';
+import 'package:groute_nartec/view/screens/dashboard/start_day/start_of_day_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -62,92 +72,89 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text(
-          'GRoute Pro (Van sales)',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: AppColors.primaryBlue,
-        foregroundColor: AppColors.textLight,
-      ),
-      body: Container(
+    return CustomScaffold(
+      title: "GRoute Pro (Van sales)",
+      automaticallyImplyLeading: false,
+      body: GridView.builder(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [AppColors.primaryBlue.withOpacity(0.3), AppColors.white],
-          ),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 1,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
         ),
-        child: GridView.builder(
-          padding: const EdgeInsets.all(16),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 1,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-          ),
-          itemCount: menuItems.length,
-          itemBuilder: (context, index) {
-            return Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: InkWell(
-                onTap: () {
-                  // Add navigation logic here
-                  if (menuItems[index]['title'] == 'Route Plan\nManagement') {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const RoutePlanScreen(),
+        itemCount: menuItems.length,
+        itemBuilder: (context, index) {
+          return Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: InkWell(
+              onTap: () {
+                // Add navigation logic here
+                if (menuItems[index]['title'] == 'Route Plan\nManagement') {
+                  AppNavigator.push(context, RoutePlanScreen());
+                } else if (menuItems[index]['title'] ==
+                    'Sales Invoice\nManagement') {
+                  AppNavigator.push(context, SalesInvoiceScreen());
+                } else if (menuItems[index]['title'] == 'Dynamic\nPromotions') {
+                  AppNavigator.push(context, DynamicPromotionsScreen());
+                } else if (menuItems[index]['title'] == 'Item\nReturns') {
+                  AppNavigator.push(context, ItemsReturnsScreen());
+                } else if (menuItems[index]['title'] == 'Parameters') {
+                  AppNavigator.push(context, ParametersScreen());
+                } else if (menuItems[index]['title'] == 'About') {
+                  AppNavigator.push(context, AboutScreen());
+                } else if (menuItems[index]['title'] == 'Start of Day') {
+                  AppNavigator.push(context, StartOfDayScreen());
+                } else if (menuItems[index]['title'] ==
+                    'Sales Order\nManagement') {
+                  AppNavigator.push(context, SalesOrderManagementScreen());
+                } else if (menuItems[index]['title'] ==
+                    'Inventory\nManagement') {
+                  AppNavigator.push(context, InventoryManagementScreen());
+                }
+              },
+              borderRadius: BorderRadius.circular(15),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      menuItems[index]['icon'],
+                      size: 40,
+                      color: AppColors.primaryBlue,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      menuItems[index]['title'],
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
                       ),
-                    );
-                  }
-                },
-                borderRadius: BorderRadius.circular(15),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        menuItems[index]['icon'],
-                        size: 40,
-                        color: AppColors.primaryBlue,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        menuItems[index]['title'],
+                    ),
+                    const SizedBox(height: 8),
+                    Expanded(
+                      child: Text(
+                        menuItems[index]['subtitle'],
                         textAlign: TextAlign.center,
                         style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 11,
+                          color: Colors.grey,
                         ),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 8),
-                      Expanded(
-                        child: Text(
-                          menuItems[index]['subtitle'],
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey,
-                          ),
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }

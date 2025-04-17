@@ -1,20 +1,19 @@
-// lib/view/screens/route_plan/route_plan_screen.dart
 import 'package:flutter/material.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/themes/custom_scaffold.dart';
 import 'package:groute_nartec/view/widgets/menu_card.dart';
 
-class RoutePlanScreen extends StatelessWidget {
-  const RoutePlanScreen({super.key});
+class ItemsReturnsScreen extends StatelessWidget {
+  const ItemsReturnsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      title: "Route Plan Management",
+      title: "Items Returns",
       automaticallyImplyLeading: true,
       body: Column(
         children: [
-          // Top header with route summary
+          // Top header with returns summary
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -38,7 +37,7 @@ class RoutePlanScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
-                    Icons.route,
+                    Icons.assignment_return,
                     color: AppColors.primaryBlue,
                     size: 32,
                   ),
@@ -49,7 +48,7 @@ class RoutePlanScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Today\'s Route',
+                        'Returns Overview',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -70,32 +69,26 @@ class RoutePlanScreen extends StatelessWidget {
               mainAxisSpacing: 16,
               crossAxisSpacing: 16,
               childAspectRatio: 0.8,
+              padding: const EdgeInsets.all(16),
               children: [
                 MenuCard(
-                  icon: Icons.map,
-                  title: 'Plan Route',
-                  description: 'Create and modify route plans',
-                  color: Colors.blue,
-                  onTap: () {},
-                ),
-                MenuCard(
-                  icon: Icons.checklist_rtl,
-                  title: 'Route Check',
-                  description: 'Verify and optimize routes',
-                  color: Colors.green,
-                  onTap: () {},
-                ),
-                MenuCard(
-                  icon: Icons.analytics,
-                  title: 'Route Statistics',
-                  description: 'View performance metrics',
+                  icon: Icons.warning_amber,
+                  title: 'Damages',
+                  description: 'Track and manage damaged items returns',
                   color: Colors.orange,
                   onTap: () {},
                 ),
                 MenuCard(
-                  icon: Icons.history,
-                  title: 'Route History',
-                  description: 'Past routes and analytics',
+                  icon: Icons.event_busy,
+                  title: 'Expired Items',
+                  description: 'Manage expired product returns',
+                  color: Colors.red,
+                  onTap: () {},
+                ),
+                MenuCard(
+                  icon: Icons.cancel,
+                  title: 'Canceled Items',
+                  description: 'Handle canceled order returns',
                   color: Colors.purple,
                   onTap: () {},
                 ),

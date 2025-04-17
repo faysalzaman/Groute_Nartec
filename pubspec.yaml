@@ -58,6 +58,7 @@ dependencies:
   pretty_qr_code: ^3.4.0
   flex_color_scheme: ^8.2.0
   connectivity_plus: ^6.1.3
+  font_awesome_flutter: ^10.8.0
 
 dev_dependencies:
   flutter_test:

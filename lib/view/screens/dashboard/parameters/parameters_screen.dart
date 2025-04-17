@@ -1,20 +1,19 @@
-// lib/view/screens/route_plan/route_plan_screen.dart
 import 'package:flutter/material.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/themes/custom_scaffold.dart';
 import 'package:groute_nartec/view/widgets/menu_card.dart';
 
-class RoutePlanScreen extends StatelessWidget {
-  const RoutePlanScreen({super.key});
+class ParametersScreen extends StatelessWidget {
+  const ParametersScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      title: "Route Plan Management",
+      title: "Parameters",
       automaticallyImplyLeading: true,
       body: Column(
         children: [
-          // Top header with route summary
+          // Top header with parameters summary
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -38,7 +37,7 @@ class RoutePlanScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
-                    Icons.route,
+                    Icons.settings_applications,
                     color: AppColors.primaryBlue,
                     size: 32,
                   ),
@@ -49,7 +48,7 @@ class RoutePlanScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Today\'s Route',
+                        'System Parameters',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -70,33 +69,34 @@ class RoutePlanScreen extends StatelessWidget {
               mainAxisSpacing: 16,
               crossAxisSpacing: 16,
               childAspectRatio: 0.8,
+              padding: const EdgeInsets.all(16),
               children: [
                 MenuCard(
-                  icon: Icons.map,
-                  title: 'Plan Route',
-                  description: 'Create and modify route plans',
+                  icon: Icons.settings,
+                  title: 'Settings',
+                  description: 'Configure system settings and preferences',
                   color: Colors.blue,
                   onTap: () {},
                 ),
                 MenuCard(
-                  icon: Icons.checklist_rtl,
-                  title: 'Route Check',
-                  description: 'Verify and optimize routes',
-                  color: Colors.green,
+                  icon: Icons.wifi_tethering,
+                  title: 'Connectivity',
+                  description: 'Manage network and connection settings',
+                  color: Colors.cyan,
                   onTap: () {},
                 ),
                 MenuCard(
-                  icon: Icons.analytics,
-                  title: 'Route Statistics',
-                  description: 'View performance metrics',
-                  color: Colors.orange,
+                  icon: Icons.group_add,
+                  title: 'Users Creation',
+                  description: 'Manage user accounts and permissions',
+                  color: Colors.indigo,
                   onTap: () {},
                 ),
                 MenuCard(
-                  icon: Icons.history,
-                  title: 'Route History',
-                  description: 'Past routes and analytics',
-                  color: Colors.purple,
+                  icon: Icons.admin_panel_settings,
+                  title: 'Admin Panel',
+                  description: 'Access administrative controls and settings',
+                  color: Colors.teal,
                   onTap: () {},
                 ),
               ],
