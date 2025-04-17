@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:groute_nartec/core/constants/app_colors.dart';
 
 class MenuCard extends StatelessWidget {
   final IconData icon;
@@ -18,9 +20,10 @@ class MenuCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -47,7 +50,7 @@ class MenuCard extends StatelessWidget {
                     color: color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(icon, color: color, size: 32),
+                  child: FaIcon(icon, color: color, size: 28),
                 ),
                 const SizedBox(height: 12),
                 Text(
@@ -61,7 +64,10 @@ class MenuCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   description,
-                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? AppColors.grey400 : Colors.grey[600],
+                  ),
                   textAlign: TextAlign.center,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,

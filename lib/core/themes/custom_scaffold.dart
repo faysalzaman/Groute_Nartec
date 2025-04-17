@@ -48,6 +48,7 @@ class CustomScaffold extends StatelessWidget {
                 foregroundColor: foregroundColor ?? AppColors.textLight,
                 elevation: elevation ?? 0,
                 actions: actions,
+                scrolledUnderElevation: 0,
               ),
       body: Container(
         padding: const EdgeInsets.all(16),
