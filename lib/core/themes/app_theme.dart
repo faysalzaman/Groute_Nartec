@@ -19,8 +19,13 @@ import 'package:flutter/material.dart';
 abstract final class AppTheme {
   // The FlexColorScheme defined light mode ThemeData.
   static ThemeData light = FlexThemeData.light(
-    // Using FlexColorScheme built-in FlexScheme enum based colors
-    scheme: FlexScheme.amber,
+    // Playground built-in scheme made with FlexSchemeColor.from() API.
+    colors: FlexSchemeColor.from(
+      primary: const Color(0xFF1145A4),
+      secondary: const Color(0xFFB61D1D),
+      brightness: Brightness.light,
+      swapOnMaterial3: true,
+    ),
     // Component theme configurations for light mode.
     subThemesData: const FlexSubThemesData(
       interactionEffects: true,
@@ -38,8 +43,15 @@ abstract final class AppTheme {
 
   // The FlexColorScheme defined dark mode ThemeData.
   static ThemeData dark = FlexThemeData.dark(
-    // Using FlexColorScheme built-in FlexScheme enum based colors.
-    scheme: FlexScheme.amber,
+    // Playground built-in scheme made with FlexSchemeColor.from() API
+    // The input FlexSchemeColor is identical to light mode, but uses
+    // default Error and toDark() methods to convert it to a dark theme.
+    colors: FlexSchemeColor.from(
+      primary: const Color(0xFF1145A4),
+      secondary: const Color(0xFFB61D1D),
+      brightness: Brightness.light,
+      swapOnMaterial3: true,
+    ).defaultError.toDark(30, true),
     // Component theme configurations for dark mode.
     subThemesData: const FlexSubThemesData(
       interactionEffects: true,
