@@ -9,16 +9,31 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    return buildMaterialApp();
+  }
+
+  buildMaterialApp() {
     return MaterialApp(
       title: 'GRoute Nartec',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
-      home: const SplashScreen(),
+      home: SplashScreen(),
     );
   }
+
+  // buildMaterialAppWithRouter() {
+  //   final appRouter = AppRouter();
+  //   return MaterialApp.router(
+  //     title: 'GRoute Nartec',
+  //     debugShowCheckedModeBanner: false,
+  //     theme: AppTheme.light,
+  //     darkTheme: AppTheme.dark,
+  //     themeMode: ThemeMode.system,
+  //     routerConfig: appRouter.router,
+  //   );
+  // }
 }

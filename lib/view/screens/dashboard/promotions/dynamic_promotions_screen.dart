@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
-import 'package:groute_nartec/core/themes/custom_scaffold.dart';
+import 'package:groute_nartec/view/widgets/custom_scaffold.dart';
 import 'package:groute_nartec/view/widgets/menu_card.dart';
 import 'package:groute_nartec/view/widgets/rectangle_card.dart'
     show RectangleCard;

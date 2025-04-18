@@ -1,13 +1,16 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:groute_nartec/core/constants/app_colors.dart';
+import 'package:groute_nartec/core/constants/constants.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
-import 'package:groute_nartec/view/screens/auth/login_screen.dart';
+
+import 'auth/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   final Widget? nextScreen;
 
-  const SplashScreen({Key? key, this.nextScreen}) : super(key: key);
+  const SplashScreen({super.key, this.nextScreen});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -62,6 +65,7 @@ class _SplashScreenState extends State<SplashScreen>
     // Navigate to next screen after 5 seconds
     Timer(const Duration(seconds: 5), () {
       AppNavigator.push(context, LoginScreen());
+      // context.go(AppRoutes.login);
     });
   }
 
@@ -73,8 +77,10 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: Colors.white, // Adjust background color as needed
+      // backgroundColor: isDark ? AppColors.grey900 : AppColors.lightBackground,
+      backgroundColor: AppColors.white,
       body: Center(
         child: AnimatedBuilder(
           animation: _controller,
@@ -85,11 +91,7 @@ class _SplashScreenState extends State<SplashScreen>
                 angle: _rotateAnimation.value,
                 child: Opacity(
                   opacity: _opacityAnimation.value,
-                  child: Image.asset(
-                    'assets/images/groute_splash.png',
-                    width: 200,
-                    height: 200,
-                  ),
+                  child: Image.asset(kLogoImg, width: 200, height: 200),
                 ),
               ),
             );

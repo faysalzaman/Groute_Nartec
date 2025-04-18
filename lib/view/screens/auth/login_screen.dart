@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
-import 'package:groute_nartec/view/screens/dashboard/home_screen.dart';
 import 'package:groute_nartec/view/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/view/widgets/test_fields/custom_textfield.dart';
+
+import '../dashboard/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -169,6 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           buttonState: ButtonState.normal,
                           onPressed: () {
                             FocusScope.of(context).unfocus();
+                            // context.go(AppRoutes.home);
                             AppNavigator.push(context, HomeScreen());
                           },
                         ),

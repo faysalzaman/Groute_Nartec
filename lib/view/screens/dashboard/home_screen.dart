@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
-import 'package:groute_nartec/core/themes/custom_scaffold.dart';
+import 'package:groute_nartec/view/widgets/custom_scaffold.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/view/screens/dashboard/about/about_screen.dart';
 import 'package:groute_nartec/view/screens/dashboard/inventory/inventory_management_screen.dart';
