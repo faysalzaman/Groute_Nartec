@@ -32,35 +32,35 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isSmallScreen = screenWidth < 360;
+
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/login_background.jpeg'),
+            image: AssetImage('assets/images/login_background.png'),
             fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(Colors.black38, BlendMode.luminosity),
+            colorFilter: ColorFilter.mode(Colors.black54, BlendMode.darken),
           ),
         ),
         child: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              padding: EdgeInsets.symmetric(
+                horizontal: screenWidth * 0.05,
+                vertical: screenHeight * 0.02,
+              ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Logo or App Name
-                  // Text(
-                  //   'GROUTE',
-                  //   style: TextStyle(
-                  //     fontSize: 40,
-                  //     fontWeight: FontWeight.w700,
-                  //     color: AppColors.textLight,
-                  //     letterSpacing: 2.0,
-                  //   ),
-                  // ),
+                  SizedBox(height: screenHeight * 0.1),
                   LogoWidget(),
+                  SizedBox(height: screenHeight * 0.02),
                   const Text(
                     'Sign in to your account',
                     style: TextStyle(
@@ -69,11 +69,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 50),
+                  SizedBox(height: screenHeight * 0.05),
 
                   // Login Form
                   Container(
-                    padding: const EdgeInsets.all(20),
+                    width: double.infinity,
+                    padding: EdgeInsets.all(screenWidth * 0.05),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.7),
                       borderRadius: BorderRadius.circular(16),
@@ -89,14 +90,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CustomTextFormField(
-                          height: 45,
-                          fontSize: 12,
+                          height: isSmallScreen ? 40 : 45,
+                          fontSize: isSmallScreen ? 11 : 12,
                           controller: _emailController,
                           focusNode: _emailFocusNode,
                           hintText: 'Enter your email',
-                          hintTextSize: 12,
+                          hintTextSize: isSmallScreen ? 11 : 12,
                           labelText: 'Email',
-                          lableTextSize: 12,
+                          lableTextSize: isSmallScreen ? 11 : 12,
                           prefixIcon: Icons.email_outlined,
                           keyboardType: TextInputType.emailAddress,
                           onCompleted: () {
@@ -114,16 +115,16 @@ class _LoginScreenState extends State<LoginScreen> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 10),
+                        SizedBox(height: screenHeight * 0.01),
                         CustomTextFormField(
-                          fontSize: 12,
-                          height: 45,
+                          height: isSmallScreen ? 40 : 45,
+                          fontSize: isSmallScreen ? 11 : 12,
                           controller: _passwordController,
                           focusNode: _passwordFocusNode,
                           hintText: 'Enter your password',
-                          hintTextSize: 12,
+                          hintTextSize: isSmallScreen ? 11 : 12,
                           labelText: 'Password',
-                          lableTextSize: 12,
+                          lableTextSize: isSmallScreen ? 11 : 12,
                           prefixIcon: Icons.lock_outline,
                           suffixIcon:
                               _obscurePassword
@@ -151,28 +152,25 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: TextButton(
                             onPressed: () {
                               FocusScope.of(context).unfocus();
-
                               // Navigate to forgot password screen
                             },
-                            child: const Text(
+                            child: Text(
                               'Forgot Password?',
-
                               style: TextStyle(
                                 color: AppColors.textDark,
                                 fontWeight: FontWeight.w500,
-                                fontSize: 12,
+                                fontSize: isSmallScreen ? 11 : 12,
                               ),
                             ),
                           ),
                         ),
                         CustomElevatedButton(
-                          height: 40,
-                          fontSize: 12,
+                          height: isSmallScreen ? 35 : 40,
+                          fontSize: isSmallScreen ? 11 : 12,
                           title: "LOGIN",
                           buttonState: ButtonState.normal,
                           onPressed: () {
                             FocusScope.of(context).unfocus();
-                            // context.go(AppRoutes.home);
                             AppNavigator.push(context, HomeScreen());
                           },
                         ),
@@ -180,13 +178,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 40),
+                  SizedBox(height: screenHeight * 0.04),
 
                   // NFC Card Login Option
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 16,
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.05,
+                      vertical: screenHeight * 0.02,
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.7),
@@ -194,47 +193,29 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     child: Column(
                       children: [
-                        const Text(
+                        Text(
                           'Or login with NFC Card',
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: isSmallScreen ? 13 : 14,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: screenHeight * 0.02),
                         CustomElevatedButton(
                           title: "TAP NFC CARD",
                           backgroundColor: Colors.green.shade700,
                           buttonState: ButtonState.normal,
                           leadingIcon: Icons.nfc,
+                          height: isSmallScreen ? 35 : 40,
+                          fontSize: isSmallScreen ? 11 : 12,
                           onPressed: () {
                             FocusScope.of(context).unfocus();
                           },
                         ),
-
-                        // ElevatedButton.icon(
-                        //   onPressed: () {
-                        //     FocusScope.of(context).unfocus();
-
-                        //     // Handle NFC card logic
-                        //   },
-                        //   icon: const Icon(Icons.contactless),
-                        //   label: const Text('TAP NFC CARD'),
-                        //   style: ElevatedButton.styleFrom(
-                        //     backgroundColor: Colors.green.shade700,
-                        //     foregroundColor: Colors.white,
-                        //     padding: const EdgeInsets.symmetric(
-                        //       vertical: 12,
-                        //       horizontal: 24,
-                        //     ),
-                        //     shape: RoundedRectangleBorder(
-                        //       borderRadius: BorderRadius.circular(30),
-                        //     ),
-                        //   ),
-                        // ),
                       ],
                     ),
                   ),
+                  SizedBox(height: screenHeight * 0.1),
                 ],
               ),
             ),

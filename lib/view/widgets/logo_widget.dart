@@ -13,6 +13,10 @@ class _LogoWidgetState extends State<LogoWidget> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Image.asset(kLogoImg, scale: 3, color: AppColors.lightBackground);
+    return Image.asset(
+      kLogoImg,
+      scale: 3,
+      color: isDark ? AppColors.lightBackground : AppColors.primaryDark,
+    );
   }
 }

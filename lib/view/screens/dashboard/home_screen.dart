@@ -86,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 physics: const NeverScrollableScrollPhysics(),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  childAspectRatio: 0.8,
+                  childAspectRatio: 1,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
                 ),
@@ -156,11 +156,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             const SizedBox(height: 8),
                             Expanded(
                               child: Text(
-                                menuItems[index]['subtitle'],
+                                menuItems[index]['subtitle']
+                                    .split('\n')
+                                    .map((line) => '• $line')
+                                    .join('\n'),
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   fontSize: 11,
-                                  color: Colors.grey,
+                                  color: AppColors.primaryBlue,
                                 ),
                                 maxLines: 3,
                                 overflow: TextOverflow.ellipsis,
