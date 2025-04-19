@@ -13,4 +13,5 @@ const String kGTrackUrl = 'https://gtrack.com/';
   ##############################################################################
 */
 
-const String kLogoImg = 'assets/images/groute_splash.png';
+const String kGrouteSplashImg = 'assets/images/groute_splash.png';
+const String kLogoImg = 'assets/images/logo.png';

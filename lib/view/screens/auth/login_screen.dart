@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/view/widgets/buttons/custom_elevated_button.dart';
+import 'package:groute_nartec/view/widgets/logo_widget.dart';
 import 'package:groute_nartec/view/widgets/test_fields/custom_textfield.dart';
 
 import '../dashboard/home_screen.dart';
@@ -50,15 +51,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Logo or App Name
-                  Text(
-                    'GROUTE',
-                    style: TextStyle(
-                      fontSize: 40,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textLight,
-                      letterSpacing: 2.0,
-                    ),
-                  ),
+                  // Text(
+                  //   'GROUTE',
+                  //   style: TextStyle(
+                  //     fontSize: 40,
+                  //     fontWeight: FontWeight.w700,
+                  //     color: AppColors.textLight,
+                  //     letterSpacing: 2.0,
+                  //   ),
+                  // ),
+                  LogoWidget(),
                   const Text(
                     'Sign in to your account',
                     style: TextStyle(

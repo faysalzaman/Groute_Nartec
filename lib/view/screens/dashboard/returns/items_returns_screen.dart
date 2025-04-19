@@ -10,7 +10,6 @@ class ItemsReturnsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return CustomScaffold(
       title: "Items Returns",
       automaticallyImplyLeading: true,

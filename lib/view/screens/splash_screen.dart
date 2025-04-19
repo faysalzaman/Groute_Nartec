@@ -77,7 +77,6 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       // backgroundColor: isDark ? AppColors.grey900 : AppColors.lightBackground,
       backgroundColor: AppColors.white,
@@ -91,7 +90,7 @@ class _SplashScreenState extends State<SplashScreen>
                 angle: _rotateAnimation.value,
                 child: Opacity(
                   opacity: _opacityAnimation.value,
-                  child: Image.asset(kLogoImg, width: 200, height: 200),
+                  child: Image.asset(kGrouteSplashImg, width: 200, height: 200),
                 ),
               ),
             );

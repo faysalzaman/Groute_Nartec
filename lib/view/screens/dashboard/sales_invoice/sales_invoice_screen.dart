@@ -11,7 +11,6 @@ class SalesInvoiceScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return CustomScaffold(
       title: "Sales Invoice Management",
       automaticallyImplyLeading: true,
