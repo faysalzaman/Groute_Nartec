@@ -73,6 +73,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Get device screen size
+    final Size screenSize = MediaQuery.of(context).size;
+
     return CustomScaffold(
       title: "GRoute Pro (Van sales)",
       automaticallyImplyLeading: false,
@@ -81,98 +84,121 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.8,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                ),
-                itemCount: menuItems.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
+              // Replace GridView.builder with LayoutBuilder
+              LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  // Calculate the number of columns based on screen width
+                  int crossAxisCount = screenSize.width > 600 ? 3 : 2;
+                  // For very small screens (like in portrait orientation on phones)
+                  if (screenSize.width < 380) crossAxisCount = 1;
+
+                  // Calculate appropriate child aspect ratio based on available width
+                  double cardWidth =
+                      (constraints.maxWidth - (16 * (crossAxisCount - 1))) /
+                      crossAxisCount;
+                  double aspectRatio =
+                      cardWidth /
+                      180; // 180 is an estimated height that works well
+
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      childAspectRatio: aspectRatio,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
                     ),
-                    child: InkWell(
-                      onTap: () {
-                        // Add navigation logic here
-                        if (menuItems[index]['title'] ==
-                            'Route Plan\nManagement') {
-                          AppNavigator.push(context, RoutePlanScreen());
-                        } else if (menuItems[index]['title'] ==
-                            'Sales Invoice\nManagement') {
-                          AppNavigator.push(context, SalesInvoiceScreen());
-                        } else if (menuItems[index]['title'] ==
-                            'Dynamic\nPromotions') {
-                          AppNavigator.push(context, DynamicPromotionsScreen());
-                        } else if (menuItems[index]['title'] ==
-                            'Item\nReturns') {
-                          AppNavigator.push(context, ItemsReturnsScreen());
-                        } else if (menuItems[index]['title'] == 'Parameters') {
-                          AppNavigator.push(context, ParametersScreen());
-                        } else if (menuItems[index]['title'] == 'About') {
-                          AppNavigator.push(context, AboutScreen());
-                        } else if (menuItems[index]['title'] ==
-                            'Start of Day') {
-                          AppNavigator.push(context, StartOfDayScreen());
-                        } else if (menuItems[index]['title'] ==
-                            'Sales Order\nManagement') {
-                          AppNavigator.push(
-                            context,
-                            SalesOrderManagementScreen(),
-                          );
-                        } else if (menuItems[index]['title'] ==
-                            'Inventory\nManagement') {
-                          AppNavigator.push(
-                            context,
-                            InventoryManagementScreen(),
-                          );
-                        }
-                      },
-                      borderRadius: BorderRadius.circular(15),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            FaIcon(
-                              menuItems[index]['icon'],
-                              size: 35,
-                              color: AppColors.primaryBlue,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              menuItems[index]['title'],
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Expanded(
-                              child: Text(
-                                menuItems[index]['subtitle']
-                                    .split('\n')
-                                    .map((line) => '• $line')
-                                    .join('\n'),
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 11,
+                    itemCount: menuItems.length,
+                    itemBuilder: (context, index) {
+                      // Keep your existing card building code
+                      return Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            // Add navigation logic here
+                            if (menuItems[index]['title'] ==
+                                'Route Plan\nManagement') {
+                              AppNavigator.push(context, RoutePlanScreen());
+                            } else if (menuItems[index]['title'] ==
+                                'Sales Invoice\nManagement') {
+                              AppNavigator.push(context, SalesInvoiceScreen());
+                            } else if (menuItems[index]['title'] ==
+                                'Dynamic\nPromotions') {
+                              AppNavigator.push(
+                                context,
+                                DynamicPromotionsScreen(),
+                              );
+                            } else if (menuItems[index]['title'] ==
+                                'Item\nReturns') {
+                              AppNavigator.push(context, ItemsReturnsScreen());
+                            } else if (menuItems[index]['title'] ==
+                                'Parameters') {
+                              AppNavigator.push(context, ParametersScreen());
+                            } else if (menuItems[index]['title'] == 'About') {
+                              AppNavigator.push(context, AboutScreen());
+                            } else if (menuItems[index]['title'] ==
+                                'Start of Day') {
+                              AppNavigator.push(context, StartOfDayScreen());
+                            } else if (menuItems[index]['title'] ==
+                                'Sales Order\nManagement') {
+                              AppNavigator.push(
+                                context,
+                                SalesOrderManagementScreen(),
+                              );
+                            } else if (menuItems[index]['title'] ==
+                                'Inventory\nManagement') {
+                              AppNavigator.push(
+                                context,
+                                InventoryManagementScreen(),
+                              );
+                            }
+                          },
+                          borderRadius: BorderRadius.circular(15),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                FaIcon(
+                                  menuItems[index]['icon'],
+                                  size: 35,
                                   color: AppColors.primaryBlue,
                                 ),
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  menuItems[index]['title'],
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Expanded(
+                                  child: Text(
+                                    menuItems[index]['subtitle']
+                                        .split('\n')
+                                        .map((line) => '• $line')
+                                        .join('\n'),
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      color: AppColors.primaryBlue,
+                                    ),
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   );
                 },
               ),
