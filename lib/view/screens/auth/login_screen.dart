@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
+import 'package:groute_nartec/core/constants/constants.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/view/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/view/widgets/logo_widget.dart';
-import 'package:groute_nartec/view/widgets/test_fields/custom_textfield.dart';
+import 'package:groute_nartec/view/widgets/text_fields/custom_textfield.dart';
 
 import '../dashboard/home_screen.dart';
 
@@ -42,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
         height: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/login_background.png'),
+            image: AssetImage(loginBackground),
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(Colors.black54, BlendMode.darken),
           ),
@@ -59,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(height: screenHeight * 0.1),
-                  LogoWidget(),
+                  Hero(tag: "logo", child: LogoWidget()),
                   SizedBox(height: screenHeight * 0.02),
                   const Text(
                     'Sign in to your account',

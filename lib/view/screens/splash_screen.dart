@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/constants/constants.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
+import 'package:groute_nartec/view/widgets/logo_widget.dart';
 
 import 'auth/login_screen.dart';
 
@@ -69,18 +70,33 @@ class _SplashScreenState extends State<SplashScreen>
     return Scaffold(
       // backgroundColor: isDark ? AppColors.grey900 : AppColors.lightBackground,
       backgroundColor: AppColors.white,
-      body: Center(
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, child) {
-            return Transform.scale(
-              scale: _scaleAnimation.value,
-              child: Opacity(
-                opacity: _opacityAnimation.value,
-                child: Image.asset(kGrouteSplashImg, width: 200, height: 200),
-              ),
-            );
-          },
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(loginBackground),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(Colors.black54, BlendMode.darken),
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                return Transform.scale(
+                  scale: 1.5,
+                  child: Opacity(
+                    opacity: _opacityAnimation.value,
+                    child: Hero(tag: "logo", child: LogoWidget()),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 100),
+          ],
         ),
       ),
     );

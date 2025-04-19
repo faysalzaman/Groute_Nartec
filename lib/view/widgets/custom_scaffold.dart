@@ -52,6 +52,7 @@ class CustomScaffold extends StatelessWidget {
               ),
       body: Container(
         padding: const EdgeInsets.all(16),
+
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
