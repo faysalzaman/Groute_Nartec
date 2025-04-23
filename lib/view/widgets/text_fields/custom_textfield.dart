@@ -76,7 +76,7 @@ class CustomTextFormField extends StatelessWidget {
             fontSize: hintTextSize ?? 12,
             color:
                 isDarkTheme
-                    ? AppColors.textLight.withOpacity(0.7)
+                    ? AppColors.textLight.withValues(alpha: 0.7)
                     : AppColors.textMedium,
           ),
           labelStyle: TextStyle(

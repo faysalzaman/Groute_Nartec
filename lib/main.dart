@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groute_nartec/core/themes/app_theme.dart' show AppTheme;
+import 'package:groute_nartec/view/screens/auth/cubit/auth_cubit.dart';
 import 'package:groute_nartec/view/screens/splash_screen.dart';
 
 void main() {
@@ -15,13 +17,16 @@ class MyApp extends StatelessWidget {
   }
 
   buildMaterialApp() {
-    return MaterialApp(
-      title: 'GRoute Nartec',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      themeMode: ThemeMode.system,
-      home: SplashScreen(),
+    return MultiBlocProvider(
+      providers: [BlocProvider<AuthCubit>(create: (context) => AuthCubit())],
+      child: MaterialApp(
+        title: 'GRoute Nartec',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        themeMode: ThemeMode.system,
+        home: SplashScreen(),
+      ),
     );
   }
 

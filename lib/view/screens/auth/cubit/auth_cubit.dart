@@ -4,7 +4,7 @@ import 'package:groute_nartec/view/screens/auth/cubit/auth_state.dart';
 import 'package:groute_nartec/view/screens/auth/model/child_member.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-  AuthCubit() : super(const AuthState());
+  AuthCubit({AuthController? controller}) : super(const AuthState());
 
   final AuthController _authController = AuthController();
 
