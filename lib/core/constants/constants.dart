@@ -4,6 +4,7 @@
   ##############################################################################
 */
 
+const String kGrouteUrl = "https://api.groute.online/api/";
 const String kGS1Url = 'https://gs1.org/';
 const String kGTrackUrl = 'https://gtrack.com/';
 
