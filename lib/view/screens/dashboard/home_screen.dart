@@ -113,7 +113,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (context, index) {
                       // Keep your existing card building code
                       return Card(
-                        elevation: 2,
+                        elevation: 5,
+                        color: AppColors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
