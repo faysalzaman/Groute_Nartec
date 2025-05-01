@@ -23,14 +23,23 @@ class AuthController {
       if (accessToken == null) {
         throw Exception('Access token not found in response');
       }
+
+      // Save access token
       await AppPreferences.setAccessToken(accessToken);
 
+      // Parse driver data
       final Driver driver = Driver.fromJson(data['driver']);
 
-      // Save tokens to SharedPreferences
+      // Save driver data to SharedPreferences
+      await AppPreferences.saveDriver(driver);
 
       return driver;
     }
     return null;
+  }
+
+  // Add a logout method to clear stored data
+  Future<void> logout() async {
+    await AppPreferences.clearAllData();
   }
 }

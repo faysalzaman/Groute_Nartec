@@ -32,6 +32,8 @@ class Driver {
   String? experience;
   String? availability;
   String? photo;
+  bool? isNFCEnabled;
+  String? nfcNumber;
   String? createdAt;
   String? updatedAt;
   String? memberId;
@@ -51,6 +53,8 @@ class Driver {
     this.experience,
     this.availability,
     this.photo,
+    this.isNFCEnabled,
+    this.nfcNumber,
     this.createdAt,
     this.updatedAt,
     this.memberId,
@@ -71,6 +75,8 @@ class Driver {
     experience = json['experience'];
     availability = json['availability'];
     photo = json['photo'];
+    isNFCEnabled = json['isNFCEnabled'];
+    nfcNumber = json['nfcNumber'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     memberId = json['memberId'];
@@ -92,6 +98,8 @@ class Driver {
     data['experience'] = experience;
     data['availability'] = availability;
     data['photo'] = photo;
+    data['isNFCEnabled'] = isNFCEnabled;
+    data['nfcNumber'] = nfcNumber;
     data['createdAt'] = createdAt;
     data['updatedAt'] = updatedAt;
     data['memberId'] = memberId;
