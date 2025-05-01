@@ -2,13 +2,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
+import 'package:groute_nartec/core/utils/app_snackbars.dart';
+import 'package:groute_nartec/view/screens/auth/cubit/auth_cubit.dart';
+import 'package:groute_nartec/view/widgets/buttons/custom_elevated_button.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 
 class NFCScanDialog extends StatefulWidget {
-  const NFCScanDialog({super.key, this.serialNumber});
+  const NFCScanDialog({super.key, this.serialNumber, required this.authCubit});
 
   final String? serialNumber;
-  // final AuthCubit authCubit;
+  final AuthCubit authCubit;
 
   @override
   State<NFCScanDialog> createState() => _NFCScanDialogState();
@@ -32,11 +35,7 @@ class _NFCScanDialogState extends State<NFCScanDialog> {
       if (!isAvailable) {
         if (mounted) {
           Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('NFC is not available on this device'),
-            ),
-          );
+          AppSnackbars.danger(context, 'Please enable NFC on your device.');
         }
         return;
       }
@@ -77,7 +76,7 @@ class _NFCScanDialogState extends State<NFCScanDialog> {
 
             if (mounted) {
               Navigator.pop(context);
-              // widget.authCubit.loginWithNfc(serialNumber ?? '');
+              widget.authCubit.loginWithNfc(serialNumber ?? "");
             }
           } catch (e) {
             if (mounted) {
@@ -125,7 +124,7 @@ class _NFCScanDialogState extends State<NFCScanDialog> {
             SizedBox(
               width: 120,
               height: 120,
-              child: Image.asset('assets/nfc.png'),
+              child: Image.asset('assets/images/nfc.png'),
             ),
             const SizedBox(height: 20),
             const Text(
@@ -137,17 +136,12 @@ class _NFCScanDialogState extends State<NFCScanDialog> {
             SizedBox(
               width: double.infinity,
               height: 45,
-              child: TextButton(
-                style: TextButton.styleFrom(
-                  backgroundColor: AppColors.primaryLight,
-                ),
+              child: CustomElevatedButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: const Text(
-                  'Cancel',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
+                title: 'Cancel',
+                backgroundColor: AppColors.primaryBlue,
               ),
             ),
           ],

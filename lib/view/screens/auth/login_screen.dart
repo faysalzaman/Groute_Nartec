@@ -8,6 +8,7 @@ import 'package:groute_nartec/view/screens/auth/cubit/auth_cubit.dart';
 import 'package:groute_nartec/view/screens/auth/cubit/auth_state.dart';
 import 'package:groute_nartec/view/screens/dashboard/home_screen.dart';
 import 'package:groute_nartec/view/widgets/buttons/custom_elevated_button.dart';
+import 'package:groute_nartec/view/widgets/dialogs/nfc_scan_dialog.dart';
 import 'package:groute_nartec/view/widgets/logo_widget.dart';
 import 'package:groute_nartec/view/widgets/text_fields/custom_textfield.dart';
 
@@ -228,13 +229,24 @@ class _LoginScreenState extends State<LoginScreen> {
                             SizedBox(height: screenHeight * 0.02),
                             CustomElevatedButton(
                               title: "TAP NFC CARD",
+
                               backgroundColor: Colors.green.shade700,
-                              buttonState: ButtonState.normal,
+                              buttonState:
+                                  state is AuthLoadingState
+                                      ? ButtonState.loading
+                                      : ButtonState.normal,
                               leadingIcon: Icons.nfc,
                               height: isSmallScreen ? 35 : 40,
                               fontSize: isSmallScreen ? 11 : 12,
                               onPressed: () {
                                 FocusScope.of(context).unfocus();
+                                showDialog(
+                                  context: context,
+                                  builder:
+                                      (context) => NFCScanDialog(
+                                        authCubit: context.read<AuthCubit>(),
+                                      ),
+                                );
                               },
                             ),
                           ],

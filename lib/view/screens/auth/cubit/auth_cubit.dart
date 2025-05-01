@@ -22,4 +22,20 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthErrorState(e.toString()));
     }
   }
+
+  Future<void> loginWithNfc(String serialNumber) async {
+    if (serialNumber.isEmpty) {
+      emit(AuthErrorState('Serial number cannot be empty'));
+      return;
+    }
+
+    emit(AuthLoadingState());
+    try {
+      await _authController.loginWithNfc("123123");
+
+      emit(AuthSuccessState());
+    } catch (e) {
+      emit(AuthErrorState(e.toString()));
+    }
+  }
 }

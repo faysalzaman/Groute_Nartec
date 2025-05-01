@@ -90,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   // Calculate the number of columns based on screen width
                   int crossAxisCount = screenSize.width > 600 ? 3 : 2;
                   // For very small screens (like in portrait orientation on phones)
-                  if (screenSize.width < 380) crossAxisCount = 1;
+                  if (screenSize.width < 350) crossAxisCount = 1;
 
                   // Calculate appropriate child aspect ratio based on available width
                   double cardWidth =
@@ -99,7 +99,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   double aspectRatio =
                       cardWidth /
                       180; // 180 is an estimated height that works well
-
                   return GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),

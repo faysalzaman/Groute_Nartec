@@ -17,6 +17,7 @@ class AppSnackbars {
       context,
       message: message,
       backgroundColor: AppColors.black.withValues(alpha: 0.9),
+
       icon: Icons.info_outline,
       iconColor: AppColors.white,
     );
@@ -68,7 +69,7 @@ class AppSnackbars {
                 color: iconColor.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: iconColor, size: 20),
+              child: Icon(icon, color: iconColor, size: 15),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -80,6 +81,7 @@ class AppSnackbars {
                 style: TextStyle(
                   color: AppColors.white,
                   fontWeight: FontWeight.w500,
+                  fontSize: 12,
                 ),
               ),
             ),
