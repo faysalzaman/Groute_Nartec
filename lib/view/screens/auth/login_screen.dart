@@ -43,14 +43,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
-        if (state.isAuthenticated) {
+        if (state is AuthSuccessState) {
           AppNavigator.push(context, const HomeScreen());
-        } else if (state.hasError) {
-          // Show error snackbar
-          AppSnackbars.danger(
-            context,
-            state.errorMessage ?? 'An error occurred',
-          );
+        } else if (state is AuthErrorState) {
+          AppSnackbars.danger(context, state.errorMessage);
         }
       },
       builder: (context, state) {
@@ -189,7 +185,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 fontSize: isSmallScreen ? 11 : 12,
                                 title: "LOGIN",
                                 buttonState:
-                                    state.isLoading
+                                    state is AuthLoadingState
                                         ? ButtonState.loading
                                         : ButtonState.normal,
                                 onPressed: () {

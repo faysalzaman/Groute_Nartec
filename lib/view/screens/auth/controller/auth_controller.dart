@@ -1,12 +1,12 @@
 import 'package:groute_nartec/core/constants/app_preferences.dart';
 import 'package:groute_nartec/core/services/http_service.dart';
-import 'package:groute_nartec/view/screens/auth/model/child_member.dart';
+import 'package:groute_nartec/view/screens/auth/model/login_model.dart';
 
 class AuthController {
   final HttpService _httpService = HttpService();
 
-  Future<ChildMember?> login(String email, String password) async {
-    final path = 'v1/child-members/login';
+  Future<Driver?> login(String email, String password) async {
+    final path = 'v1/drivers/login';
 
     final response = await _httpService.request(
       path,
@@ -19,25 +19,17 @@ class AuthController {
 
       // Extract tokens from response
       final accessToken = data['accessToken'];
-      final gtrackToken = data['GTrackResponse']['token'];
 
       if (accessToken == null) {
         throw Exception('Access token not found in response');
-      } else if (gtrackToken == null) {
-        throw Exception('GTrack token not found in response');
       }
+      await AppPreferences.setAccessToken(accessToken);
 
-      final ChildMember childMember = ChildMember.fromJson(
-        data['GTrackResponse']['subUser'],
-      );
+      final Driver driver = Driver.fromJson(data['driver']);
 
       // Save tokens to SharedPreferences
-      await AppPreferences.setAccessToken(accessToken);
-      if (gtrackToken != null) {
-        await AppPreferences.setGTrackToken(gtrackToken);
-      }
 
-      return childMember;
+      return driver;
     }
     return null;
   }
