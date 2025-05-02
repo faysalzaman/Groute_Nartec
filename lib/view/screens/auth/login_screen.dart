@@ -60,9 +60,9 @@ class _LoginScreenState extends State<LoginScreen> {
             height: double.infinity,
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage(loginBackground),
+                image: AssetImage(kAuthBackgroundImg),
                 fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(Colors.black54, BlendMode.darken),
+                // colorFilter: ColorFilter.mode(Colors.black54, BlendMode.darken),
               ),
             ),
             child: SafeArea(

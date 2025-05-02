@@ -6,26 +6,24 @@ class AppColors {
   AppColors._();
 
   // Primary colors
-  static const Color primaryBlue = Color(0xFF1145A4);
-  static const Color primaryLight = Color(
-    0xFF4B71D7,
-  ); // Lighter shade of primary
-  static const Color primaryDark = Color(0xFF0B2F75); // Darker shade of primary
+  static const Color primaryBlue = Color(0xFF136F63); // Deep teal
+  static const Color primaryLight = Color(0xFF22AAA1); // Medium teal
+  static const Color primaryDark = Color(0xFF0B4D43); // Dark teal
 
   // Secondary colors
-  static const Color secondary = Color(0xFFB61D1D);
-  static const Color secondaryLight = Color(0xFFE64A4A);
-  static const Color secondaryDark = Color(0xFF850F0F);
+  static const Color secondary = Color(0xFFDB5461); // Coral red
+  static const Color secondaryLight = Color(0xFFFF7E8A); // Light coral
+  static const Color secondaryDark = Color(0xFFB2323E); // Dark coral
 
   // Background colors
-  static const Color lightBackground = Color(0xFFF8F9FC);
-  static const Color darkBackground = Color(0xFF121212);
+  static const Color lightBackground = Color(0xFFF2F5F8); // Light blue-gray
+  static const Color darkBackground = Color(0xFF1D2C38); // Deep blue-gray
   static const Color scaffoldBackground = Color(0xFFF5F5F5);
   static const Color cardBackground = Color(0xFFFFFFFF);
 
   // Text colors
-  static const Color textDark = Color(0xFF1A1A1A);
-  static const Color textMedium = Color(0xFF666666);
+  static const Color textDark = Color(0xFF2C363F); // Dark slate
+  static const Color textMedium = Color(0xFF5C6670); // Medium slate
   static const Color textLight = Color(0xFFFFFFFF);
   static const Color textDisabled = Color(0xFF9E9E9E);
 

@@ -1,6 +1,7 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:groute_nartec/core/constants/app_colors.dart';
 
 /// The [AppTheme] defines light and dark themes for the app.
 ///
@@ -19,10 +20,10 @@ import 'package:flutter/material.dart';
 abstract final class AppTheme {
   // The FlexColorScheme defined light mode ThemeData.
   static ThemeData light = FlexThemeData.light(
-    // Playground built-in scheme made with FlexSchemeColor.from() API.
+    // Use our custom colors
     colors: FlexSchemeColor.from(
-      primary: const Color(0xFF1145A4),
-      secondary: const Color(0xFFB61D1D),
+      primary: AppColors.primaryBlue, // Deep teal
+      secondary: AppColors.secondary, // Coral red
       brightness: Brightness.light,
       swapOnMaterial3: true,
     ),
@@ -35,21 +36,27 @@ abstract final class AppTheme {
       inputDecoratorBorderType: FlexInputBorderType.outline,
       alignedDropdown: true,
       navigationRailUseIndicator: true,
+      chipSchemeColor: SchemeColor.primary,
+      tooltipSchemeColor: SchemeColor.primaryContainer,
+      bottomNavigationBarElevation: 2,
+      bottomNavigationBarOpacity: 0.95,
+      cardRadius: 12,
+      popupMenuRadius: 8,
+      dialogRadius: 16,
     ),
     // Direct ThemeData properties.
     visualDensity: FlexColorScheme.comfortablePlatformDensity,
     cupertinoOverrideTheme: const CupertinoThemeData(applyThemeToAll: true),
+    useMaterial3: true, // Enable Material 3 design
   );
 
   // The FlexColorScheme defined dark mode ThemeData.
   static ThemeData dark = FlexThemeData.dark(
-    // Playground built-in scheme made with FlexSchemeColor.from() API
-    // The input FlexSchemeColor is identical to light mode, but uses
-    // default Error and toDark() methods to convert it to a dark theme.
+    // Use our custom colors for dark mode too
     colors: FlexSchemeColor.from(
-      primary: const Color(0xFF1145A4),
-      secondary: const Color(0xFFB61D1D),
-      brightness: Brightness.light,
+      primary: AppColors.primaryBlue, // Deep teal
+      secondary: AppColors.secondary, // Coral red
+      brightness: Brightness.dark,
       swapOnMaterial3: true,
     ).defaultError.toDark(30, true),
     // Component theme configurations for dark mode.
@@ -62,9 +69,17 @@ abstract final class AppTheme {
       inputDecoratorBorderType: FlexInputBorderType.outline,
       alignedDropdown: true,
       navigationRailUseIndicator: true,
+      chipSchemeColor: SchemeColor.primary,
+      tooltipSchemeColor: SchemeColor.inversePrimary,
+      bottomNavigationBarElevation: 2,
+      bottomNavigationBarOpacity: 0.95,
+      cardRadius: 12,
+      popupMenuRadius: 8,
+      dialogRadius: 16,
     ),
     // Direct ThemeData properties.
     visualDensity: FlexColorScheme.comfortablePlatformDensity,
     cupertinoOverrideTheme: const CupertinoThemeData(applyThemeToAll: true),
+    useMaterial3: true, // Enable Material 3 design
   );
 }
