@@ -43,9 +43,12 @@ class _LoginScreenState extends State<LoginScreen> {
     final isSmallScreen = screenWidth < 360;
 
     return BlocConsumer<AuthCubit, AuthState>(
-      listener: (context, state) {
+      listener: (context, state) async {
         if (state is AuthSuccessState) {
-          AppNavigator.push(context, const HomeScreen());
+          await Future.delayed(const Duration(seconds: 1));
+          if (context.mounted) {
+            AppNavigator.push(context, const HomeScreen());
+          }
         } else if (state is AuthErrorState) {
           AppSnackbars.danger(context, state.errorMessage);
         }
@@ -188,6 +191,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 buttonState:
                                     state is AuthLoadingState
                                         ? ButtonState.loading
+                                        : state is AuthSuccessState
+                                        ? ButtonState.success
                                         : ButtonState.normal,
                                 onPressed: () {
                                   FocusScope.of(context).unfocus();

@@ -21,7 +21,7 @@ class ParametersScreen extends StatelessWidget {
             // This is a placeholder for the top header. You can replace it with your own widget.
             RectangleCard(
               title: "Parameters Overview",
-              icon: FontAwesomeIcons.cogs,
+              icon: FontAwesomeIcons.gears,
               color: AppColors.primaryBlue,
             ),
             // Main menu options
