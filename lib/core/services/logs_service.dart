@@ -112,6 +112,6 @@ class LogsService {
   }
 
   void logVerbose(String message) {
-    _logger.v('�� $message');
+    _logger.t('�� $message');
   }
 }

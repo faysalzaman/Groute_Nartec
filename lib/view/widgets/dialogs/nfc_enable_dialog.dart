@@ -1,5 +1,3 @@
-// ignore_for_file: unused_field
-
 import 'package:flutter/material.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:nfc_manager/nfc_manager.dart';
@@ -21,8 +19,6 @@ class NFCEnableDialog extends StatefulWidget {
 }
 
 class _NFCEnableDialogState extends State<NFCEnableDialog> {
-  bool _isScanning = false;
-
   @override
   void initState() {
     super.initState();
@@ -30,8 +26,6 @@ class _NFCEnableDialogState extends State<NFCEnableDialog> {
   }
 
   Future<void> _startNFCScan() async {
-    setState(() => _isScanning = true);
-
     try {
       bool isAvailable = await NfcManager.instance.isAvailable();
 
@@ -83,8 +77,6 @@ class _NFCEnableDialogState extends State<NFCEnableDialog> {
 
             if (mounted) {
               Navigator.pop(context);
-              print('serialNumber: $serialNumber');
-              // widget.profileCubit.enableNfc(true, serialNumber!);
             }
           } catch (e) {
             if (mounted) {
