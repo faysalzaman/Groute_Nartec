@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
-import 'package:groute_nartec/view/widgets/custom_scaffold.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/view/screens/dashboard/about/about_screen.dart';
 import 'package:groute_nartec/view/screens/dashboard/inventory/inventory_management_screen.dart';
@@ -12,6 +11,7 @@ import 'package:groute_nartec/view/screens/dashboard/route_plane/route_plan_scre
 import 'package:groute_nartec/view/screens/dashboard/sales_invoice/sales_invoice_screen.dart';
 import 'package:groute_nartec/view/screens/dashboard/sales_order/sales_order_management_screen.dart';
 import 'package:groute_nartec/view/screens/dashboard/start_day/start_of_day_screen.dart';
+import 'package:groute_nartec/view/widgets/custom_scaffold.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -75,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     // Get device screen size
     final Size screenSize = MediaQuery.of(context).size;
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
 
     return CustomScaffold(
       title: "GRoute Pro (Van sales)",
@@ -113,9 +114,23 @@ class _HomeScreenState extends State<HomeScreen> {
                       // Keep your existing card building code
                       return Card(
                         elevation: 5,
-                        color: AppColors.white,
+                        color:
+                            isDarkTheme
+                                ? AppColors.darkBackground.withValues(
+                                  alpha: 0.95,
+                                )
+                                : AppColors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
+                          side:
+                              isDarkTheme
+                                  ? BorderSide(
+                                    color: AppColors.primaryBlue.withValues(
+                                      alpha: 0.3,
+                                    ),
+                                    width: 1,
+                                  )
+                                  : BorderSide.none,
                         ),
                         child: InkWell(
                           onTap: () {
@@ -166,15 +181,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                 FaIcon(
                                   menuItems[index]['icon'],
                                   size: 35,
-                                  color: AppColors.primaryBlue,
+                                  color:
+                                      isDarkTheme
+                                          ? AppColors.primaryLight
+                                          : AppColors.primaryBlue,
                                 ),
                                 const SizedBox(height: 12),
                                 Text(
                                   menuItems[index]['title'],
                                   textAlign: TextAlign.center,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
+                                    color:
+                                        isDarkTheme
+                                            ? AppColors.white
+                                            : AppColors.textDark,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
@@ -185,9 +207,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                         .map((line) => '• $line')
                                         .join('\n'),
                                     textAlign: TextAlign.center,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 11,
-                                      color: AppColors.primaryBlue,
+                                      color:
+                                          isDarkTheme
+                                              ? AppColors.primaryLight
+                                                  .withValues(alpha: 0.8)
+                                              : AppColors.primaryBlue,
                                     ),
                                     maxLines: 3,
                                     overflow: TextOverflow.ellipsis,

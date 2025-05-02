@@ -51,6 +51,7 @@ class CustomScaffold extends StatelessWidget {
                 scrolledUnderElevation: 0,
               ),
       body: Container(
+        height: double.infinity,
         padding: const EdgeInsets.all(16),
 
         decoration: BoxDecoration(
