@@ -60,7 +60,6 @@ abstract final class AppTheme {
       tabBarItemSchemeColor: SchemeColor.primary,
       elevatedButtonRadius: 8,
       // Additional text theme customization
-      blendTextTheme: true,
       textButtonRadius: 8,
       outlinedButtonRadius: 8,
       outlinedButtonBorderWidth: 1.5,
@@ -126,7 +125,6 @@ abstract final class AppTheme {
       tabBarItemSchemeColor: SchemeColor.primary,
       elevatedButtonRadius: 8,
       // Additional text theme customization
-      blendTextTheme: true,
       textButtonRadius: 8,
       outlinedButtonRadius: 8,
       outlinedButtonBorderWidth: 1.5,

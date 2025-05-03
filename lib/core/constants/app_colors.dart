@@ -61,26 +61,3 @@ class AppColors {
   static const Color surfaceVariant = Color(0xFFF5F5F5);
   static const Color overlay = Color(0x52000000); // 32% black
 }
-
-/// Extension to modify color values
-extension ColorWithValues on Color {
-  /// Returns a new Color with modified alpha, red, green, or blue values
-  Color withValues({int? alpha, int? red, int? green, int? blue}) {
-    return Color.fromARGB(
-      alpha ?? this.alpha,
-      red ?? this.red,
-      green ?? this.green,
-      blue ?? this.blue,
-    );
-  }
-
-  /// Returns a new Color with a modified alpha value
-  Color withAlpha(int alpha) {
-    return withValues(alpha: alpha);
-  }
-
-  /// Returns a new Color with the specified opacity (0.0 to 1.0)
-  Color withOpacity(double opacity) {
-    return withValues(alpha: (opacity * 255).round());
-  }
-}
