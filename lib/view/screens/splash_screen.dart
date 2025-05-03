@@ -79,7 +79,7 @@ class _SplashScreenState extends State<SplashScreen>
           image: DecorationImage(
             image: AssetImage(kAuthBackgroundImg),
             fit: BoxFit.cover,
-            // colorFilter: ColorFilter.mode(Colors.black54, BlendMode.darken),
+            colorFilter: ColorFilter.mode(Colors.black54, BlendMode.darken),
           ),
         ),
         child: Column(

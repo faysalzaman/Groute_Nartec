@@ -62,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
               image: DecorationImage(
                 image: AssetImage(kAuthBackgroundImg),
                 fit: BoxFit.cover,
-                // colorFilter: ColorFilter.mode(Colors.black54, BlendMode.darken),
+                colorFilter: ColorFilter.mode(Colors.black54, BlendMode.darken),
               ),
             ),
             child: SafeArea(
@@ -182,7 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       fontSize: isSmallScreen ? 11 : 12,
                                     ),
                                   ),
-                                ), 
+                                ),
                               ),
                               CustomElevatedButton(
                                 height: isSmallScreen ? 35 : 40,
