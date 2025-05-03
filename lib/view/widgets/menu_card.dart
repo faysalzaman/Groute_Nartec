@@ -33,9 +33,11 @@ class MenuCard extends StatelessWidget {
             offset: const Offset(0, 2),
           ),
         ],
+
+        border: Border.all(width: 1, color: color.withValues(alpha: 0.1)),
       ),
       child: Material(
-        color: Colors.transparent,
+        color: AppColors.white,
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(16),
@@ -45,7 +47,7 @@ class MenuCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),

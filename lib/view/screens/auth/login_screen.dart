@@ -47,14 +47,14 @@ class _LoginScreenState extends State<LoginScreen> {
         if (state is AuthSuccessState) {
           await Future.delayed(const Duration(seconds: 1));
           if (context.mounted) {
-            AppNavigator.push(context, const HomeScreen());
+            AppNavigator.pushReplacement(context, const HomeScreen());
           }
         } else if (state is AuthErrorState) {
           AppSnackbars.danger(context, state.errorMessage);
         } else if (state is NfcAuthSuccessState) {
           await Future.delayed(const Duration(seconds: 1));
           if (context.mounted) {
-            AppNavigator.push(context, const HomeScreen());
+            AppNavigator.pushReplacement(context, const HomeScreen());
           }
         } else if (state is NfcAuthErrorState) {
           AppSnackbars.danger(context, state.errorMessage);

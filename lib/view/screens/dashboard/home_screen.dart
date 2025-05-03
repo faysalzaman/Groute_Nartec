@@ -113,114 +113,134 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemCount: menuItems.length,
                     itemBuilder: (context, index) {
                       // Keep your existing card building code
-                      return Card(
-                        elevation: 5,
-                        color:
-                            isDarkTheme
-                                ? AppColors.darkBackground.withValues(
-                                  alpha: 0.95,
-                                )
-                                : AppColors.white,
-                        shape: RoundedRectangleBorder(
+                      return Container(
+                        decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15),
-                          side:
+                          color:
                               isDarkTheme
-                                  ? BorderSide(
-                                    color: AppColors.primaryBlue.withValues(
-                                      alpha: 0.3,
-                                    ),
-                                    width: 1,
+                                  ? AppColors.darkBackground.withValues(
+                                    alpha: 0.95,
                                   )
-                                  : BorderSide.none,
+                                  : AppColors.white,
+                          border: Border.all(
+                            color: Colors.black.withValues(alpha: 0.1),
+                          ),
                         ),
-                        child: InkWell(
-                          onTap: () {
-                            // Add navigation logic here
-                            if (menuItems[index]['title'] ==
-                                'Route Plan\nManagement') {
-                              AppNavigator.push(context, RoutePlanScreen());
-                            } else if (menuItems[index]['title'] ==
-                                'Sales Invoice\nManagement') {
-                              AppNavigator.push(context, SalesInvoiceScreen());
-                            } else if (menuItems[index]['title'] ==
-                                'Dynamic\nPromotions') {
-                              AppNavigator.push(
-                                context,
-                                DynamicPromotionsScreen(),
-                              );
-                            } else if (menuItems[index]['title'] ==
-                                'Item\nReturns') {
-                              AppNavigator.push(context, ItemsReturnsScreen());
-                            } else if (menuItems[index]['title'] ==
-                                'Parameters') {
-                              AppNavigator.push(context, ParametersScreen());
-                            } else if (menuItems[index]['title'] == 'About') {
-                              AppNavigator.push(context, AboutScreen());
-                            } else if (menuItems[index]['title'] ==
-                                'Start of Day') {
-                              AppNavigator.push(context, StartOfDayScreen());
-                            } else if (menuItems[index]['title'] ==
-                                'Sales Order\nManagement') {
-                              AppNavigator.push(
-                                context,
-                                SalesOrderManagementScreen(),
-                              );
-                            } else if (menuItems[index]['title'] ==
-                                'Inventory\nManagement') {
-                              AppNavigator.push(
-                                context,
-                                InventoryManagementScreen(),
-                              );
-                            }
-                          },
-                          borderRadius: BorderRadius.circular(15),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                FaIcon(
-                                  menuItems[index]['icon'],
-                                  size: 35,
-                                  color:
-                                      isDarkTheme
-                                          ? AppColors.primaryLight
-                                          : AppColors.primaryBlue,
-                                ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  menuItems[index]['title'],
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
+                        child: Card(
+                          elevation: 10,
+                          color:
+                              isDarkTheme
+                                  ? AppColors.darkBackground.withValues(
+                                    alpha: 0.95,
+                                  )
+                                  : AppColors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            side:
+                                isDarkTheme
+                                    ? BorderSide(
+                                      color: AppColors.primaryBlue.withValues(
+                                        alpha: 0.3,
+                                      ),
+                                      width: 1,
+                                    )
+                                    : BorderSide.none,
+                          ),
+                          child: InkWell(
+                            onTap: () {
+                              // Add navigation logic here
+                              if (menuItems[index]['title'] ==
+                                  'Route Plan\nManagement') {
+                                AppNavigator.push(context, RoutePlanScreen());
+                              } else if (menuItems[index]['title'] ==
+                                  'Sales Invoice\nManagement') {
+                                AppNavigator.push(
+                                  context,
+                                  SalesInvoiceScreen(),
+                                );
+                              } else if (menuItems[index]['title'] ==
+                                  'Dynamic\nPromotions') {
+                                AppNavigator.push(
+                                  context,
+                                  DynamicPromotionsScreen(),
+                                );
+                              } else if (menuItems[index]['title'] ==
+                                  'Item\nReturns') {
+                                AppNavigator.push(
+                                  context,
+                                  ItemsReturnsScreen(),
+                                );
+                              } else if (menuItems[index]['title'] ==
+                                  'Parameters') {
+                                AppNavigator.push(context, ParametersScreen());
+                              } else if (menuItems[index]['title'] == 'About') {
+                                AppNavigator.push(context, AboutScreen());
+                              } else if (menuItems[index]['title'] ==
+                                  'Start of Day') {
+                                AppNavigator.push(context, StartOfDayScreen());
+                              } else if (menuItems[index]['title'] ==
+                                  'Sales Order\nManagement') {
+                                AppNavigator.push(
+                                  context,
+                                  SalesOrderManagementScreen(),
+                                );
+                              } else if (menuItems[index]['title'] ==
+                                  'Inventory\nManagement') {
+                                AppNavigator.push(
+                                  context,
+                                  InventoryManagementScreen(),
+                                );
+                              }
+                            },
+                            borderRadius: BorderRadius.circular(15),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  FaIcon(
+                                    menuItems[index]['icon'],
+                                    size: 35,
                                     color:
                                         isDarkTheme
-                                            ? AppColors.white
-                                            : AppColors.textDark,
+                                            ? AppColors.primaryLight
+                                            : AppColors.primaryBlue,
                                   ),
-                                ),
-                                const SizedBox(height: 8),
-                                Expanded(
-                                  child: Text(
-                                    menuItems[index]['subtitle']
-                                        .split('\n')
-                                        .map((line) => '• $line')
-                                        .join('\n'),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    menuItems[index]['title'],
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                      fontSize: 11,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
                                       color:
                                           isDarkTheme
-                                              ? AppColors.primaryLight
-                                                  .withValues(alpha: 0.8)
-                                              : AppColors.primaryBlue,
+                                              ? AppColors.white
+                                              : AppColors.textDark,
                                     ),
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(height: 8),
+                                  Expanded(
+                                    child: Text(
+                                      menuItems[index]['subtitle']
+                                          .split('\n')
+                                          .map((line) => '• $line')
+                                          .join('\n'),
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color:
+                                            isDarkTheme
+                                                ? AppColors.primaryLight
+                                                    .withValues(alpha: 0.8)
+                                                : AppColors.primaryBlue,
+                                      ),
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),

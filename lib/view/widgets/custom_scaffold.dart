@@ -35,14 +35,7 @@ class CustomScaffold extends StatelessWidget {
                 ),
                 flexibleSpace: Container(
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        AppColors.primaryBlue,
-                        AppColors.primaryBlue.withValues(alpha: 0.3),
-                      ],
-                    ),
+                    color: backgroundColor ?? AppColors.primaryLight,
                   ),
                 ),
                 foregroundColor: foregroundColor ?? AppColors.textLight,
@@ -54,16 +47,7 @@ class CustomScaffold extends StatelessWidget {
         height: double.infinity,
         padding: const EdgeInsets.all(16),
 
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              AppColors.primaryBlue.withValues(alpha: 0.3),
-              AppColors.white,
-            ],
-          ),
-        ),
+        decoration: BoxDecoration(color: Colors.white),
         child: body,
       ),
     );
