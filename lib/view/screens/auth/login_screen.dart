@@ -182,7 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       fontSize: isSmallScreen ? 11 : 12,
                                     ),
                                   ),
-                                ),
+                                ), 
                               ),
                               CustomElevatedButton(
                                 height: isSmallScreen ? 35 : 40,

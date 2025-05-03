@@ -6,14 +6,14 @@ class AppColors {
   AppColors._();
 
   // Primary colors
-  static const Color primaryBlue = Color(0xFF136F63); // Deep teal
-  static const Color primaryLight = Color(0xFF22AAA1); // Medium teal
-  static const Color primaryDark = Color(0xFF0B4D43); // Dark teal
+  static const Color primaryBlue = Color(0xFF2E5A88); // Rich navy blue
+  static const Color primaryLight = Color(0xFF4B7AB0); // Medium blue
+  static const Color primaryDark = Color(0xFF1A3457); // Dark navy
 
   // Secondary colors
-  static const Color secondary = Color(0xFFDB5461); // Coral red
-  static const Color secondaryLight = Color(0xFFFF7E8A); // Light coral
-  static const Color secondaryDark = Color(0xFFB2323E); // Dark coral
+  static const Color secondary = Color(0xFFE67E22); // Vibrant orange
+  static const Color secondaryLight = Color(0xFFF39C12); // Amber
+  static const Color secondaryDark = Color(0xFFD35400); // Burnt orange
 
   // Background colors
   static const Color lightBackground = Color(0xFFF2F5F8); // Light blue-gray
@@ -30,7 +30,9 @@ class AppColors {
   // Status colors
   static const Color success = Color(0xFF2E7D32); // Material green 800
   static const Color error = Color(0xFFD32F2F); // Material red 700
-  static const Color warning = Color(0xFFF57C00); // Material orange 800
+  static const Color warning = Color(
+    0xFFF39C12,
+  ); // Matching amber from secondary
   static const Color info = primaryBlue;
 
   // Border and divider colors
@@ -58,4 +60,27 @@ class AppColors {
   static const Color surface = Color(0xFFFFFFFF);
   static const Color surfaceVariant = Color(0xFFF5F5F5);
   static const Color overlay = Color(0x52000000); // 32% black
+}
+
+/// Extension to modify color values
+extension ColorWithValues on Color {
+  /// Returns a new Color with modified alpha, red, green, or blue values
+  Color withValues({int? alpha, int? red, int? green, int? blue}) {
+    return Color.fromARGB(
+      alpha ?? this.alpha,
+      red ?? this.red,
+      green ?? this.green,
+      blue ?? this.blue,
+    );
+  }
+
+  /// Returns a new Color with a modified alpha value
+  Color withAlpha(int alpha) {
+    return withValues(alpha: alpha);
+  }
+
+  /// Returns a new Color with the specified opacity (0.0 to 1.0)
+  Color withOpacity(double opacity) {
+    return withValues(alpha: (opacity * 255).round());
+  }
 }
