@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/view/screens/dashboard/sales_order/cubit/sales_cubit.dart';
 import 'package:groute_nartec/view/screens/dashboard/sales_order/cubit/sales_state.dart';
 import 'package:groute_nartec/view/screens/dashboard/sales_order/models/sales_order.dart';
 import 'package:groute_nartec/view/screens/dashboard/sales_order/new_orders/new_orders_detail_screen.dart';
+import 'package:groute_nartec/view/screens/dashboard/sales_order/new_orders/new_orders_map_screen.dart';
 import 'package:groute_nartec/view/widgets/custom_scaffold.dart';
 import 'package:intl/intl.dart';
 
@@ -280,7 +282,20 @@ class SalesOrderCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: () {
-                    // Process order action
+                    AppNavigator.push(
+                      context,
+                      NewOrdersMapScreen(
+                        salesOrder: salesOrder,
+                        salesOrderLocation: LatLng(
+                          double.parse(
+                            salesOrder.customer?.latitude.toString() ?? '0.0',
+                          ),
+                          double.parse(
+                            salesOrder.customer?.longitude.toString() ?? '0.0',
+                          ),
+                        ),
+                      ),
+                    );
                   },
                   child: const Text('Process'),
                 ),
