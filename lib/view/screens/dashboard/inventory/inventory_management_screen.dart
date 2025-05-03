@@ -14,6 +14,7 @@ class InventoryManagementScreen extends StatelessWidget {
       title: "Inventory Management",
       automaticallyImplyLeading: true,
       body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
             // Warehouse Icon Banner

@@ -15,6 +15,7 @@ class SalesInvoiceScreen extends StatelessWidget {
       title: "Sales Invoice Management",
       automaticallyImplyLeading: true,
       body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
             // Top header with sales summary

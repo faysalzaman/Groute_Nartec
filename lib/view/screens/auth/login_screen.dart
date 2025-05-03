@@ -51,6 +51,13 @@ class _LoginScreenState extends State<LoginScreen> {
           }
         } else if (state is AuthErrorState) {
           AppSnackbars.danger(context, state.errorMessage);
+        } else if (state is NfcAuthSuccessState) {
+          await Future.delayed(const Duration(seconds: 1));
+          if (context.mounted) {
+            AppNavigator.push(context, const HomeScreen());
+          }
+        } else if (state is NfcAuthErrorState) {
+          AppSnackbars.danger(context, state.errorMessage);
         }
       },
       builder: (context, state) {
@@ -67,6 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             child: SafeArea(
               child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
                 child: Padding(
                   padding: EdgeInsets.symmetric(
                     horizontal: screenWidth * 0.05,
@@ -237,8 +245,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
                               backgroundColor: Colors.green.shade700,
                               buttonState:
-                                  state is AuthLoadingState
+                                  state is NfcAuthLoadingState
                                       ? ButtonState.loading
+                                      : state is NfcAuthSuccessState
+                                      ? ButtonState.success
                                       : ButtonState.normal,
                               leadingIcon: Icons.nfc,
                               height: isSmallScreen ? 35 : 40,

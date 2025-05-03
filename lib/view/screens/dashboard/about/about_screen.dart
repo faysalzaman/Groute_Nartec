@@ -14,6 +14,7 @@ class AboutScreen extends StatelessWidget {
       title: "About",
       automaticallyImplyLeading: true,
       body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
             // Top header with about icon

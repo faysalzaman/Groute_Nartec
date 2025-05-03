@@ -15,6 +15,7 @@ class ParametersScreen extends StatelessWidget {
       title: "Parameters",
       automaticallyImplyLeading: true,
       body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
             // Top header with parameters summary

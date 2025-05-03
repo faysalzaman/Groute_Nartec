@@ -81,6 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
       title: "GRoute Pro (Van sales)",
       automaticallyImplyLeading: false,
       body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(

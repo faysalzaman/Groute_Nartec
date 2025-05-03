@@ -15,6 +15,7 @@ class DynamicPromotionsScreen extends StatelessWidget {
       title: "Dynamic Promotions",
       automaticallyImplyLeading: true,
       body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
             // Top header with promotions summary

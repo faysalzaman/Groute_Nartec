@@ -56,7 +56,7 @@ class MenuCard extends StatelessWidget {
                 Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
@@ -65,7 +65,7 @@ class MenuCard extends StatelessWidget {
                 Text(
                   description,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 10,
                     color: isDark ? AppColors.grey400 : Colors.grey[600],
                   ),
                   textAlign: TextAlign.center,

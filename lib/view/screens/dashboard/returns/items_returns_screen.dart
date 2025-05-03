@@ -14,6 +14,7 @@ class ItemsReturnsScreen extends StatelessWidget {
       title: "Items Returns",
       automaticallyImplyLeading: true,
       body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
             // Top header with returns summary

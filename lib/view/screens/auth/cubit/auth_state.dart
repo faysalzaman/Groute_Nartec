@@ -11,3 +11,13 @@ class AuthErrorState extends AuthState {
 
   AuthErrorState(this.errorMessage);
 }
+
+class NfcAuthLoadingState extends AuthState {}
+
+class NfcAuthSuccessState extends AuthState {}
+
+class NfcAuthErrorState extends AuthState {
+  final String errorMessage;
+
+  NfcAuthErrorState(this.errorMessage);
+}

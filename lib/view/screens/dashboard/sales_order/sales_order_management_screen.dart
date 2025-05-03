@@ -14,6 +14,7 @@ class SalesOrderManagementScreen extends StatelessWidget {
       title: "Sales Order Management",
       automaticallyImplyLeading: true,
       body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
             // Top header with sales order icon
@@ -29,9 +30,10 @@ class SalesOrderManagementScreen extends StatelessWidget {
                 crossAxisCount: 2,
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
-                childAspectRatio: 0.8,
+                childAspectRatio: 0.6,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
+
                 children: [
                   MenuCard(
                     icon: FontAwesomeIcons.cartPlus,

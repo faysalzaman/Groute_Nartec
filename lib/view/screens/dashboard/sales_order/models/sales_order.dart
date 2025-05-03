@@ -1,4 +1,35 @@
-class SalesOrer {
+class SalesOrderModel {
+  List<SalesOrders>? salesOrders;
+  Pagination? pagination;
+
+  SalesOrderModel({this.salesOrders, this.pagination});
+
+  SalesOrderModel.fromJson(Map<String, dynamic> json) {
+    if (json['salesOrders'] != null) {
+      salesOrders = <SalesOrders>[];
+      json['salesOrders'].forEach((v) {
+        salesOrders!.add(SalesOrders.fromJson(v));
+      });
+    }
+    pagination =
+        json['pagination'] != null
+            ? Pagination.fromJson(json['pagination'])
+            : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (salesOrders != null) {
+      data['salesOrders'] = salesOrders!.map((v) => v.toJson()).toList();
+    }
+    if (pagination != null) {
+      data['pagination'] = pagination!.toJson();
+    }
+    return data;
+  }
+}
+
+class SalesOrders {
   String? id;
   String? salesInvoiceNumber;
   String? purchaseOrderNumber;
@@ -23,7 +54,7 @@ class SalesOrer {
   List<SalesInvoiceDetails>? salesInvoiceDetails;
   Customer? customer;
 
-  SalesOrer({
+  SalesOrders({
     this.id,
     this.salesInvoiceNumber,
     this.purchaseOrderNumber,
@@ -49,7 +80,7 @@ class SalesOrer {
     this.customer,
   });
 
-  SalesOrer.fromJson(Map<String, dynamic> json) {
+  SalesOrders.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     salesInvoiceNumber = json['salesInvoiceNumber'];
     purchaseOrderNumber = json['purchaseOrderNumber'];
@@ -279,6 +310,34 @@ class Customer {
     data['status'] = status;
     data['createdAt'] = createdAt;
     data['updatedAt'] = updatedAt;
+    return data;
+  }
+}
+
+class Pagination {
+  int? total;
+  int? page;
+  int? limit;
+  int? pages;
+  bool? hasMore;
+
+  Pagination({this.total, this.page, this.limit, this.pages, this.hasMore});
+
+  Pagination.fromJson(Map<String, dynamic> json) {
+    total = json['total'];
+    page = json['page'];
+    limit = json['limit'];
+    pages = json['pages'];
+    hasMore = json['hasMore'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['total'] = total;
+    data['page'] = page;
+    data['limit'] = limit;
+    data['pages'] = pages;
+    data['hasMore'] = hasMore;
     return data;
   }
 }
