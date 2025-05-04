@@ -1,10 +1,25 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
+import 'package:groute_nartec/core/utils/app_navigator.dart';
+import 'package:groute_nartec/view/screens/dashboard/sales_order/models/sales_order.dart';
+import 'package:groute_nartec/view/screens/dashboard/sales_order/new_orders/action_screens/delivery_invoice/print_invoice_delivery_screen.dart';
+import 'package:groute_nartec/view/screens/dashboard/sales_order/new_orders/action_screens/signature/signature_screen.dart';
+import 'package:groute_nartec/view/screens/dashboard/sales_order/new_orders/action_screens/unloading/unloading_screen.dart';
 
 class ActionScreen extends StatefulWidget {
-  const ActionScreen({super.key});
+  const ActionScreen({
+    super.key,
+    required this.salesOrderLocation,
+    required this.currentDeviceLocation,
+    required this.salesOrder,
+  });
+
+  final LatLng salesOrderLocation;
+  final LatLng currentDeviceLocation; // Add this parameter
+  final SalesOrderModel salesOrder;
 
   @override
   State<ActionScreen> createState() => _ActionScreenState();
@@ -104,7 +119,16 @@ class _ActionScreenState extends State<ActionScreen> {
                 title: 'Start Unloading',
                 subtitle: 'Begin the delivery process',
                 icon: Icons.local_shipping,
-                onPressed: () {},
+                onPressed: () {
+                  AppNavigator.push(
+                    context,
+                    PicklistDetailsScreen(
+                      salesOrder: widget.salesOrder,
+                      salesOrderLocation: widget.salesOrderLocation,
+                      currentDeviceLocation: widget.currentDeviceLocation,
+                    ),
+                  );
+                },
                 color: Colors.green,
               ),
               const SizedBox(height: 16),
@@ -120,7 +144,16 @@ class _ActionScreenState extends State<ActionScreen> {
                 title: 'Capture Signature',
                 subtitle: 'Get customer confirmation',
                 icon: Icons.draw,
-                onPressed: () {},
+                onPressed: () {
+                  AppNavigator.push(
+                    context,
+                    SignatureScreen(
+                      salesOrder: widget.salesOrder,
+                      salesOrderLocation: widget.salesOrderLocation,
+                      currentDeviceLocation: widget.currentDeviceLocation,
+                    ),
+                  );
+                },
                 color: Colors.purple,
               ),
               const SizedBox(height: 16),
@@ -128,7 +161,16 @@ class _ActionScreenState extends State<ActionScreen> {
                 title: 'Print Delivery Invoice',
                 subtitle: 'Generate delivery documentation',
                 icon: Icons.receipt_long,
-                onPressed: () {},
+                onPressed: () {
+                  AppNavigator.push(
+                    context,
+                    PrintDeliveryInvoiceScreen(
+                      salesOrder: widget.salesOrder,
+                      salesOrderLocation: widget.salesOrderLocation,
+                      currentDeviceLocation: widget.currentDeviceLocation,
+                    ),
+                  );
+                },
                 color: Colors.orange,
               ),
             ],

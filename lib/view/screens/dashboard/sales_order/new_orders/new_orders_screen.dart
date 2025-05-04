@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart'; // Add this import
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/view/screens/dashboard/sales_order/cubit/sales_cubit.dart';
 import 'package:groute_nartec/view/screens/dashboard/sales_order/cubit/sales_state.dart';
 import 'package:groute_nartec/view/screens/dashboard/sales_order/models/sales_order.dart';
 import 'package:groute_nartec/view/screens/dashboard/sales_order/new_orders/new_orders_detail_screen.dart';
 import 'package:groute_nartec/view/screens/dashboard/sales_order/new_orders/new_orders_map_screen.dart';
+import 'package:groute_nartec/view/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/view/widgets/custom_scaffold.dart';
 import 'package:intl/intl.dart';
 
@@ -523,25 +525,16 @@ class _SalesOrderCardState extends State<SalesOrderCard> {
                   child: const Text('View Details'),
                 ),
                 const SizedBox(width: 8),
-                ElevatedButton(
-                  // Call the new _processOrder method
-                  // Disable button and show loader when _isProcessing is true
+                CustomElevatedButton(
+                  width: 100,
+                  height: 40,
                   onPressed:
                       _isProcessing ? null : () => _processOrder(context),
-                  child:
-                      _isProcessing
-                          ? const SizedBox(
-                            // Show loader
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white,
-                              ),
-                            ),
-                          )
-                          : const Text('Process'), // Show text
+                  backgroundColor: AppColors.primaryBlue,
+                  foregroundColor: AppColors.white,
+                  title: 'Process',
+                  buttonState:
+                      _isProcessing ? ButtonState.loading : ButtonState.normal,
                 ),
               ],
             ),

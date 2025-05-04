@@ -17,3 +17,23 @@ class SalesError extends SalesState {
 
   SalesError(this.error);
 }
+
+class SalesStatusUpdateLoadingState extends SalesState {}
+
+class SalesStatusUpdateSuccessState extends SalesState {}
+
+class SalesStatusUpdateErrorState extends SalesState {
+  final String error;
+
+  SalesStatusUpdateErrorState(this.error);
+}
+
+class SalesOrderAddSignatureLoadingState extends SalesState {}
+
+class SalesOrderAddSignatureSuccessState extends SalesState {}
+
+class SalesOrderAddSignatureErrorState extends SalesState {
+  final String error;
+
+  SalesOrderAddSignatureErrorState(this.error);
+}

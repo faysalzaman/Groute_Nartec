@@ -1,13 +1,16 @@
 // ignore_for_file: prefer_final_fields, avoid_print, deprecated_member_use
 
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
+import 'package:groute_nartec/core/utils/app_loading.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/core/utils/app_snackbars.dart';
+import 'package:groute_nartec/view/screens/dashboard/sales_order/cubit/sales_cubit.dart';
+import 'package:groute_nartec/view/screens/dashboard/sales_order/cubit/sales_state.dart';
 import 'package:groute_nartec/view/screens/dashboard/sales_order/models/sales_order.dart';
 import 'package:groute_nartec/view/screens/dashboard/sales_order/new_orders/action_screen.dart';
 import 'package:http/http.dart' as http;
@@ -34,7 +37,6 @@ class _StartJourneyScreenState extends State<StartJourneyScreen>
   Set<Polyline> _polylines = {};
   List<LatLng> polylineCoordinates = [];
   Set<Marker> _markers = {};
-  bool _hasArrived = false;
 
   @override
   void initState() {
@@ -169,42 +171,6 @@ class _StartJourneyScreenState extends State<StartJourneyScreen>
     return points;
   }
 
-  Future<void> _updateArrivalStatus() async {
-    try {
-      // Get current date
-      final _ = DateTime.now();
-
-      // Show loading indicator
-      setState(() {
-        _hasArrived = true;
-      });
-
-      // Here you would add the actual API call to update the journey status
-      // For example:
-      // await _salesCubit.updateJourneyStatus(
-      //   widget.salesOrder.id!,
-      //   {
-      //     'arrivalTime': now.toIso8601String()
-      //   }
-      // );
-
-      // Show success message
-      if (mounted) {
-        AppNavigator.pushReplacement(context, ActionScreen());
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _hasArrived = false;
-        });
-        AppSnackbars.danger(
-          context,
-          'Failed to update arrival status: ${e.toString()}',
-        );
-      }
-    }
-  }
-
   @override
   void dispose() {
     _mapController?.dispose();
@@ -250,143 +216,154 @@ class _StartJourneyScreenState extends State<StartJourneyScreen>
           fontWeight: FontWeight.bold,
         ),
       ),
-      bottomNavigationBar:
-          !_hasArrived
-              ? Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withValues(alpha: 0.2),
-                      spreadRadius: 5,
-                      blurRadius: 15,
-                      offset: const Offset(0, 3),
+      bottomNavigationBar: BlocConsumer<SalesCubit, SalesState>(
+        listener: (context, state) {
+          if (state is SalesStatusUpdateSuccessState) {
+            AppNavigator.push(
+              context,
+              ActionScreen(
+                salesOrder: widget.salesOrder,
+                currentDeviceLocation: widget.currentLocation,
+                salesOrderLocation: widget.destinationLocation,
+              ),
+            );
+          } else if (state is SalesStatusUpdateErrorState) {
+            AppSnackbars.danger(context, state.error);
+          }
+        },
+        builder: (context, state) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withValues(alpha: 0.2),
+                  spreadRadius: 5,
+                  blurRadius: 15,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.location_on,
+                      color: AppColors.error,
+                      size: 24,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Delivery Address',
+                            style: TextStyle(
+                              color: AppColors.grey600,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            widget.salesOrder.customer?.address ??
+                                'No address provided',
+                            style: const TextStyle(
+                              color: Colors.black87,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Divider(height: 1),
+                ),
+                Row(
                   children: [
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.location_on,
-                          color: AppColors.error,
-                          size: 24,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Delivery Address',
-                                style: TextStyle(
-                                  color: AppColors.grey600,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
+                    Expanded(
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.gps_fixed,
+                            color: AppColors.error,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Coordinates',
+                                  style: TextStyle(
+                                    color: AppColors.grey600,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                widget.salesOrder.customer?.address ??
-                                    'No address provided',
-                                style: const TextStyle(
-                                  color: Colors.black87,
+                                const SizedBox(height: 4),
+                                Text(
+                                  '${widget.destinationLocation.latitude}, ${widget.destinationLocation.longitude}',
+                                  style: const TextStyle(
+                                    color: Colors.black87,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    FilledButton.icon(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppColors.error,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 15,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () async {
+                        final now = DateTime.now();
+                        await context.read<SalesCubit>().updateStatus(
+                          widget.salesOrder.id!,
+                          {"arrivalTime": now.toIso8601String()},
+                        );
+                      },
+                      icon: const Icon(Icons.check_circle_outline, size: 20),
+                      label:
+                          state is SalesStatusUpdateLoadingState
+                              ? AppLoading()
+                              : const Text(
+                                'Arrived ?',
+                                style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      child: Divider(height: 1),
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.gps_fixed,
-                                color: AppColors.error,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Coordinates',
-                                      style: TextStyle(
-                                        color: AppColors.grey600,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      '${widget.destinationLocation.latitude}, ${widget.destinationLocation.longitude}',
-                                      style: const TextStyle(
-                                        color: Colors.black87,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        FilledButton.icon(
-                          style: FilledButton.styleFrom(
-                            backgroundColor: AppColors.error,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 15,
-                              vertical: 12,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          onPressed: _hasArrived ? null : _updateArrivalStatus,
-                          icon:
-                              _hasArrived
-                                  ? null
-                                  : const Icon(
-                                    Icons.check_circle_outline,
-                                    size: 20,
-                                  ),
-                          label:
-                              _hasArrived
-                                  ? const Center(
-                                    child: CircularProgressIndicator(
-                                      color: AppColors.white,
-                                    ),
-                                  )
-                                  : const Text(
-                                    'Arrived ?',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                        ),
-                      ],
                     ),
                   ],
                 ),
-              )
-              : null,
+              ],
+            ),
+          );
+        },
+      ),
       body: Stack(
         children: [
           GoogleMap(

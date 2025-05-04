@@ -119,6 +119,7 @@ class CustomElevatedButton extends StatelessWidget {
                 style: GoogleFonts.inter(
                   fontSize: fontSize ?? 14,
                   fontWeight: FontWeight.w600,
+                  color: AppColors.white,
                 ),
               ),
               if (trailingIcon != null) ...[
@@ -133,6 +134,7 @@ class CustomElevatedButton extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: fontSize ?? 14,
             fontWeight: FontWeight.w600,
+            color: AppColors.white,
           ),
           textAlign: TextAlign.center,
         );

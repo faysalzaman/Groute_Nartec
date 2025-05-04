@@ -4,9 +4,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:groute_nartec/core/constants/app_colors.dart';
+import 'package:groute_nartec/core/utils/app_loading.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
+import 'package:groute_nartec/core/utils/app_snackbars.dart';
 import 'package:groute_nartec/view/screens/auth/cubit/auth_cubit.dart';
 import 'package:groute_nartec/view/screens/auth/model/login_model.dart';
+import 'package:groute_nartec/view/screens/dashboard/sales_order/cubit/sales_cubit.dart';
+import 'package:groute_nartec/view/screens/dashboard/sales_order/cubit/sales_state.dart';
 import 'package:groute_nartec/view/screens/dashboard/sales_order/models/sales_order.dart';
 import 'package:groute_nartec/view/screens/dashboard/sales_order/new_orders/start_journey_screen.dart';
 import 'package:location/location.dart' as loc;
@@ -220,12 +225,12 @@ class _NewOrdersMapScreenState extends State<NewOrdersMapScreen> {
     if (_currentLocation == null || !mounted) return;
 
     final LatLng currentLatLng = LatLng(
-      // _currentLocation!.latitude!,
-      // _currentLocation!.longitude!,
+      _currentLocation!.latitude!,
+      _currentLocation!.longitude!,
 
-      // saudi lat lng
-      24.7136,
-      46.6753,
+      // // saudi lat lng
+      // 24.7136,
+      // 46.6753,
     );
 
     setState(() {
@@ -368,93 +373,123 @@ class _NewOrdersMapScreenState extends State<NewOrdersMapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('Order Route Map'),
-      //   actions: [
-      //     IconButton(
-      //       icon: const Icon(Icons.my_location),
-      //       tooltip: 'Show Both Locations',
-      //       onPressed: () {
-      //         if (_currentLocation != null) {
-      //           final LatLng currentLatLng = LatLng(
-      //             _currentLocation!.latitude!,
-      //             _currentLocation!.longitude!,
-      //           );
-      //           _moveCameraToFit(currentLatLng, widget.salesOrderLocation);
-      //         } else {
-      //           _moveCameraToFit(
-      //             widget.currentDeviceLocation,
-      //             widget.salesOrderLocation,
-      //           );
-      //         }
-      //       },
-      //     ),
-      //   ],
-      // ),
-      body: GoogleMap(
-        mapType: MapType.normal,
+    return BlocListener<SalesCubit, SalesState>(
+      listener: (context, state) {
+        if (state is SalesStatusUpdateSuccessState) {
+          AppNavigator.pushReplacement(
+            context,
+            StartJourneyScreen(
+              salesOrder: widget.salesOrder,
+              // Use the latest tracked location if available, otherwise fallback to the initial one
+              currentLocation:
+                  _currentLocation != null
+                      ? LatLng(
+                        _currentLocation!.latitude!,
+                        _currentLocation!.longitude!,
+                      )
+                      : widget.currentDeviceLocation,
+              destinationLocation: widget.salesOrderLocation,
+            ),
+          );
+        }
 
-        initialCameraPosition: _initialCameraPosition,
-        onMapCreated: (GoogleMapController controller) {
-          if (!_controller.isCompleted) {
-            _controller.complete(controller);
-            // Once map is ready, fit both markers in view
-            _moveCameraToFit(
-              widget.currentDeviceLocation,
-              widget.salesOrderLocation,
-            );
-          }
-        },
-        markers: _markers,
-        polylines: _polylines,
-        zoomGesturesEnabled: true,
+        if (state is SalesStatusUpdateErrorState) {
+          AppSnackbars.danger(context, state.error);
+        }
+      },
+      child: Scaffold(
+        // appBar: AppBar(
+        //   title: const Text('Order Route Map'),
+        //   actions: [
+        //     IconButton(
+        //       icon: const Icon(Icons.my_location),
+        //       tooltip: 'Show Both Locations',
+        //       onPressed: () {
+        //         if (_currentLocation != null) {
+        //           final LatLng currentLatLng = LatLng(
+        //             _currentLocation!.latitude!,
+        //             _currentLocation!.longitude!,
+        //           );
+        //           _moveCameraToFit(currentLatLng, widget.salesOrderLocation);
+        //         } else {
+        //           _moveCameraToFit(
+        //             widget.currentDeviceLocation,
+        //             widget.salesOrderLocation,
+        //           );
+        //         }
+        //       },
+        //     ),
+        //   ],
+        // ),
+        body: GoogleMap(
+          mapType: MapType.normal,
 
-        polygons: _polygons, // Add the polygons to the map
-        myLocationEnabled: false,
-        myLocationButtonEnabled: false,
-        zoomControlsEnabled: true,
+          initialCameraPosition: _initialCameraPosition,
+          onMapCreated: (GoogleMapController controller) {
+            if (!_controller.isCompleted) {
+              _controller.complete(controller);
+              // Once map is ready, fit both markers in view
+              _moveCameraToFit(
+                widget.currentDeviceLocation,
+                widget.salesOrderLocation,
+              );
+            }
+          },
+          markers: _markers,
+          polylines: _polylines,
+          zoomGesturesEnabled: true,
+
+          polygons: _polygons, // Add the polygons to the map
+          myLocationEnabled: false,
+          myLocationButtonEnabled: false,
+          zoomControlsEnabled: true,
+        ),
+        floatingActionButton:
+            !_isJourneyStarted
+                ? FloatingActionButton.extended(
+                  onPressed: () async {
+                    final now = DateTime.now();
+                    await context
+                        .read<SalesCubit>()
+                        .updateStatus(widget.salesOrder.id!, {
+                          "startJourneyTime": now.toIso8601String(),
+                          "status": "In Progress",
+                        });
+                  },
+                  icon: const Icon(
+                    Icons.navigation,
+                    color: AppColors.white,
+                    size: 16,
+                  ),
+                  label:
+                      context.read<SalesCubit>().state
+                              is SalesStatusUpdateLoadingState
+                          ? AppLoading()
+                          : const Text(
+                            'Start Journey',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.white,
+                            ),
+                          ),
+                  backgroundColor: Colors.green,
+                )
+                : FloatingActionButton(
+                  onPressed: () async {
+                    final now = DateTime.now();
+                    await context
+                        .read<SalesCubit>()
+                        .updateStatus(widget.salesOrder.id!, {
+                          "startJourneyTime": now.toIso8601String(),
+                          "status": "In Progress",
+                        });
+                  },
+                  backgroundColor: Colors.blue,
+                  child: const Icon(Icons.gps_fixed),
+                ),
+        floatingActionButtonLocation:
+            FloatingActionButtonLocation.startFloat, // Add this line
       ),
-      floatingActionButton:
-          !_isJourneyStarted
-              ? FloatingActionButton.extended(
-                onPressed: () {
-                  AppNavigator.pushReplacement(
-                    context,
-                    StartJourneyScreen(
-                      salesOrder: widget.salesOrder,
-                      // Use the latest tracked location if available, otherwise fallback to the initial one
-                      currentLocation:
-                          _currentLocation != null
-                              ? LatLng(
-                                _currentLocation!.latitude!,
-                                _currentLocation!.longitude!,
-                              )
-                              : widget.currentDeviceLocation,
-                      destinationLocation: widget.salesOrderLocation,
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.navigation),
-                label: const Text('Start Journey'),
-                backgroundColor: Colors.green,
-              )
-              : FloatingActionButton(
-                onPressed: () {
-                  // // When journey is active, FAB will center on current location
-                  // if (_currentLocation != null) {
-                  //   final LatLng currentLatLng = LatLng(
-                  //     _currentLocation!.latitude!,
-                  //     _currentLocation!.longitude!,
-                  //   );
-                  //   _moveCamera(currentLatLng);
-                  // }
-                },
-                backgroundColor: Colors.blue,
-                child: const Icon(Icons.gps_fixed),
-              ),
-      floatingActionButtonLocation:
-          FloatingActionButtonLocation.startFloat, // Add this line
     );
   }
 }

@@ -93,13 +93,13 @@ class AppSnackbars {
           borderRadius: BorderRadius.circular(10.0),
         ),
         duration: Duration(seconds: duration ?? 3),
-        action: SnackBarAction(
-          label: 'DISMISS',
-          textColor: AppColors.white,
-          onPressed: () {
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          },
-        ),
+        // action: SnackBarAction(
+        //   label: 'DISMISS',
+        //   textColor: AppColors.white,
+        //   onPressed: () {
+        //     ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        //   },
+        // ),
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         elevation: 6,
