@@ -1,11 +1,49 @@
+import 'dart:convert';
+
 class LoginModel {
+  int? statusCode;
+  bool? success;
+  String? message;
+  LoginData? data;
+
+  LoginModel({this.statusCode, this.success, this.message, this.data});
+
+  LoginModel.fromJson(Map<String, dynamic> json) {
+    statusCode = json['statusCode'];
+    success = json['success'];
+    message = json['message'];
+
+    if (json['data'] != null) {
+      data = LoginData.fromJson(json['data']);
+    } else {
+      data = null;
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['statusCode'] = statusCode;
+    data['success'] = success;
+    data['message'] = message;
+    if (this.data != null) {
+      data['data'] = this.data!.toJson();
+    }
+    return data;
+  }
+}
+
+class LoginData {
   Driver? driver;
   String? accessToken;
 
-  LoginModel({this.driver, this.accessToken});
+  LoginData({this.driver, this.accessToken});
 
-  LoginModel.fromJson(Map<String, dynamic> json) {
-    driver = json['driver'] != null ? Driver.fromJson(json['driver']) : null;
+  LoginData.fromJson(Map<String, dynamic> json) {
+    if (json['driver'] != null) {
+      driver = Driver.fromJson(json['driver']);
+    } else {
+      driver = null;
+    }
     accessToken = json['accessToken'];
   }
 
@@ -39,6 +77,9 @@ class Driver {
   String? memberId;
   String? vehicleId;
   String? routeId;
+  dynamic vehicle;
+  Route? route;
+  String? radius;
 
   Driver({
     this.id,
@@ -60,6 +101,9 @@ class Driver {
     this.memberId,
     this.vehicleId,
     this.routeId,
+    this.vehicle,
+    this.route,
+    this.radius,
   });
 
   Driver.fromJson(Map<String, dynamic> json) {
@@ -82,6 +126,15 @@ class Driver {
     memberId = json['memberId'];
     vehicleId = json['vehicleId'];
     routeId = json['routeId'];
+    vehicle = json['vehicle'];
+
+    if (json['route'] != null) {
+      route = Route.fromJson(json['route']);
+    } else {
+      route = null;
+    }
+
+    radius = json['radius'];
   }
 
   Map<String, dynamic> toJson() {
@@ -105,6 +158,137 @@ class Driver {
     data['memberId'] = memberId;
     data['vehicleId'] = vehicleId;
     data['routeId'] = routeId;
+    data['vehicle'] = vehicle;
+    if (route != null) {
+      data['route'] = route!.toJson();
+    }
+
+    return data;
+  }
+}
+
+class Route {
+  String? id;
+  String? nameEn;
+  String? nameAr;
+  String? nameNl;
+  String? descriptionEn;
+  String? descriptionAr;
+  String? descriptionNl;
+  List<Coordinate>? points;
+  String? radius;
+  String? glnNumber;
+  String? createdAt;
+  String? updatedAt;
+  String? memberId;
+
+  Route({
+    this.id,
+    this.nameEn,
+    this.nameAr,
+    this.nameNl,
+    this.descriptionEn,
+    this.descriptionAr,
+    this.descriptionNl,
+    this.points,
+    this.radius,
+    this.glnNumber,
+    this.createdAt,
+    this.updatedAt,
+    this.memberId,
+  });
+
+  Route.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    nameEn = json['nameEn'];
+    nameAr = json['nameAr'];
+    nameNl = json['nameNl'];
+    descriptionEn = json['descriptionEn'];
+    descriptionAr = json['descriptionAr'];
+    descriptionNl = json['descriptionNl'];
+    radius = json['radius'];
+    glnNumber = json['glnNumber'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+    memberId = json['memberId'];
+
+    if (json['points'] != null) {
+      points = <Coordinate>[];
+      dynamic decodedData;
+      try {
+        if (json['points'] is String) {
+          decodedData = jsonDecode(json['points']);
+        } else {
+          decodedData = json['points'];
+        }
+      } catch (e) {
+        // Handle decoding error if necessary, maybe log it differently
+        decodedData = null;
+      }
+
+      if (decodedData is List) {
+        for (final item in decodedData) {
+          if (item is Map<String, dynamic>) {
+            try {
+              points!.add(Coordinate.fromJson(item));
+            } catch (e) {
+              // Handle coordinate parsing error if necessary
+            }
+          } else {
+            // Handle non-map items if necessary
+          }
+        }
+      } else if (decodedData != null) {
+        // Handle cases where points data is not a list
+      }
+    } else {
+      points = null;
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['nameEn'] = nameEn;
+    data['nameAr'] = nameAr;
+    data['nameNl'] = nameNl;
+    data['descriptionEn'] = descriptionEn;
+    data['descriptionAr'] = descriptionAr;
+    data['descriptionNl'] = descriptionNl;
+    data['radius'] = radius;
+    data['glnNumber'] = glnNumber;
+    data['createdAt'] = createdAt;
+    data['updatedAt'] = updatedAt;
+    data['memberId'] = memberId;
+    if (points != null) {
+      // Ensure points are encoded back to a JSON string if needed when sending data
+      data['points'] = jsonEncode(points!.map((e) => e.toJson()).toList());
+    }
+    return data;
+  }
+}
+
+class Coordinate {
+  double? latitude;
+  double? longitude;
+
+  Coordinate({this.latitude, this.longitude});
+
+  Coordinate.fromJson(Map<String, dynamic> json) {
+    // Make sure keys match ('lat', 'lng')
+    if (json.containsKey('lat') && json.containsKey('lng')) {
+      latitude = json['lat'];
+      longitude = json['lng'];
+    } else {
+      // Handle missing keys if necessary, maybe throw an error or set defaults
+      // throw FormatException("Invalid Coordinate format: $json");
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['lat'] = latitude;
+    data['lng'] = longitude;
     return data;
   }
 }

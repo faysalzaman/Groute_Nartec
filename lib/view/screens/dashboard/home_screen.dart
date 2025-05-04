@@ -1,7 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
+import 'package:groute_nartec/view/screens/auth/cubit/auth_cubit.dart';
 import 'package:groute_nartec/view/screens/dashboard/about/about_screen.dart';
 import 'package:groute_nartec/view/screens/dashboard/inventory/inventory_management_screen.dart';
 import 'package:groute_nartec/view/screens/dashboard/parameters/parameters_screen.dart';
@@ -76,6 +80,8 @@ class _HomeScreenState extends State<HomeScreen> {
     // Get device screen size
     final Size screenSize = MediaQuery.of(context).size;
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+
+    log(context.read<AuthCubit>().driver?.route?.toJson().toString() ?? '');
 
     return CustomScaffold(
       title: "GRoute Pro (Van sales)",

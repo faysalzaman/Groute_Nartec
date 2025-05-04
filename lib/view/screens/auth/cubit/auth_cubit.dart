@@ -1,11 +1,14 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groute_nartec/view/screens/auth/controller/auth_controller.dart';
 import 'package:groute_nartec/view/screens/auth/cubit/auth_state.dart';
+import 'package:groute_nartec/view/screens/auth/model/login_model.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit({AuthController? controller}) : super(AuthInitialState());
 
   final AuthController _authController = AuthController();
+
+  Driver? driver;
 
   Future<void> login(String email, String password) async {
     if (email.isEmpty || password.isEmpty) {
@@ -15,7 +18,7 @@ class AuthCubit extends Cubit<AuthState> {
 
     emit(AuthLoadingState());
     try {
-      await _authController.login(email, password);
+      driver = await _authController.login(email, password);
 
       emit(AuthSuccessState());
     } catch (e) {
@@ -31,7 +34,7 @@ class AuthCubit extends Cubit<AuthState> {
 
     emit(NfcAuthLoadingState());
     try {
-      await _authController.loginWithNfc("123123");
+      driver = await _authController.loginWithNfc("123123");
 
       emit(NfcAuthSuccessState());
     } catch (e) {

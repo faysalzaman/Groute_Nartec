@@ -45,10 +45,7 @@ class NewOrdersDetailScreen extends StatelessWidget {
     return CustomScaffold(
       title: 'Order #${salesOrder.salesInvoiceNumber ?? 'Details'}',
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(
-          vertical: 16.0,
-          horizontal: 8.0,
-        ), // Adjusted padding
+        padding: const EdgeInsets.symmetric(vertical: 10.0), // Adjusted padding
         child: Column(
           crossAxisAlignment:
               CrossAxisAlignment.stretch, // Stretch cards horizontally

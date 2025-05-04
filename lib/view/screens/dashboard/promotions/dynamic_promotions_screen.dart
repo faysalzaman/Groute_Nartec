@@ -31,7 +31,7 @@ class DynamicPromotionsScreen extends StatelessWidget {
                 crossAxisCount: 2,
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
-                childAspectRatio: 0.8,
+                childAspectRatio: 0.7,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 children: [

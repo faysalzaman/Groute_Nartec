@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart'; // Add this import
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/view/screens/dashboard/sales_order/cubit/sales_cubit.dart';
@@ -73,7 +74,114 @@ class _NewOrdersScreenState extends State<NewOrdersScreen> {
           if (state is SalesInitial) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is SalesLoading && page == 1) {
-            return const Center(child: CircularProgressIndicator());
+            // Replace simple CircularProgressIndicator with a placeholder loading UI
+            return ListView.builder(
+              itemCount: 5, // Show 5 placeholder items
+              itemBuilder: (context, index) {
+                return Card(
+                  margin: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 16,
+                  ),
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(12),
+                            topRight: Radius.circular(12),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  width: 150,
+                                  height: 16,
+                                  color: Colors.grey[200],
+                                ),
+                                Container(
+                                  width: 80,
+                                  height: 14,
+                                  color: Colors.grey[200],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Container(
+                              width: 180,
+                              height: 15,
+                              color: Colors.grey[200],
+                            ),
+                            const SizedBox(height: 4),
+                            Container(
+                              width: double.infinity,
+                              height: 14,
+                              color: Colors.grey[200],
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  width: 80,
+                                  height: 14,
+                                  color: Colors.grey[200],
+                                ),
+                                Container(
+                                  width: 100,
+                                  height: 16,
+                                  color: Colors.grey[200],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Container(
+                              width: 80,
+                              height: 32,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              width: 80,
+                              height: 32,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
           } else if (salesOrders.isEmpty) {
             return Center(
               child: Column(
@@ -143,32 +251,161 @@ class _NewOrdersScreenState extends State<NewOrdersScreen> {
   }
 }
 
-class SalesOrderCard extends StatelessWidget {
+// Convert SalesOrderCard to StatefulWidget
+class SalesOrderCard extends StatefulWidget {
   final SalesOrderModel salesOrder;
 
   const SalesOrderCard({super.key, required this.salesOrder});
 
   @override
+  State<SalesOrderCard> createState() => _SalesOrderCardState();
+}
+
+class _SalesOrderCardState extends State<SalesOrderCard> {
+  bool _isProcessing = false; // State variable for loading indicator
+
+  // Function to handle location fetching and navigation
+  Future<void> _processOrder(BuildContext context) async {
+    if (!mounted) return; // Check if widget is still mounted
+    setState(() {
+      _isProcessing = true;
+    });
+
+    try {
+      // 1. Check Location Permissions & Services
+      bool serviceEnabled;
+      LocationPermission permission;
+
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Location services are disabled. Please enable them.',
+              ),
+            ),
+          );
+        }
+        setState(() {
+          _isProcessing = false;
+        });
+        return;
+      }
+
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Location permissions are denied.')),
+            );
+          }
+          setState(() {
+            _isProcessing = false;
+          });
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Location permissions are permanently denied. Please enable them in settings.',
+              ),
+            ),
+          );
+          // Optionally, prompt user to open settings:
+          // await Geolocator.openAppSettings();
+        }
+        setState(() {
+          _isProcessing = false;
+        });
+        return;
+      }
+
+      // 2. Get Current Location
+      Position currentPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      LatLng currentDeviceLocation = LatLng(
+        currentPosition.latitude,
+        currentPosition.longitude,
+      );
+
+      // 3. Get Destination Location (Customer)
+      final customerLat = double.tryParse(
+        widget.salesOrder.customer?.latitude?.toString() ?? '',
+      );
+      final customerLng = double.tryParse(
+        widget.salesOrder.customer?.longitude?.toString() ?? '',
+      );
+
+      if (customerLat == null || customerLng == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Invalid customer location data.')),
+          );
+        }
+        setState(() {
+          _isProcessing = false;
+        });
+        return;
+      }
+      LatLng destinationLocation = LatLng(customerLat, customerLng);
+
+      // 4. Navigate to Map Screen
+      if (mounted) {
+        AppNavigator.push(
+          context,
+          NewOrdersMapScreen(
+            salesOrder: widget.salesOrder,
+            salesOrderLocation: destinationLocation,
+            currentDeviceLocation: currentDeviceLocation,
+          ),
+        );
+      }
+    } catch (e) {
+      // Handle potential errors during location fetching
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to get location: $e')));
+      }
+    } finally {
+      // Ensure the loading indicator is turned off
+      if (mounted) {
+        setState(() {
+          _isProcessing = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     // Format date
     String formattedDate = 'N/A';
-    if (salesOrder.orderDate != null) {
+    if (widget.salesOrder.orderDate != null) {
       try {
-        final dateTime = DateTime.parse(salesOrder.orderDate!);
+        final dateTime = DateTime.parse(widget.salesOrder.orderDate!);
         formattedDate = DateFormat('MMM dd, yyyy').format(dateTime);
       } catch (e) {
-        formattedDate = salesOrder.orderDate ?? 'N/A';
+        formattedDate = widget.salesOrder.orderDate ?? 'N/A';
       }
     }
 
     // Get item count
-    final itemCount = salesOrder.salesInvoiceDetails?.length ?? 0;
+    final itemCount = widget.salesOrder.salesInvoiceDetails?.length ?? 0;
 
     // Get customer name and address
     final customerName =
-        salesOrder.customer?.companyNameEnglish ?? 'Unknown Customer';
+        widget.salesOrder.customer?.companyNameEnglish ?? 'Unknown Customer';
     final deliveryAddress =
-        salesOrder.customer?.address ?? 'No address provided';
+        widget.salesOrder.customer?.address ?? 'No address provided';
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -182,14 +419,14 @@ class SalesOrderCard extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             decoration: BoxDecoration(
-              color: _getStatusColor(salesOrder.status),
+              color: _getStatusColor(widget.salesOrder.status),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(12),
                 topRight: Radius.circular(12),
               ),
             ),
             child: Text(
-              salesOrder.status?.toUpperCase() ?? 'NEW',
+              widget.salesOrder.status?.toUpperCase() ?? 'NEW',
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -208,7 +445,7 @@ class SalesOrderCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        'Order #${salesOrder.salesInvoiceNumber ?? 'N/A'}',
+                        'Order #${widget.salesOrder.salesInvoiceNumber ?? 'N/A'}',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -252,7 +489,7 @@ class SalesOrderCard extends StatelessWidget {
                       style: TextStyle(color: Colors.grey[700]),
                     ),
                     Text(
-                      'Total: ${salesOrder.totalAmount ?? 'N/A'}',
+                      'Total: ${widget.salesOrder.totalAmount ?? 'N/A'}',
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -271,33 +508,40 @@ class SalesOrderCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton(
-                  onPressed: () {
-                    AppNavigator.push(
-                      context,
-                      NewOrdersDetailScreen(salesOrder: salesOrder),
-                    );
-                  },
+                  // Disable button while processing
+                  onPressed:
+                      _isProcessing
+                          ? null
+                          : () {
+                            AppNavigator.push(
+                              context,
+                              NewOrdersDetailScreen(
+                                salesOrder: widget.salesOrder,
+                              ),
+                            );
+                          },
                   child: const Text('View Details'),
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
-                  onPressed: () {
-                    AppNavigator.push(
-                      context,
-                      NewOrdersMapScreen(
-                        salesOrder: salesOrder,
-                        salesOrderLocation: LatLng(
-                          double.parse(
-                            salesOrder.customer?.latitude.toString() ?? '0.0',
-                          ),
-                          double.parse(
-                            salesOrder.customer?.longitude.toString() ?? '0.0',
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                  child: const Text('Process'),
+                  // Call the new _processOrder method
+                  // Disable button and show loader when _isProcessing is true
+                  onPressed:
+                      _isProcessing ? null : () => _processOrder(context),
+                  child:
+                      _isProcessing
+                          ? const SizedBox(
+                            // Show loader
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
+                            ),
+                          )
+                          : const Text('Process'), // Show text
                 ),
               ],
             ),
