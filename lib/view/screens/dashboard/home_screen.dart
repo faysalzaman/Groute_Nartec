@@ -1,5 +1,4 @@
-import 'dart:developer';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -9,6 +8,7 @@ import 'package:groute_nartec/view/screens/auth/cubit/auth_cubit.dart';
 import 'package:groute_nartec/view/screens/dashboard/about/about_screen.dart';
 import 'package:groute_nartec/view/screens/dashboard/inventory/inventory_management_screen.dart';
 import 'package:groute_nartec/view/screens/dashboard/parameters/parameters_screen.dart';
+import 'package:groute_nartec/view/screens/dashboard/profile_screen.dart';
 import 'package:groute_nartec/view/screens/dashboard/promotions/dynamic_promotions_screen.dart';
 import 'package:groute_nartec/view/screens/dashboard/returns/items_returns_screen.dart';
 import 'package:groute_nartec/view/screens/dashboard/route_plane/route_plan_screen.dart';
@@ -81,11 +81,26 @@ class _HomeScreenState extends State<HomeScreen> {
     final Size screenSize = MediaQuery.of(context).size;
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
 
-    log(context.read<AuthCubit>().driver?.route?.toJson().toString() ?? '');
+    final driver = context.read<AuthCubit>().driver;
 
     return CustomScaffold(
       title: "GRoute Pro (Van sales)",
       automaticallyImplyLeading: false,
+      actions: [
+        GestureDetector(
+          onTap: () {
+            AppNavigator.push(context, ProfileScreen());
+          },
+          child: CircleAvatar(
+            backgroundImage:
+                driver?.photo != null
+                    ? CachedNetworkImageProvider(driver?.photo ?? '')
+                    : null,
+            child: driver?.photo != null ? null : Icon(Icons.person),
+          ),
+        ),
+        const SizedBox(width: 16),
+      ],
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(

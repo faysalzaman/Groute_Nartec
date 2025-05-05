@@ -45,6 +45,9 @@
     <true/>
     <key>UIApplicationSupportsIndirectInputEvents</key>
     <true/>
+    <!-- Google Maps API Key -->
+    <key>io.flutter.embedded_views_preview</key>
+    <true/>
     <!-- NFC Permission -->
     <key>NFCReaderUsageDescription</key>
     <string>We need access to NFC to read tags and cards</string>
