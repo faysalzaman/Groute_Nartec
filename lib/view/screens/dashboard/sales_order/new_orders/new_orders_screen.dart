@@ -7,6 +7,7 @@ import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/view/screens/dashboard/sales_order/cubit/sales_cubit.dart';
 import 'package:groute_nartec/view/screens/dashboard/sales_order/cubit/sales_state.dart';
 import 'package:groute_nartec/view/screens/dashboard/sales_order/models/sales_order.dart';
+import 'package:groute_nartec/view/screens/dashboard/sales_order/new_orders/action_screen.dart';
 import 'package:groute_nartec/view/screens/dashboard/sales_order/new_orders/new_orders_detail_screen.dart';
 import 'package:groute_nartec/view/screens/dashboard/sales_order/new_orders/new_orders_map_screen.dart';
 import 'package:groute_nartec/view/widgets/buttons/custom_elevated_button.dart';
@@ -269,6 +270,7 @@ class _SalesOrderCardState extends State<SalesOrderCard> {
   // Function to handle location fetching and navigation
   Future<void> _processOrder(BuildContext context) async {
     if (!mounted) return; // Check if widget is still mounted
+
     setState(() {
       _isProcessing = true;
     });
@@ -361,14 +363,25 @@ class _SalesOrderCardState extends State<SalesOrderCard> {
 
       // 4. Navigate to Map Screen
       if (mounted) {
-        AppNavigator.push(
-          context,
-          NewOrdersMapScreen(
-            salesOrder: widget.salesOrder,
-            salesOrderLocation: destinationLocation,
-            currentDeviceLocation: currentDeviceLocation,
-          ),
-        );
+        if (widget.salesOrder.status?.toLowerCase() == 'completed') {
+          AppNavigator.push(
+            context,
+            ActionScreen(
+              salesOrder: widget.salesOrder,
+              salesOrderLocation: destinationLocation,
+              currentDeviceLocation: currentDeviceLocation,
+            ),
+          );
+        } else {
+          AppNavigator.push(
+            context,
+            NewOrdersMapScreen(
+              salesOrder: widget.salesOrder,
+              salesOrderLocation: destinationLocation,
+              currentDeviceLocation: currentDeviceLocation,
+            ),
+          );
+        }
       }
     } catch (e) {
       // Handle potential errors during location fetching
