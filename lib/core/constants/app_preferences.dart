@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import '../../view/screens/auth/model/login_model.dart';
+import '../../presentation/modules/auth/models/driver_model.dart';
 
 class AppPreferences {
   // Private constructor to prevent instantiation

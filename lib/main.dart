@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groute_nartec/core/themes/app_theme.dart' show AppTheme;
-import 'package:groute_nartec/view/screens/auth/cubit/auth_cubit.dart';
-import 'package:groute_nartec/view/screens/dashboard/sales_order/cubit/sales_cubit.dart';
-import 'package:groute_nartec/view/screens/splash_screen.dart';
+import 'package:groute_nartec/presentation/modules/auth/cubit/auth_cubit.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_cubit.dart';
+import 'package:groute_nartec/presentation/modules/splash_screen.dart';
 
 void main() {
   runApp(const MyApp());
