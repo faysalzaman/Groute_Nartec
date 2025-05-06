@@ -91,7 +91,7 @@ class _SignatureScreenState extends State<SignatureScreen> {
 
         // If we have a saved image, upload it
         if (imageFile != null) {
-          context.read<SalesCubit>().uploadImage(
+          context.read<SalesCubit>().uploadSignature(
             widget.salesOrder.id.toString(),
             imageFile!,
           );

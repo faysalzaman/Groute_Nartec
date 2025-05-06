@@ -1,9 +1,12 @@
+// ignore_for_file: deprecated_member_use, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart'; // Add this import
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
+import 'package:groute_nartec/core/utils/app_snackbars.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
@@ -65,13 +68,10 @@ class _NewOrdersScreenState extends State<NewOrdersScreen> {
               isLoading = false;
             });
           } else if (state is SalesError) {
-            // Show error message
-            ScaffoldMessenger.of(
+            AppSnackbars.danger(
               context,
-            ).showSnackBar(SnackBar(content: Text('Error: ${state.error}')));
-            setState(() {
-              isLoading = false;
-            });
+              state.error.replaceAll("Exception: ", ""),
+            );
           }
         },
         builder: (context, state) {
@@ -284,12 +284,9 @@ class _SalesOrderCardState extends State<SalesOrderCard> {
       serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Location services are disabled. Please enable them.',
-              ),
-            ),
+          AppSnackbars.danger(
+            context,
+            "Location services are disabled. Please enable them.",
           );
         }
         setState(() {
@@ -303,8 +300,9 @@ class _SalesOrderCardState extends State<SalesOrderCard> {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Location permissions are denied.')),
+            AppSnackbars.danger(
+              context,
+              "Location permissions are denied. Please enable them.",
             );
           }
           setState(() {
@@ -316,15 +314,10 @@ class _SalesOrderCardState extends State<SalesOrderCard> {
 
       if (permission == LocationPermission.deniedForever) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Location permissions are permanently denied. Please enable them in settings.',
-              ),
-            ),
+          AppSnackbars.danger(
+            context,
+            "Location permissions are permanently denied. Please enable them in settings.",
           );
-          // Optionally, prompt user to open settings:
-          // await Geolocator.openAppSettings();
         }
         setState(() {
           _isProcessing = false;
@@ -351,8 +344,9 @@ class _SalesOrderCardState extends State<SalesOrderCard> {
 
       if (customerLat == null || customerLng == null) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid customer location data.')),
+          AppSnackbars.danger(
+            context,
+            "Invalid customer location data. Please check the order details.",
           );
         }
         setState(() {
@@ -387,9 +381,7 @@ class _SalesOrderCardState extends State<SalesOrderCard> {
     } catch (e) {
       // Handle potential errors during location fetching
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Failed to get location: $e')));
+        AppSnackbars.danger(context, "Failed to get location: $e");
       }
     } finally {
       // Ensure the loading indicator is turned off

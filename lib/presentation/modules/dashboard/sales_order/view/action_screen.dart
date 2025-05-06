@@ -5,9 +5,11 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/action_screens/capture_images/display_products_screen.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/action_screens/print_invoice_delivery_screen.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/action_screens/signature_screen.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/action_screens/unloading_screen.dart';
+import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 
 class ActionScreen extends StatefulWidget {
   const ActionScreen({
@@ -33,21 +35,14 @@ class _ActionScreenState extends State<ActionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Delivery Actions',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        elevation: 0,
-        backgroundColor: AppColors.primaryBlue,
-        automaticallyImplyLeading: false,
-        // back button manually created
-        leading: IconButton(
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkTheme ? AppColors.textLight : AppColors.textDark;
+    return CustomScaffold(
+      title: 'Delivery Actions',
+      automaticallyImplyLeading: false,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             // a confirmation dialog
             showDialog(
@@ -96,22 +91,21 @@ class _ActionScreenState extends State<ActionScreen> {
                   ),
             );
           },
-          icon: const Icon(Icons.arrow_back),
         ),
-      ),
-      backgroundColor: Colors.white,
+      ],
+      padding: const EdgeInsets.symmetric(horizontal: 0),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
+              Text(
                 'What would you like to do?',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: textColor,
                 ),
               ),
               const SizedBox(height: 24),
@@ -136,7 +130,16 @@ class _ActionScreenState extends State<ActionScreen> {
                 title: 'Capture Images',
                 subtitle: 'Take photos of the delivery',
                 icon: Icons.camera_alt,
-                onPressed: () {},
+                onPressed: () {
+                  AppNavigator.push(
+                    context,
+                    DisplayProductScreen(
+                      salesOrder: widget.salesOrder,
+                      salesOrderLocation: widget.salesOrderLocation,
+                      currentDeviceLocation: widget.currentDeviceLocation,
+                    ),
+                  );
+                },
                 color: Colors.blue,
               ),
               const SizedBox(height: 16),
@@ -187,8 +190,14 @@ class _ActionScreenState extends State<ActionScreen> {
     required VoidCallback onPressed,
     required Color color,
   }) {
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor =
+        isDarkTheme ? AppColors.darkBackground : AppColors.lightBackground;
+    final textColor = isDarkTheme ? AppColors.textLight : AppColors.textDark;
+
     return Container(
       decoration: BoxDecoration(
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -197,9 +206,10 @@ class _ActionScreenState extends State<ActionScreen> {
             offset: const Offset(0, 4),
           ),
         ],
+        border: Border.all(color: color, width: 1),
       ),
       child: Material(
-        color: Colors.white,
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           onTap: onPressed,
@@ -223,16 +233,16 @@ class _ActionScreenState extends State<ActionScreen> {
                     children: [
                       Text(
                         title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: textColor,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         subtitle,
-                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                        style: TextStyle(fontSize: 12, color: textColor),
                       ),
                     ],
                   ),

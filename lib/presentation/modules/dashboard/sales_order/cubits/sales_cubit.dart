@@ -35,15 +35,30 @@ class SalesCubit extends Cubit<SalesState> {
     }
   }
 
-  Future<void> uploadImage(String id, File image) async {
+  Future<void> uploadSignature(String id, File image) async {
     emit(SalesOrderAddSignatureLoadingState());
 
     try {
       final salesController = SalesOrderRepository();
-      await salesController.uploadImage(image, id);
+      await salesController.uploadSignature(image, id);
       emit(SalesOrderAddSignatureSuccessState());
     } catch (e) {
       emit(SalesOrderAddSignatureErrorState(e.toString()));
+    }
+  }
+
+  Future<void> uploadImages(
+    List<File> images,
+    String orderId,
+    String productId,
+  ) async {
+    emit(SalesOrderUploadImageLoading());
+    try {
+      final salesController = SalesOrderRepository();
+      await salesController.uploadImages(images, orderId, productId);
+      emit(SalesOrderUploadImageSuccess());
+    } catch (e) {
+      emit(SalesOrderUploadImageError(e.toString()));
     }
   }
 }

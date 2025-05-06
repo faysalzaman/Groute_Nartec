@@ -146,14 +146,15 @@ class _MenuCardState extends State<MenuCard>
                               child: FaIcon(
                                 widget.icon,
                                 color: widget.color,
-                                size: 28,
+                                size: 20,
                               ),
                             ),
                             const SizedBox(height: 16),
                             Text(
                               widget.title,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w600,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
                                 color: textColor,
                                 letterSpacing: 0.3,
                               ),
@@ -162,9 +163,10 @@ class _MenuCardState extends State<MenuCard>
                             const SizedBox(height: 8),
                             Text(
                               widget.description,
-                              style: theme.textTheme.bodySmall?.copyWith(
+                              style: TextStyle(
+                                fontSize: 10,
                                 color: descriptionColor,
-                                height: 1.4,
+                                letterSpacing: 0.3,
                               ),
                               textAlign: TextAlign.center,
                               maxLines: 2,

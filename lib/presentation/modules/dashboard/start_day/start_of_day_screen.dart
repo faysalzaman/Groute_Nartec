@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
+import 'package:groute_nartec/core/utils/app_navigator.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/new_orders_screen.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 import 'package:groute_nartec/presentation/widgets/menu_card.dart';
 
@@ -55,7 +57,9 @@ class StartOfDayScreen extends StatelessWidget {
                     title: 'Loading / Unloading',
                     description: 'Manage cargo operations',
                     color: AppColors.warning,
-                    onTap: () {},
+                    onTap: () {
+                      AppNavigator.push(context, NewOrdersScreen());
+                    },
                   ),
                   MenuCard(
                     icon: FontAwesomeIcons.mapLocation,

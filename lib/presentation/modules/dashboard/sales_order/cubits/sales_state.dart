@@ -39,3 +39,13 @@ class SalesOrderAddSignatureErrorState extends SalesState {
 
   SalesOrderAddSignatureErrorState(this.error);
 }
+
+class SalesOrderUploadImageLoading extends SalesState {}
+
+class SalesOrderUploadImageSuccess extends SalesState {}
+
+class SalesOrderUploadImageError extends SalesState {
+  final String error;
+
+  SalesOrderUploadImageError(this.error);
+}

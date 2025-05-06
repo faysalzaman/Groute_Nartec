@@ -51,7 +51,7 @@ class SalesOrderRepository {
     }
   }
 
-  Future<String> uploadImage(File images, String id) async {
+  Future<String> uploadSignature(File images, String id) async {
     var url = Uri.parse("${kGrouteUrl}v1/sales-orders/add-signature/$id");
 
     final token = await AppPreferences.getAccessToken();
@@ -90,6 +90,82 @@ class SalesOrderRepository {
       throw Exception(
         msg['message'] ?? msg['error'] ?? 'Failed to upload image',
       );
+    }
+  }
+
+  Future<void> uploadImages(
+    List<File> images,
+    String orderId,
+    String productId,
+  ) async {
+    try {
+      var url = Uri.parse(
+        "${kGrouteUrl}v1/sales-orders/add-images/$orderId/product/$productId",
+      );
+
+      final token = await AppPreferences.getAccessToken();
+
+      // Create multipart request
+      var request = http.MultipartRequest('PATCH', url);
+
+      // Set authorization header only (don't set Content-Type manually)
+      request.headers['Authorization'] = 'Bearer $token';
+
+      // Add each image to the request
+      for (var image in images) {
+        try {
+          var mimeType = getMediaType(image.path);
+          var fileName = image.path.split('/').last;
+
+          var multipartFile = await http.MultipartFile.fromPath(
+            'images',
+            image.path,
+            contentType: mimeType,
+            filename: fileName,
+          );
+
+          request.files.add(multipartFile);
+          print('Image added: $fileName');
+        } catch (e) {
+          print("Error processing image: $e");
+          throw Exception("Failed to process image: ${e.toString()}");
+        }
+      }
+
+      // Send the request
+      var streamedResponse = await request.send().timeout(
+        const Duration(minutes: 2),
+        onTimeout: () {
+          throw Exception("Request timed out. Please check your connection.");
+        },
+      );
+
+      // Get the response
+      var response = await http.Response.fromStream(streamedResponse);
+
+      // Check if successful
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('Images uploaded successfully');
+      } else {
+        // Parse error response
+        Map<String, dynamic> errorData = {};
+        try {
+          errorData = jsonDecode(response.body);
+        } catch (_) {
+          // If JSON parsing fails, use empty map
+        }
+
+        final errorMessage =
+            errorData['message'] ??
+            errorData['error'] ??
+            'Failed to upload images (Status: ${response.statusCode})';
+
+        print('Upload failed: $errorMessage');
+        throw Exception(errorMessage);
+      }
+    } catch (e) {
+      print("Exception during image upload: $e");
+      throw Exception("Failed to upload images: ${e.toString()}");
     }
   }
 
