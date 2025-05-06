@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/new_orders_screen.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/vehicle_check_screen.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 import 'package:groute_nartec/presentation/widgets/menu_card.dart';
 
@@ -50,7 +51,9 @@ class StartOfDayScreen extends StatelessWidget {
                     title: 'Vehicle Checks',
                     description: 'Complete daily vehicle inspection',
                     color: AppColors.success,
-                    onTap: () {},
+                    onTap: () {
+                      AppNavigator.push(context, VehicleCheckScreen());
+                    },
                   ),
                   MenuCard(
                     icon: FontAwesomeIcons.truckRampBox,

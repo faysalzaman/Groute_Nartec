@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/model/vehicle_model.dart';
+
 part 'coordinate_model.dart';
 part 'route_model.dart';
 
@@ -80,7 +82,7 @@ class Driver {
   String? memberId;
   String? vehicleId;
   String? routeId;
-  dynamic vehicle;
+  VehicleModel? vehicle;
   Route? route;
   String? radius;
 
@@ -129,7 +131,8 @@ class Driver {
     memberId = json['memberId'];
     vehicleId = json['vehicleId'];
     routeId = json['routeId'];
-    vehicle = json['vehicle'];
+    vehicle =
+        json['vehicle'] != null ? VehicleModel.fromJson(json['vehicle']) : null;
 
     if (json['route'] != null) {
       route = Route.fromJson(json['route']);
@@ -161,7 +164,9 @@ class Driver {
     data['memberId'] = memberId;
     data['vehicleId'] = vehicleId;
     data['routeId'] = routeId;
-    data['vehicle'] = vehicle;
+    if (vehicle != null) {
+      data['vehicle'] = vehicle!.toJson();
+    }
     if (route != null) {
       data['route'] = route!.toJson();
     }
