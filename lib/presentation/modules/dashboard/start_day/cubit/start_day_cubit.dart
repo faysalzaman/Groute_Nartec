@@ -9,8 +9,20 @@ class StartDayCubit extends Cubit<StartDayState> {
 
   final StartDayRepository _startDayRepository = StartDayRepository();
 
+  Future<void> getVehicleCheckHistory() async {
+    emit(VehicleCheckHistoryLoading());
+
+    try {
+      final vehicleCheckHistory =
+          await _startDayRepository.getVehicleCheckHistory();
+      emit(VehicleCheckHistorySuccess(vehicleCheckHistory));
+    } catch (e) {
+      emit(VehicleCheckHistoryError(e.toString()));
+    }
+  }
+
   Future<void> checkVehicle(
-    File photo,
+    List<File> photo,
     String vehicleId,
     String tyresCondition,
     String aCCondition,
@@ -18,14 +30,6 @@ class StartDayCubit extends Cubit<StartDayState> {
     String engineCondition,
     String odoMeterReading,
   ) async {
-    print("Photo: ${photo.path}");
-    print("Vehicle ID: $vehicleId");
-    print("Tyres Condition: $tyresCondition");
-    print("AC Condition: $aCCondition");
-    print("Petrol Level: $petrolLevel");
-    print("Engine Condition: $engineCondition");
-    print("Odo Meter Reading: $odoMeterReading");
-
     emit(VehicleCheckLoadingState());
 
     try {
@@ -40,7 +44,6 @@ class StartDayCubit extends Cubit<StartDayState> {
       );
       emit(VehicleCheckSuccessState());
     } catch (e) {
-      print(e);
       emit(VehicleCheckErrorState(e.toString()));
     }
   }

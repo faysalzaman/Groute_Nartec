@@ -26,7 +26,7 @@ class VehicleCheckScreen extends StatefulWidget {
 
 class _VehicleCheckScreenState extends State<VehicleCheckScreen> {
   final ImagePicker _picker = ImagePicker();
-  File? _vehicleImage;
+  List<File> _vehicleImages = [];
 
   // Vehicle condition options
   final List<String> _conditionOptions = [
@@ -577,106 +577,170 @@ class _VehicleCheckScreenState extends State<VehicleCheckScreen> {
               ),
               const SizedBox(width: 8),
               Text(
-                'Current Image',
+                'Vehicle Images',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   color: AppColors.textMedium,
                 ),
               ),
+              const SizedBox(width: 8),
+              Text(
+                '(${_vehicleImages.length})',
+                style: TextStyle(fontSize: 12, color: AppColors.textMedium),
+              ),
             ],
           ),
           const SizedBox(height: 12),
-          Container(
-            height: 200,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: AppColors.grey100,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.grey300),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 5,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child:
-                _vehicleImage != null
-                    ? ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.file(_vehicleImage!, fit: BoxFit.cover),
-                    )
-                    : Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          FaIcon(
-                            FontAwesomeIcons.cameraRetro,
-                            size: 48,
-                            color: AppColors.grey500,
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'No image selected',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.grey500,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Take a photo of the vehicle',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.grey500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-          ),
+          _vehicleImages.isEmpty
+              ? _buildEmptyImagesPlaceholder()
+              : _buildImageGrid(),
           const SizedBox(height: 16),
-          GestureDetector(
-            onTap: _pickImage,
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-              decoration: BoxDecoration(
-                color: AppColors.primaryBlue,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primaryBlue.withValues(alpha: 0.3),
-                    blurRadius: 5,
-                    offset: const Offset(0, 2),
+          _vehicleImages.length < 13
+              ? GestureDetector(
+                onTap: _pickImage,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 16,
                   ),
-                ],
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  FaIcon(
-                    FontAwesomeIcons.camera,
-                    size: 16,
-                    color: AppColors.white,
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryBlue,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primaryBlue.withValues(alpha: 0.3),
+                        blurRadius: 5,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Take Vehicle Photo',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      FaIcon(
+                        FontAwesomeIcons.camera,
+                        size: 16,
+                        color: AppColors.white,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Take Vehicle Photo',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
+                ),
+              )
+              : const SizedBox.shrink(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyImagesPlaceholder() {
+    return Container(
+      height: 200,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: AppColors.grey100,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.grey300),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 5,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            FaIcon(
+              FontAwesomeIcons.cameraRetro,
+              size: 48,
+              color: AppColors.grey500,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'No images selected',
+              style: TextStyle(
+                fontSize: 14,
+                color: AppColors.grey500,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Take up to 4 photos of the vehicle',
+              style: TextStyle(fontSize: 12, color: AppColors.grey500),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageGrid() {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+      ),
+      itemCount: _vehicleImages.length,
+      itemBuilder: (context, index) {
+        return Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.grey300),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.file(
+                  _vehicleImages[index],
+                  width: double.infinity,
+                  height: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            Positioned(
+              top: 5,
+              right: 5,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _vehicleImages.removeAt(index);
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: AppColors.error.withOpacity(0.8),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                    size: 16,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -691,7 +755,7 @@ class _VehicleCheckScreenState extends State<VehicleCheckScreen> {
                 ? ButtonState.loading
                 : ButtonState.normal,
         onPressed: () async {
-          if (_vehicleImage == null) {
+          if (_vehicleImages.isEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Please take a photo of the vehicle.'),
@@ -711,7 +775,7 @@ class _VehicleCheckScreenState extends State<VehicleCheckScreen> {
             return;
           }
           await context.read<StartDayCubit>().checkVehicle(
-            _vehicleImage!,
+            _vehicleImages,
             context.read<AuthCubit>().driver?.vehicle?.id ?? "",
             _tyresCondition,
             _acCondition,
@@ -730,7 +794,7 @@ class _VehicleCheckScreenState extends State<VehicleCheckScreen> {
     final XFile? image = await _picker.pickImage(source: ImageSource.camera);
     if (image != null) {
       setState(() {
-        _vehicleImage = File(image.path);
+        _vehicleImages.add(File(image.path));
       });
     }
   }

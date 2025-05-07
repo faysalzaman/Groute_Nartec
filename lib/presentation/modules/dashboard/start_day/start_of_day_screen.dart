@@ -4,6 +4,7 @@ import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/new_orders_screen.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/vehicle_check_screen.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/vehicle_information_screen.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 import 'package:groute_nartec/presentation/widgets/menu_card.dart';
 
@@ -52,7 +53,7 @@ class StartOfDayScreen extends StatelessWidget {
                     description: 'Complete daily vehicle inspection',
                     color: AppColors.success,
                     onTap: () {
-                      AppNavigator.push(context, VehicleCheckScreen());
+                      _showVehicleCheckConfirmationDialog(context);
                     },
                   ),
                   MenuCard(
@@ -79,6 +80,68 @@ class StartOfDayScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _showVehicleCheckConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              const FaIcon(
+                FontAwesomeIcons.carRear,
+                color: AppColors.primaryBlue,
+                size: 20,
+              ),
+              const SizedBox(width: 10),
+              const Text(
+                'Vehicle Check',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          content: const Text(
+            'Do you want to perform the daily vehicle inspection now?',
+            style: TextStyle(fontSize: 14),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+                AppNavigator.push(context, VehicleInformationScreen());
+              },
+              child: const Text(
+                'No, Later',
+                style: TextStyle(color: AppColors.textMedium),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.success,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+                AppNavigator.push(context, VehicleCheckScreen());
+              },
+              child: const Text(
+                'Yes, Continue',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
