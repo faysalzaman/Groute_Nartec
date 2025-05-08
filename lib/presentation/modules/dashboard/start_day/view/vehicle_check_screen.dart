@@ -753,7 +753,7 @@ class _VehicleCheckScreenState extends State<VehicleCheckScreen> {
         buttonState:
             state is VehicleCheckLoadingState
                 ? ButtonState.loading
-                : ButtonState.normal,
+                : ButtonState.idle,
         onPressed: () async {
           if (_vehicleImages.isEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(

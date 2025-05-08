@@ -21,3 +21,32 @@ class NfcAuthErrorState extends AuthState {
 
   NfcAuthErrorState(this.errorMessage);
 }
+
+class VerifyEmailLoading extends AuthState {}
+
+class VerifyEmailSuccess extends AuthState {}
+
+class VerifyEmailError extends AuthState {
+  final String errorMessage;
+
+  VerifyEmailError(this.errorMessage);
+}
+
+class VerifyOtpLoading extends AuthState {}
+
+class VerifyOtpSuccess extends AuthState {}
+
+class VerifyOtpError extends AuthState {
+  final String errorMessage;
+
+  VerifyOtpError(this.errorMessage);
+}
+
+class ResetPasswordLoading extends AuthState {}
+
+class ResetPasswordSuccess extends AuthState {}
+
+class ResetPasswordError extends AuthState {
+  final String errorMessage;
+  ResetPasswordError(this.errorMessage);
+}

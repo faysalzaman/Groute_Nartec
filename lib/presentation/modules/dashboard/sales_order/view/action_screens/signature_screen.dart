@@ -234,7 +234,7 @@ class _SignatureScreenState extends State<SignatureScreen> {
                           buttonState:
                               state is SalesOrderAddSignatureLoadingState
                                   ? ButtonState.loading
-                                  : ButtonState.normal,
+                                  : ButtonState.idle,
                         ),
                       ),
                     ],

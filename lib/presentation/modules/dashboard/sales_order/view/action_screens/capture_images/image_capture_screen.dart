@@ -320,7 +320,7 @@ class _ImageCaptureScreenState extends State<ImageCaptureScreen> {
                         buttonState:
                             state is SalesOrderUploadImageLoading
                                 ? ButtonState.loading
-                                : ButtonState.normal,
+                                : ButtonState.idle,
                         height: 40,
                         onPressed: () async {
                           await context.read<SalesCubit>().uploadImages(

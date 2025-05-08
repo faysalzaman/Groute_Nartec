@@ -75,4 +75,69 @@ class DriverRepositry {
   Future<void> logout() async {
     await AppPreferences.clearAllData();
   }
+
+  Future<String> verifyEmail(String email) async {
+    final path = 'v1/drivers/verify-email';
+
+    final response = await _httpService.request(
+      path,
+      method: HttpMethod.post,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      payload: {'email': email},
+    );
+
+    final data = response.data['data'];
+
+    if (response.success) {
+      return data['token'];
+    }
+    throw Exception('Email verification failed');
+  }
+
+  Future<void> verifyOtp(String otp, String token) async {
+    final path = 'v1/drivers/verify-otp';
+
+    final response = await _httpService.request(
+      path,
+      method: HttpMethod.post,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      payload: {'otp': otp, 'token': token},
+    );
+
+    if (response.success) {
+      return;
+    }
+
+    throw Exception('OTP verification failed');
+  }
+
+  Future<void> resetPassword(
+    String newPassword,
+    String email,
+    String token,
+  ) async {
+    final path = 'v1/drivers/reset-password';
+
+    final response = await _httpService.request(
+      path,
+      method: HttpMethod.patch,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      payload: {'password': newPassword, 'email': email},
+    );
+
+    if (response.success) {
+      return;
+    }
+    throw Exception('Password reset failed');
+  }
 }

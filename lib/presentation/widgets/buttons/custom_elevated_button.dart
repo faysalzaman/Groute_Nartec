@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/utils/app_loading.dart';
 
-enum ButtonState { normal, loading, disabled, success, error }
+enum ButtonState { idle, loading, disabled, success, error }
 
 class CustomElevatedButton extends StatelessWidget {
   const CustomElevatedButton({
@@ -12,7 +12,7 @@ class CustomElevatedButton extends StatelessWidget {
     required this.title,
     this.backgroundColor,
     this.foregroundColor,
-    this.buttonState = ButtonState.normal,
+    this.buttonState = ButtonState.idle,
     this.height,
     this.width,
     this.fontSize,

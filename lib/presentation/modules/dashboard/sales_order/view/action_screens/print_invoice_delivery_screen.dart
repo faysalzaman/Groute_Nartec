@@ -97,7 +97,7 @@ class _PrintDeliveryInvoiceScreenState
                           buttonState:
                               state is SalesStatusUpdateLoadingState
                                   ? ButtonState.loading
-                                  : ButtonState.normal,
+                                  : ButtonState.idle,
                         ),
                       ],
                     ),

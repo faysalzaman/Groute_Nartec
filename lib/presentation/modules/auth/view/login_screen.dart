@@ -4,9 +4,9 @@ import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/constants/constants.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/core/utils/app_snackbars.dart';
-import 'package:groute_nartec/presentation/modules/auth/controller/login_screen_controller.dart';
 import 'package:groute_nartec/presentation/modules/auth/cubit/auth_cubit.dart';
 import 'package:groute_nartec/presentation/modules/auth/cubit/auth_state.dart';
+import 'package:groute_nartec/presentation/modules/auth/view/verify_email_screen.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/home_screen.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/presentation/widgets/dialogs/nfc_scan_dialog.dart';
@@ -134,7 +134,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                     context,
                                   ).requestFocus(_passwordFocusNode);
                                 },
-                                validator: LoginScreenController.validateEmail,
                               ),
                               SizedBox(height: screenHeight * 0.01),
                               CustomTextFormField(
@@ -158,8 +157,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                   FocusScope.of(context).unfocus();
                                 },
                                 obscureText: _obscurePassword,
-                                validator:
-                                    LoginScreenController.validatePassword,
                               ),
                               Align(
                                 alignment: Alignment.centerRight,
@@ -167,6 +164,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   onPressed: () {
                                     FocusScope.of(context).unfocus();
                                     // Navigate to forgot password screen
+                                    AppNavigator.push(
+                                      context,
+                                      const VeryEmailScreen(),
+                                    );
                                   },
                                   child: Text(
                                     'Forgot Password?',
@@ -187,7 +188,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         ? ButtonState.loading
                                         : state is AuthSuccessState
                                         ? ButtonState.success
-                                        : ButtonState.normal,
+                                        : ButtonState.idle,
                                 onPressed: () {
                                   FocusScope.of(context).unfocus();
                                   if (_formKey.currentState!.validate()) {
@@ -235,7 +236,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ? ButtonState.loading
                                       : state is NfcAuthSuccessState
                                       ? ButtonState.success
-                                      : ButtonState.normal,
+                                      : ButtonState.idle,
                               leadingIcon: Icons.nfc,
                               height: isSmallScreen ? 35 : 40,
                               fontSize: isSmallScreen ? 11 : 12,

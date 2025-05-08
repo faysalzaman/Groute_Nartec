@@ -66,7 +66,7 @@ class _PicklistDetailsScreenState extends State<PicklistDetailsScreen> {
               buttonState:
                   state is SalesStatusUpdateLoadingState
                       ? ButtonState.loading
-                      : ButtonState.normal,
+                      : ButtonState.idle,
             ),
           ),
           body: SingleChildScrollView(
