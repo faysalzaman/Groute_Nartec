@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
 import 'package:groute_nartec/repositories/sales_order_repository.dart';
 
 import 'sales_state.dart';
@@ -8,12 +9,16 @@ import 'sales_state.dart';
 class SalesCubit extends Cubit<SalesState> {
   SalesCubit({SalesOrderRepository? controller}) : super(SalesInitial());
 
+  // Lists
+  List<SalesOrderModel> salesOrders = [];
+
   Future<void> getSalesOrder(int page, int limit) async {
     emit(SalesLoading());
 
     try {
       final salesController = SalesOrderRepository();
       final salesOrders = await salesController.getSalesOrders(page, limit);
+      this.salesOrders = salesOrders;
 
       if (salesOrders.isNotEmpty) {
         emit(SalesLoaded(salesOrders));
