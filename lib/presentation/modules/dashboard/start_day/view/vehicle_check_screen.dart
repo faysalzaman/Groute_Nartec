@@ -41,8 +41,9 @@ class _VehicleCheckScreenState extends State<VehicleCheckScreen> {
   String _tyresCondition = 'Good';
   String _acCondition = 'Good';
   String _engineCondition = 'Excellent';
-  String _petrolLevel = '100%';
+  String _petrolLevel = '100';
   String _odometerReading = '3000';
+  String _remarks = '';
 
   @override
   Widget build(BuildContext context) {
@@ -408,23 +409,13 @@ class _VehicleCheckScreenState extends State<VehicleCheckScreen> {
                 ),
               ),
               const SizedBox(width: 16),
-              Expanded(
-                child: _buildDropdown(
-                  'Petrol Level',
-                  _petrolLevel,
-                  ['100%', '75%', '50%', '25%', 'Empty'],
-                  (value) {
-                    setState(() {
-                      _petrolLevel = value!;
-                    });
-                  },
-                  icon: FontAwesomeIcons.gasPump,
-                ),
-              ),
+              Expanded(child: _buildPetrolInput()),
             ],
           ),
           const SizedBox(height: 16),
           _buildOdometerInput(),
+          const SizedBox(height: 16),
+          _buildRemarksInput(),
         ],
       ),
     );
@@ -539,6 +530,105 @@ class _VehicleCheckScreenState extends State<VehicleCheckScreen> {
               border: InputBorder.none,
               suffixText: 'km',
               suffixStyle: TextStyle(color: AppColors.textMedium, fontSize: 14),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPetrolInput() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            FaIcon(
+              FontAwesomeIcons.gasPump,
+              size: 14,
+              color: AppColors.primaryBlue,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'Petrol Level',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: AppColors.textMedium,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 5),
+          decoration: BoxDecoration(
+            color: AppColors.grey100,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: AppColors.grey300, width: 1),
+          ),
+          child: TextField(
+            controller: TextEditingController(text: _petrolLevel),
+            keyboardType: TextInputType.number,
+            style: TextStyle(fontSize: 16, color: AppColors.textDark),
+            onChanged: (value) {
+              _petrolLevel = value;
+            },
+            decoration: const InputDecoration(
+              border: InputBorder.none,
+              suffixText: '%',
+              suffixStyle: TextStyle(color: AppColors.textMedium, fontSize: 14),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRemarksInput() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            FaIcon(
+              FontAwesomeIcons.noteSticky,
+              size: 14,
+              color: AppColors.primaryBlue,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'Remarks or Comments',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: AppColors.textMedium,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 5),
+          decoration: BoxDecoration(
+            color: AppColors.grey100,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: AppColors.grey300, width: 1),
+          ),
+          child: TextField(
+            controller: TextEditingController(text: _remarks),
+            keyboardType: TextInputType.multiline,
+            maxLines: 3,
+            style: TextStyle(fontSize: 16, color: AppColors.textDark),
+            onChanged: (value) {
+              _remarks = value;
+            },
+            decoration: const InputDecoration(
+              border: InputBorder.none,
+              hintText: 'Enter any additional comments here...',
+              hintStyle: TextStyle(color: AppColors.grey400, fontSize: 14),
             ),
           ),
         ),
