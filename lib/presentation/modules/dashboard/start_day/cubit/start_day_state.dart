@@ -27,3 +27,19 @@ class VehicleCheckHistoryError extends StartDayState {
 
   VehicleCheckHistoryError(this.error);
 }
+
+/*
+##############################################################################
+! Start Picking Section
+############################################################################## 
+*/
+
+class GS1ProductLoadingState extends StartDayState {}
+
+class GS1ProductSuccessState extends StartDayState {}
+
+class GS1ProductErrorState extends StartDayState {
+  final String error;
+
+  GS1ProductErrorState(this.error);
+}

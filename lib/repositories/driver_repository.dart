@@ -19,13 +19,17 @@ class DriverRepositry {
 
       // Extract tokens from response
       final accessToken = data['accessToken'];
+      final gtrackToken = data['driver']['member']['token'];
 
       if (accessToken == null) {
         throw Exception('Access token not found in response');
+      } else if (gtrackToken == null) {
+        throw Exception('Gtrack token not found in response');
       }
 
       // Save access token
       await AppPreferences.setAccessToken(accessToken);
+      await AppPreferences.setGTrackToken(gtrackToken);
 
       // Parse driver data
       final Driver driver = Driver.fromJson(data['driver']);
@@ -52,13 +56,17 @@ class DriverRepositry {
 
       // Extract tokens from response
       final accessToken = data['accessToken'];
+      final gtrackToken = data['driver']['member']['token'];
 
       if (accessToken == null) {
         throw Exception('Access token not found in response');
+      } else if (gtrackToken == null) {
+        throw Exception('Gtrack token not found in response');
       }
 
       // Save access token
       await AppPreferences.setAccessToken(accessToken);
+      await AppPreferences.setGTrackToken(gtrackToken);
 
       // Parse driver data
       final Driver driver = Driver.fromJson(data['driver']);

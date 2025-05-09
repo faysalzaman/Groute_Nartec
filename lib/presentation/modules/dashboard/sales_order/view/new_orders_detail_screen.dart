@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/picking_screens/gs1_product_details_screen.dart';
+import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 import 'package:intl/intl.dart';
 
@@ -432,6 +435,26 @@ class NewOrdersDetailScreen extends StatelessWidget {
               ),
             ],
           ),
+          const SizedBox(height: 8),
+          // Start Picking Button
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              CustomElevatedButton(
+                title: "Start Picking",
+                onPressed: () {
+                  // Navigate to GS1 product details screen
+                  AppNavigator.push(
+                    context,
+                    GS1ProductDetailsScreen(barcode: item.productId ?? ''),
+                  );
+                },
+                height: 30,
+                width: 100,
+              ),
+            ],
+          ),
+
           const Divider(height: 20, thickness: 0.5), // Thinner divider
         ],
       ),
