@@ -4,8 +4,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
+import 'package:groute_nartec/core/constants/app_preferences.dart';
 import 'package:groute_nartec/core/constants/constants.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/home_screen.dart';
 import 'package:groute_nartec/presentation/widgets/logo_widget.dart';
 
 import 'auth/view/login_screen.dart';
@@ -24,12 +26,29 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<double> _opacityAnimation;
+  bool _rememberMe = false;
+  String? _accessToken;
+  bool _isLoading = true;
+
+  Future<void> _loadUserData() async {
+    final rememberMe = await AppPreferences.getRememberMe();
+    final token = await AppPreferences.getAccessToken();
+
+    setState(() {
+      _rememberMe = rememberMe;
+      _accessToken = token;
+      _isLoading = false;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
 
-    // Initialize animation controller with 5 seconds duration
+    // Load user preferences
+    _loadUserData();
+
+    // Initialize animation controller with 4 seconds duration
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 4),
@@ -55,10 +74,27 @@ class _SplashScreenState extends State<SplashScreen>
     // Start the animation
     _controller.forward();
 
-    // Navigate to next screen after 5 seconds
+    // Navigate to next screen after animation completes
     Timer(const Duration(seconds: 5), () {
-      AppNavigator.push(context, LoginScreen());
+      _navigateToNextScreen();
     });
+  }
+
+  void _navigateToNextScreen() {
+    // If widget has a predefined next screen, use that
+    if (widget.nextScreen != null) {
+      AppNavigator.pushReplacement(context, widget.nextScreen!);
+      return;
+    }
+
+    // Check if the user is logged in and has remember me enabled
+    if (_rememberMe && _accessToken != null && _accessToken!.isNotEmpty) {
+      // User is logged in and has remember me enabled - go to home screen
+      AppNavigator.pushReplacement(context, const HomeScreen());
+    } else {
+      // Not logged in or remember me not enabled - go to login screen
+      AppNavigator.pushReplacement(context, const LoginScreen());
+    }
   }
 
   @override
@@ -70,7 +106,6 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: isDark ? AppColors.grey900 : AppColors.lightBackground,
       backgroundColor: AppColors.white,
       body: Container(
         width: double.infinity,

@@ -12,6 +12,7 @@ import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_butto
 import 'package:groute_nartec/presentation/widgets/dialogs/nfc_scan_dialog.dart';
 import 'package:groute_nartec/presentation/widgets/logo_widget.dart';
 import 'package:groute_nartec/presentation/widgets/text_fields/custom_textfield.dart';
+import 'package:groute_nartec/core/constants/app_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -27,6 +28,20 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailFocusNode = FocusNode();
   final _passwordFocusNode = FocusNode();
   bool _obscurePassword = true;
+  bool _rememberMe = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRememberMeStatus();
+  }
+
+  Future<void> _loadRememberMeStatus() async {
+    final rememberMe = await AppPreferences.getRememberMe();
+    setState(() {
+      _rememberMe = rememberMe;
+    });
+  }
 
   @override
   void dispose() {
@@ -46,6 +61,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) async {
         if (state is AuthSuccessState) {
+          // Save remember me preference when login is successful
+          await AppPreferences.setRememberMe(_rememberMe);
+
           await Future.delayed(const Duration(seconds: 1));
           if (context.mounted) {
             AppNavigator.pushReplacement(context, const HomeScreen());
@@ -53,6 +71,9 @@ class _LoginScreenState extends State<LoginScreen> {
         } else if (state is AuthErrorState) {
           AppSnackbars.danger(context, state.errorMessage);
         } else if (state is NfcAuthSuccessState) {
+          // Also save remember me preference for NFC auth
+          await AppPreferences.setRememberMe(_rememberMe);
+
           await Future.delayed(const Duration(seconds: 1));
           if (context.mounted) {
             AppNavigator.pushReplacement(context, const HomeScreen());
@@ -158,26 +179,47 @@ class _LoginScreenState extends State<LoginScreen> {
                                 },
                                 obscureText: _obscurePassword,
                               ),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: TextButton(
-                                  onPressed: () {
-                                    FocusScope.of(context).unfocus();
-                                    // Navigate to forgot password screen
-                                    AppNavigator.push(
-                                      context,
-                                      const VeryEmailScreen(),
-                                    );
-                                  },
-                                  child: Text(
-                                    'Forgot Password?',
+                              Row(
+                                children: [
+                                  Checkbox(
+                                    value: _rememberMe,
+                                    checkColor: Colors.white,
+                                    activeColor: AppColors.primaryBlue,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _rememberMe = value ?? false;
+                                      });
+                                    },
+                                  ),
+                                  Text(
+                                    'Remember me',
                                     style: TextStyle(
                                       color: AppColors.textDark,
-                                      fontWeight: FontWeight.w500,
                                       fontSize: isSmallScreen ? 11 : 12,
                                     ),
                                   ),
-                                ),
+
+                                  const Spacer(),
+
+                                  // Move Forgot Password button here
+                                  TextButton(
+                                    onPressed: () {
+                                      FocusScope.of(context).unfocus();
+                                      AppNavigator.push(
+                                        context,
+                                        const VeryEmailScreen(),
+                                      );
+                                    },
+                                    child: Text(
+                                      'Forgot Password?',
+                                      style: TextStyle(
+                                        color: AppColors.textDark,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: isSmallScreen ? 11 : 12,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                               CustomElevatedButton(
                                 height: isSmallScreen ? 35 : 40,

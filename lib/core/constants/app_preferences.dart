@@ -27,6 +27,7 @@ class AppPreferences {
   static const String _keyDriverMemberId = 'driver_member_id';
   static const String _keyDriverVehicleId = 'driver_vehicle_id';
   static const String _keyDriverRouteId = 'driver_route_id';
+  static const String _keyRememberMe = 'remember_me';
 
   // Access Token methods
   static Future<void> setAccessToken(String token) async {
@@ -198,10 +199,22 @@ class AppPreferences {
     await prefs.remove(_keyDriverRouteId);
   }
 
+  // Remember Me methods
+  static Future<void> setRememberMe(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_keyRememberMe, value);
+  }
+
+  static Future<bool> getRememberMe() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_keyRememberMe) ?? false;
+  }
+
   // Helper to clear all data (for logout)
   static Future<void> clearAllData() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_keyAccessToken);
+    await prefs.remove(_keyRememberMe);
     await clearDriverData();
   }
 }
