@@ -29,6 +29,8 @@ class AppPreferences {
   static const String _keyDriverMemberId = 'driver_member_id';
   static const String _keyDriverVehicleId = 'driver_vehicle_id';
   static const String _keyDriverRouteId = 'driver_route_id';
+  static const String _keyGTrackToken = 'gtrack_token';
+  static const String _keyRememberMe = 'remember_me';
 
   // Access Token methods
   static Future<void> setAccessToken(String token) async {
