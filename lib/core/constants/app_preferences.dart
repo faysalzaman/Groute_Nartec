@@ -1,5 +1,7 @@
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../presentation/modules/auth/models/driver_model.dart';
 
 class AppPreferences {
@@ -27,6 +29,7 @@ class AppPreferences {
   static const String _keyDriverMemberId = 'driver_member_id';
   static const String _keyDriverVehicleId = 'driver_vehicle_id';
   static const String _keyDriverRouteId = 'driver_route_id';
+  static const String _keyGTrackToken = 'gtrack_token';
 
   // Access Token methods
   static Future<void> setAccessToken(String token) async {
@@ -42,6 +45,22 @@ class AppPreferences {
   static Future<void> removeAccessToken() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_keyAccessToken);
+  }
+
+  // GTrack Token methods
+  static Future<void> setGTrackToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyGTrackToken, token);
+  }
+
+  static Future<String?> getGTrackToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keyGTrackToken);
+  }
+
+  static Future<void> removeGTrackToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_keyGTrackToken);
   }
 
   // Driver data methods - Save entire driver object
