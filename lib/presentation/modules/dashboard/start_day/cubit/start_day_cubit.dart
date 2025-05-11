@@ -34,6 +34,7 @@ class StartDayCubit extends Cubit<StartDayState> {
     String petrolLevel,
     String engineCondition,
     String odoMeterReading,
+    String remarks,
   ) async {
     emit(VehicleCheckLoadingState());
 
@@ -46,6 +47,7 @@ class StartDayCubit extends Cubit<StartDayState> {
         petrolLevel,
         engineCondition,
         odoMeterReading,
+        remarks,
       );
       emit(VehicleCheckSuccessState());
     } catch (e) {

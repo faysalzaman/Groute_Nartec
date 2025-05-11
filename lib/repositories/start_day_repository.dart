@@ -47,6 +47,7 @@ class StartDayRepository {
     String petrolLevel,
     String engineCondition,
     String odoMeterReading,
+    String remarks,
   ) async {
     try {
       var url = Uri.parse("${kGrouteUrl}v1/vehicles/check");
@@ -66,6 +67,7 @@ class StartDayRepository {
       request.fields['petrolLevel'] = petrolLevel;
       request.fields['engineCondition'] = engineCondition;
       request.fields['odoMeterReading'] = odoMeterReading;
+      request.fields['remarks'] = remarks;
 
       // Add each photo to the request
       for (var photo in photos) {

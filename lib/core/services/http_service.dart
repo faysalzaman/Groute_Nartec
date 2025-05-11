@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:groute_nartec/core/constants/app_preferences.dart';
 import 'package:groute_nartec/core/constants/constants.dart';
@@ -15,6 +16,7 @@ enum HttpMethod { get, post, put, delete, patch, multipart }
 class HttpService {
   final String _baseUrl;
   final LogsService _logger = LogsService();
+  final Connectivity _connectivity = Connectivity();
 
   HttpService({String? baseUrl}) : _baseUrl = baseUrl ?? kGrouteUrl;
 
@@ -27,6 +29,11 @@ class HttpService {
     };
   }
 
+  Future<bool> _checkInternetConnection() async {
+    final connectivityResult = await _connectivity.checkConnectivity();
+    return connectivityResult != ConnectivityResult.none;
+  }
+
   Future<Response> request(
     String endpoint, {
     HttpMethod method = HttpMethod.get,
@@ -34,6 +41,19 @@ class HttpService {
     Map<String, String>? headers,
     BuildContext? context,
   }) async {
+    // Check for internet connectivity
+    final hasInternet = await _checkInternetConnection();
+    if (!hasInternet) {
+      _logger.logError('No internet connection');
+      throw HttpException(
+        message:
+            'No internet connection. Please check your network settings and try again.',
+        statusCode: 0,
+        response: 'No internet connection',
+        success: false,
+      );
+    }
+
     final url = Uri.parse('$_baseUrl$endpoint');
     final requestHeaders = headers ?? await _getHeaders();
     final stopwatch = Stopwatch()..start();
@@ -77,6 +97,15 @@ class HttpService {
       }
     } on HttpException {
       rethrow;
+    } on SocketException {
+      _logger.logError('Network error: $url');
+      throw HttpException(
+        message:
+            'Network error occurred. Please check your connection and try again.',
+        statusCode: 0,
+        response: 'Socket exception',
+        success: false,
+      );
     } catch (e) {
       _logger.logError('Request failed: $url\nError: $e');
       throw HttpException(

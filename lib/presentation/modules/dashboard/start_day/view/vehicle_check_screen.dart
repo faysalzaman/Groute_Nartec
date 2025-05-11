@@ -872,6 +872,7 @@ class _VehicleCheckScreenState extends State<VehicleCheckScreen> {
             _engineCondition,
             _petrolLevel,
             _odometerReading,
+            _remarks,
           );
         },
         leadingIcon: FontAwesomeIcons.check,

@@ -5,8 +5,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
+import 'package:groute_nartec/core/constants/app_preferences.dart';
+import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/presentation/modules/auth/cubit/auth_cubit.dart';
 import 'package:groute_nartec/presentation/modules/auth/models/driver_model.dart';
+import 'package:groute_nartec/presentation/modules/auth/view/login_screen.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -44,6 +47,11 @@ class ProfileScreen extends StatelessWidget {
               ],
             ] else
               _buildNoRouteAssigned(context, isDarkMode),
+
+            // Logout Button Section
+            const SizedBox(height: 30),
+            _buildLogoutButton(context, isDarkMode),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -679,5 +687,101 @@ class ProfileScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildLogoutButton(BuildContext context, bool isDarkMode) {
+    return Center(
+      child: ElevatedButton.icon(
+        onPressed: () => _showLogoutConfirmation(context, isDarkMode),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isDarkMode ? AppColors.white : AppColors.error,
+          foregroundColor: AppColors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          elevation: 0,
+        ),
+        icon: const Icon(Icons.logout, size: 20),
+        label: const Text(
+          'Logout',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
+  }
+
+  void _showLogoutConfirmation(BuildContext context, bool isDarkMode) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            backgroundColor:
+                isDarkMode ? AppColors.darkBackground : AppColors.white,
+            title: Text(
+              'Confirm Logout',
+              style: TextStyle(
+                color: isDarkMode ? AppColors.white : AppColors.textDark,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            content: Text(
+              'Are you sure you want to logout from your account?',
+              style: TextStyle(
+                color: isDarkMode ? AppColors.grey300 : AppColors.textMedium,
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(
+                    color: isDarkMode ? AppColors.grey400 : AppColors.grey700,
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () => _performLogout(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      isDarkMode ? AppColors.white : AppColors.error,
+                  foregroundColor: AppColors.white,
+                ),
+                child: const Text('Logout'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _performLogout(BuildContext context) async {
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      // Clear all stored data
+      await AppPreferences.clearAllData();
+
+      // Close loading dialog and navigate to login screen
+      if (context.mounted) {
+        Navigator.pop(context); // Close loading dialog
+
+        AppNavigator.pushReplacement(context, LoginScreen());
+      }
+    } catch (e) {
+      // Handle any errors during logout
+      if (context.mounted) {
+        Navigator.pop(context); // Close loading dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to logout: ${e.toString()}'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
   }
 }
