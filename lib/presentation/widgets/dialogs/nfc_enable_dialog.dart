@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
-import 'package:groute_nartec/core/constants/app_preferences.dart';
 import 'package:groute_nartec/core/utils/app_snackbars.dart';
-import 'package:groute_nartec/presentation/modules/auth/cubit/auth_cubit.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 
 class NFCEnableDialog extends StatefulWidget {
