@@ -309,7 +309,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               Padding(
                                 padding: const EdgeInsets.only(top: 8.0),
                                 child: Text(
-                                  'NFC login is disabled',
+                                  'NFC login is disabled\n You can enable NFC in your profile',
+                                  textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: Colors.red.shade700,
                                     fontSize: isSmallScreen ? 11 : 12,
