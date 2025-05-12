@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
+import 'package:groute_nartec/core/constants/app_preferences.dart';
+import 'package:groute_nartec/core/utils/app_snackbars.dart';
+import 'package:groute_nartec/presentation/modules/auth/cubit/auth_cubit.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 
 class NFCEnableDialog extends StatefulWidget {
-  const NFCEnableDialog({
-    super.key,
-    this.serialNumber,
-    required this.nfcValue,
-    // required this.profileCubit,
-  });
+  const NFCEnableDialog({super.key, required this.nfcValue});
 
-  final String? serialNumber;
   final bool nfcValue;
-  // final ProfileCubit profileCubit;
 
   @override
   State<NFCEnableDialog> createState() => _NFCEnableDialogState();
@@ -31,12 +28,8 @@ class _NFCEnableDialogState extends State<NFCEnableDialog> {
 
       if (!isAvailable) {
         if (mounted) {
-          Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('NFC is not available on this device'),
-            ),
-          );
+          Navigator.pop(context); // No result means failure
+          AppSnackbars.danger(context, 'NFC is not available on this device.');
         }
         return;
       }
@@ -75,24 +68,25 @@ class _NFCEnableDialogState extends State<NFCEnableDialog> {
               }
             }
 
+            // Stop NFC session
+            NfcManager.instance.stopSession();
+
             if (mounted) {
-              Navigator.pop(context);
+              // Return the serial number to the profile screen
+              Navigator.pop(context, serialNumber);
             }
           } catch (e) {
             if (mounted) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text('Error reading NFC: $e')));
+              Navigator.pop(context); // No result means failure
+              AppSnackbars.danger(context, 'Error reading NFC: $e');
             }
           }
         },
       );
     } catch (e) {
       if (mounted) {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        Navigator.pop(context); // No result means failure
+        AppSnackbars.danger(context, 'Error: $e');
       }
     }
   }
@@ -124,7 +118,7 @@ class _NFCEnableDialogState extends State<NFCEnableDialog> {
             SizedBox(
               width: 120,
               height: 120,
-              child: Image.asset('assets/nfc.png'),
+              child: Image.asset('assets/images/nfc.png'),
             ),
             const SizedBox(height: 20),
             const Text(

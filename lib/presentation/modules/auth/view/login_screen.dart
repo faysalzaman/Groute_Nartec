@@ -9,7 +9,7 @@ import 'package:groute_nartec/presentation/modules/auth/cubit/auth_state.dart';
 import 'package:groute_nartec/presentation/modules/auth/view/verify_email_screen.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/home_screen.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
-import 'package:groute_nartec/presentation/widgets/dialogs/nfc_scan_dialog.dart';
+import 'package:groute_nartec/presentation/widgets/dialogs/nfc_login_dialog.dart';
 import 'package:groute_nartec/presentation/widgets/logo_widget.dart';
 import 'package:groute_nartec/presentation/widgets/text_fields/custom_textfield.dart';
 import 'package:groute_nartec/core/constants/app_preferences.dart';
@@ -29,17 +29,26 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordFocusNode = FocusNode();
   bool _obscurePassword = true;
   bool _rememberMe = false;
+  bool _isNfcEnabled = false;
 
   @override
   void initState() {
     super.initState();
     _loadRememberMeStatus();
+    _checkNfcStatus();
   }
 
   Future<void> _loadRememberMeStatus() async {
     final rememberMe = await AppPreferences.getRememberMe();
     setState(() {
       _rememberMe = rememberMe;
+    });
+  }
+
+  Future<void> _checkNfcStatus() async {
+    final isEnabled = await AppPreferences.getDriverIsNFCEnabled() ?? false;
+    setState(() {
+      _isNfcEnabled = isEnabled;
     });
   }
 
@@ -271,7 +280,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             SizedBox(height: screenHeight * 0.02),
                             CustomElevatedButton(
                               title: "TAP NFC CARD",
-
                               backgroundColor: Colors.green.shade700,
                               buttonState:
                                   state is NfcAuthLoadingState
@@ -282,17 +290,32 @@ class _LoginScreenState extends State<LoginScreen> {
                               leadingIcon: Icons.nfc,
                               height: isSmallScreen ? 35 : 40,
                               fontSize: isSmallScreen ? 11 : 12,
-                              onPressed: () {
-                                FocusScope.of(context).unfocus();
-                                showDialog(
-                                  context: context,
-                                  builder:
-                                      (context) => NFCScanDialog(
-                                        authCubit: context.read<AuthCubit>(),
-                                      ),
-                                );
-                              },
+                              onPressed:
+                                  !_isNfcEnabled
+                                      ? null // Disable button when NFC is not enabled
+                                      : () {
+                                        FocusScope.of(context).unfocus();
+                                        showDialog(
+                                          context: context,
+                                          builder:
+                                              (context) => NFCLoginDialog(
+                                                authCubit:
+                                                    context.read<AuthCubit>(),
+                                              ),
+                                        );
+                                      },
                             ),
+                            if (!_isNfcEnabled)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: Text(
+                                  'NFC login is disabled',
+                                  style: TextStyle(
+                                    color: Colors.red.shade700,
+                                    fontSize: isSmallScreen ? 11 : 12,
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
                       ),

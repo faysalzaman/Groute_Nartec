@@ -209,8 +209,6 @@ class AppPreferences {
     await prefs.remove(_keyDriverExperience);
     await prefs.remove(_keyDriverAvailability);
     await prefs.remove(_keyDriverPhoto);
-    await prefs.remove(_keyDriverIsNFCEnabled);
-    await prefs.remove(_keyDriverNFCNumber);
     await prefs.remove(_keyDriverCreatedAt);
     await prefs.remove(_keyDriverUpdatedAt);
     await prefs.remove(_keyDriverMemberId);
@@ -235,5 +233,28 @@ class AppPreferences {
     await prefs.remove(_keyAccessToken);
     await prefs.remove(_keyRememberMe);
     await clearDriverData();
+  }
+
+  // Add these new methods to update NFC settings
+
+  // Set NFC enabled status
+  static Future<void> setDriverIsNFCEnabled(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_keyDriverIsNFCEnabled, enabled);
+  }
+
+  // Set NFC card number
+  static Future<void> setDriverNFCNumber(String nfcNumber) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyDriverNFCNumber, nfcNumber);
+  }
+
+  // Toggle NFC enabled status and return the new value
+  static Future<bool> toggleNFCEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    final currentValue = prefs.getBool(_keyDriverIsNFCEnabled) ?? false;
+    final newValue = !currentValue;
+    await prefs.setBool(_keyDriverIsNFCEnabled, newValue);
+    return newValue;
   }
 }

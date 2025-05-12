@@ -125,6 +125,34 @@ class DriverRepositry {
     throw Exception('OTP verification failed');
   }
 
+  Future<void> enableAndDisableNFC(
+    String status,
+    bool isNFCEnabled,
+    String nfcNumber,
+  ) async {
+    final path = 'v1/drivers/update-by-mobile';
+
+    final token = await AppPreferences.getAccessToken();
+
+    final res = await _httpService.request(
+      path,
+      method: HttpMethod.put,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      payload:
+          status == 'enable'
+              ? {'nfcNumber': nfcNumber, 'isNFCEnabled': isNFCEnabled}
+              : {'isNFCEnabled': isNFCEnabled},
+    );
+
+    if (res.success) {
+      return;
+    }
+    throw Exception('NFC update failed');
+  }
+
   Future<void> resetPassword(
     String newPassword,
     String email,

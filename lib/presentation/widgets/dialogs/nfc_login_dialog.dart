@@ -7,17 +7,17 @@ import 'package:groute_nartec/presentation/modules/auth/cubit/auth_cubit.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 
-class NFCScanDialog extends StatefulWidget {
-  const NFCScanDialog({super.key, this.serialNumber, required this.authCubit});
+class NFCLoginDialog extends StatefulWidget {
+  const NFCLoginDialog({super.key, this.serialNumber, required this.authCubit});
 
   final String? serialNumber;
   final AuthCubit authCubit;
 
   @override
-  State<NFCScanDialog> createState() => _NFCScanDialogState();
+  State<NFCLoginDialog> createState() => _NFCLoginDialogState();
 }
 
-class _NFCScanDialogState extends State<NFCScanDialog> {
+class _NFCLoginDialogState extends State<NFCLoginDialog> {
   bool _isScanning = false;
 
   @override
@@ -80,9 +80,7 @@ class _NFCScanDialogState extends State<NFCScanDialog> {
             }
           } catch (e) {
             if (mounted) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text('Error reading NFC: $e')));
+              AppSnackbars.danger(context, 'Error reading NFC: $e');
             }
           }
         },
@@ -90,9 +88,7 @@ class _NFCScanDialogState extends State<NFCScanDialog> {
     } catch (e) {
       if (mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        AppSnackbars.danger(context, 'Error: $e');
       }
     }
   }

@@ -37,7 +37,11 @@ class AuthCubit extends Cubit<AuthState> {
 
     emit(NfcAuthLoadingState());
     try {
-      driver = await _authController.loginWithNfc("123123");
+      driver = await _authController.loginWithNfc(serialNumber);
+      if (driver == null) {
+        emit(NfcAuthErrorState('Invalid NFC serial number'));
+        return;
+      }
 
       emit(NfcAuthSuccessState());
     } catch (e) {
@@ -90,6 +94,24 @@ class AuthCubit extends Cubit<AuthState> {
       emit(ResetPasswordSuccess());
     } catch (e) {
       emit(ResetPasswordError(e.toString()));
+    }
+  }
+
+  Future<void> enableNFC(
+    String status,
+    bool isNFCEnabled,
+    String nfcNumber,
+  ) async {
+    emit(EnableNfcLoading());
+    try {
+      await _authController.enableAndDisableNFC(
+        status,
+        isNFCEnabled,
+        nfcNumber,
+      );
+      emit(EnableNfcSuccess());
+    } catch (e) {
+      emit(EnableNfcError(e.toString()));
     }
   }
 }

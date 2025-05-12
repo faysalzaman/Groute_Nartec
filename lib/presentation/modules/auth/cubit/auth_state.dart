@@ -50,3 +50,12 @@ class ResetPasswordError extends AuthState {
   final String errorMessage;
   ResetPasswordError(this.errorMessage);
 }
+
+class EnableNfcLoading extends AuthState {}
+
+class EnableNfcSuccess extends AuthState {}
+
+class EnableNfcError extends AuthState {
+  final String errorMessage;
+  EnableNfcError(this.errorMessage);
+}

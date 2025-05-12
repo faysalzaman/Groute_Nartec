@@ -7,54 +7,184 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/constants/app_preferences.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
+import 'package:groute_nartec/core/utils/app_snackbars.dart';
 import 'package:groute_nartec/presentation/modules/auth/cubit/auth_cubit.dart';
+import 'package:groute_nartec/presentation/modules/auth/cubit/auth_state.dart';
 import 'package:groute_nartec/presentation/modules/auth/models/driver_model.dart';
 import 'package:groute_nartec/presentation/modules/auth/view/login_screen.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
+import 'package:groute_nartec/presentation/widgets/dialogs/nfc_enable_dialog.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  bool _isNfcEnabled = false;
+  String? _nfcNumber;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadNfcSettings();
+  }
+
+  Future<void> _loadNfcSettings() async {
+    setState(() => _isLoading = true);
+    final isEnabled = await AppPreferences.getDriverIsNFCEnabled() ?? false;
+    final nfcNumber = await AppPreferences.getDriverNFCNumber();
+
+    setState(() {
+      _isNfcEnabled = isEnabled;
+      _nfcNumber = nfcNumber;
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _toggleNfcEnabled(
+    bool newValue,
+    BuildContext context,
+    AuthCubit authCubit,
+  ) async {
+    // If trying to enable NFC, show dialog to scan NFC
+    if (newValue) {
+      // if the value is already true, just return
+      if (_isNfcEnabled) return;
+
+      // Show NFC scanning dialog
+      final result = await showDialog<String>(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => NFCEnableDialog(nfcValue: newValue),
+      );
+
+      // If a serial number was obtained from the dialog
+      if (result != null && result.isNotEmpty) {
+        setState(() => _isLoading = true);
+
+        try {
+          // Make the API call here instead of in the dialog
+          await authCubit.enableNFC("enable", true, result);
+
+          // Update local settings
+          await AppPreferences.setDriverIsNFCEnabled(true);
+          await AppPreferences.setDriverNFCNumber(result);
+
+          // Update state
+          setState(() {
+            _isNfcEnabled = true;
+            _nfcNumber = result;
+            _isLoading = false;
+          });
+        } catch (e) {
+          // In case of error, reset the switch to false
+          setState(() {
+            _isNfcEnabled = false;
+            _isLoading = false;
+          });
+          // Error handling is now done via the BlocConsumer listener
+        }
+      }
+    } else {
+      // Disabling NFC
+      if (!_isNfcEnabled) return; // Already disabled
+
+      setState(() => _isLoading = true);
+
+      try {
+        // Call API to disable NFC
+        await authCubit.enableNFC("disable", false, "null");
+
+        // Update local settings
+        await AppPreferences.setDriverIsNFCEnabled(false);
+
+        // Update state
+        setState(() {
+          _isNfcEnabled = false;
+          _nfcNumber = null;
+          _isLoading = false;
+        });
+
+        if (context.mounted) {
+          AppSnackbars.success(context, 'NFC login disabled successfully');
+        }
+      } catch (e) {
+        // If error occurs during disabling, ensure the switch stays in enabled state
+        setState(() {
+          _isNfcEnabled = true;
+          _isLoading = false;
+        });
+        // Error handling is done via the BlocConsumer listener
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final driver = context.read<AuthCubit>().driver;
 
-    return CustomScaffold(
-      title: 'Driver Profile',
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Profile Header Card
-            _buildProfileHeader(context, driver, isDarkMode),
-            const SizedBox(height: 20),
+    return BlocConsumer<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is EnableNfcError) {
+          AppSnackbars.danger(context, state.errorMessage);
+        } else if (state is EnableNfcSuccess) {
+          AppSnackbars.success(context, 'NFC login enabled successfully');
+        }
+      },
+      builder: (context, state) {
+        return CustomScaffold(
+          title: 'Driver Profile',
+          body: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Profile Header Card
+                _buildProfileHeader(context, driver, isDarkMode),
+                const SizedBox(height: 20),
 
-            // Route Information Section
-            if (driver?.route != null) ...[
-              _buildSectionTitle('Assigned Route', isDarkMode),
-              const SizedBox(height: 10),
-              _buildRouteCard(context, driver!.route!, isDarkMode),
+                // NFC Card
+                _buildNfcCard(context, isDarkMode, context.read<AuthCubit>()),
+                const SizedBox(height: 20),
 
-              const SizedBox(height: 20),
+                // Rest of the code remains the same
+                // ...existing code...
 
-              // Points List Section
-              if (driver.route?.points != null &&
-                  driver.route!.points!.isNotEmpty) ...[
-                _buildSectionTitle('Area', isDarkMode),
-                const SizedBox(height: 10),
-                _buildPointsCard(context, driver.route!.points!, isDarkMode),
+                // Route Information Section
+                if (driver?.route != null) ...[
+                  _buildSectionTitle('Assigned Route', isDarkMode),
+                  const SizedBox(height: 10),
+                  _buildRouteCard(context, driver!.route!, isDarkMode),
+
+                  const SizedBox(height: 20),
+
+                  // Points List Section
+                  if (driver.route?.points != null &&
+                      driver.route!.points!.isNotEmpty) ...[
+                    _buildSectionTitle('Area', isDarkMode),
+                    const SizedBox(height: 10),
+                    _buildPointsCard(
+                      context,
+                      driver.route!.points!,
+                      isDarkMode,
+                    ),
+                  ],
+                ] else
+                  _buildNoRouteAssigned(context, isDarkMode),
+
+                // Logout Button Section
+                const SizedBox(height: 30),
+                _buildLogoutButton(context, isDarkMode),
+                const SizedBox(height: 20),
               ],
-            ] else
-              _buildNoRouteAssigned(context, isDarkMode),
-
-            // Logout Button Section
-            const SizedBox(height: 30),
-            _buildLogoutButton(context, isDarkMode),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -784,4 +914,116 @@ class ProfileScreen extends StatelessWidget {
       }
     }
   }
+
+  Widget _buildNfcCard(
+    BuildContext context,
+    bool isDarkMode,
+    AuthCubit authCubit,
+  ) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color:
+            isDarkMode
+                ? AppColors.darkBackground.withValues(alpha: 0.95)
+                : AppColors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          if (!isDarkMode)
+            BoxShadow(
+              color: AppColors.grey300.withValues(alpha: 0.5),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+        ],
+        border:
+            isDarkMode
+                ? Border.all(
+                  color: AppColors.primaryLight.withValues(alpha: 0.2),
+                )
+                : null,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.secondary.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      FontAwesomeIcons.creditCard,
+                      color: AppColors.secondary,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'NFC Card Login',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: isDarkMode ? AppColors.white : AppColors.textDark,
+                    ),
+                  ),
+                ],
+              ),
+              _isLoading
+                  ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                  : Switch(
+                    value: _isNfcEnabled,
+                    activeColor: AppColors.success,
+                    onChanged:
+                        (newValue) =>
+                            _toggleNfcEnabled(newValue, context, authCubit),
+                  ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Enable NFC card login to quickly sign in using your company ID card',
+            style: TextStyle(
+              fontSize: 14,
+              color: isDarkMode ? AppColors.grey400 : AppColors.textMedium,
+            ),
+          ),
+          if (_isNfcEnabled && _nfcNumber != null) ...[
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Icon(
+                  FontAwesomeIcons.idCard,
+                  size: 14,
+                  color: isDarkMode ? AppColors.grey400 : AppColors.grey600,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Card Number: $_nfcNumber',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: isDarkMode ? AppColors.grey300 : AppColors.textDark,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  // Keep all existing methods unchanged below
+  // ...
 }
