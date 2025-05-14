@@ -26,6 +26,7 @@ class LastVehicleCheck {
   String? petrolLevel;
   String? engineCondition;
   String? odoMeterReading;
+  String? remarks;
   List<String>? photos;
   String? approvalStatus;
   String? vehicleId;
@@ -40,6 +41,7 @@ class LastVehicleCheck {
     this.petrolLevel,
     this.engineCondition,
     this.odoMeterReading,
+    this.remarks,
     this.photos,
     this.approvalStatus,
     this.vehicleId,
@@ -55,6 +57,7 @@ class LastVehicleCheck {
     petrolLevel = json['petrolLevel'];
     engineCondition = json['engineCondition'];
     odoMeterReading = json['odoMeterReading'];
+    remarks = json['remarks'];
     photos = json['photos'].cast<String>();
     approvalStatus = json['approvalStatus'];
     vehicleId = json['vehicleId'];
@@ -72,6 +75,7 @@ class LastVehicleCheck {
     data['petrolLevel'] = petrolLevel;
     data['engineCondition'] = engineCondition;
     data['odoMeterReading'] = odoMeterReading;
+    data['remarks'] = remarks;
     data['photos'] = photos;
     data['approvalStatus'] = approvalStatus;
     data['vehicleId'] = vehicleId;

@@ -449,8 +449,8 @@ class NewOrdersDetailScreen extends StatelessWidget {
                     GS1ProductDetailsScreen(barcode: item.productId ?? ''),
                   );
                 },
-                height: 30,
-                width: 100,
+                height: 25,
+                width: 120,
               ),
             ],
           ),

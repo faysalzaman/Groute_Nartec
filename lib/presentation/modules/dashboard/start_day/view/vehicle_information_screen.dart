@@ -49,11 +49,15 @@ class _VehicleInformationScreenState extends State<VehicleInformationScreen> {
                   const SizedBox(height: 16),
 
                   // Vehicle Check History Section
-                  _buildSectionHeader(
-                    'Last Vehicle Check',
-                    FontAwesomeIcons.clipboardCheck,
-                  ),
-                  _buildVehicleCheckHistorySection(context, state),
+                  state is VehicleCheckHistoryError
+                      ? const SizedBox()
+                      : _buildSectionHeader(
+                        'Last Vehicle Check',
+                        FontAwesomeIcons.clipboardCheck,
+                      ),
+                  state is VehicleCheckHistoryError
+                      ? const SizedBox()
+                      : _buildVehicleCheckHistorySection(context, state),
                 ],
               ),
             ),
@@ -426,6 +430,14 @@ class _VehicleInformationScreenState extends State<VehicleInformationScreen> {
                     'Odometer Reading',
                     checkHistory.odoMeterReading ?? 'N/A',
                     FontAwesomeIcons.gaugeHigh,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildCheckInfoItem(
+                    'Remarks',
+                    checkHistory.remarks.toString().trim(),
+                    FontAwesomeIcons.comment,
                   ),
                 ),
               ],
