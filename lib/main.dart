@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<StartDayCubit>(create: (context) => StartDayCubit()),
       ],
       child: MaterialApp(
-        title: 'GRoute Nartec',
+        title: 'GRoutePro',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
