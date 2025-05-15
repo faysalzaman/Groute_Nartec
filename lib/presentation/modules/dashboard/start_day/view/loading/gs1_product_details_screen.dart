@@ -9,6 +9,7 @@ import 'package:groute_nartec/core/utils/app_snackbars.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubit/start_day_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubit/start_day_state.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/model/gs1_product.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/loading/select_bin_location_screen.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 
@@ -201,20 +202,22 @@ class _GS1ProductDetailsScreenState extends State<GS1ProductDetailsScreen> {
 
           const SizedBox(height: 24),
 
-          // Action Buttons
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
                 child: CustomElevatedButton(
-                  title: 'Select Product',
+                  height: 40,
+                  title: 'Start Picking',
                   onPressed: () {
-                    if (widget.onProductSelected != null) {
-                      widget.onProductSelected!(product);
-                    }
-                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SelectBinLocationScreen(),
+                      ),
+                    );
                   },
-                  height: 50,
+                  backgroundColor: AppColors.success,
                 ),
               ),
             ],
@@ -252,7 +255,7 @@ class _GS1ProductDetailsScreenState extends State<GS1ProductDetailsScreen> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryBlue.withOpacity(0.1),
+            color: AppColors.primaryBlue.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -296,8 +299,8 @@ class _GS1ProductDetailsScreenState extends State<GS1ProductDetailsScreen> {
                           size: 64,
                           color:
                               isDarkMode
-                                  ? AppColors.textLight.withOpacity(0.5)
-                                  : AppColors.textMedium.withOpacity(0.5),
+                                  ? AppColors.textLight.withValues(alpha: 0.5)
+                                  : AppColors.textMedium.withValues(alpha: 0.5),
                         ),
                       ),
                 ),
@@ -319,8 +322,8 @@ class _GS1ProductDetailsScreenState extends State<GS1ProductDetailsScreen> {
                 size: 64,
                 color:
                     isDarkMode
-                        ? AppColors.textLight.withOpacity(0.5)
-                        : AppColors.textMedium.withOpacity(0.5),
+                        ? AppColors.textLight.withValues(alpha: 0.5)
+                        : AppColors.textMedium.withValues(alpha: 0.5),
               ),
             ),
 
@@ -347,8 +350,8 @@ class _GS1ProductDetailsScreenState extends State<GS1ProductDetailsScreen> {
                 fontWeight: FontWeight.w500,
                 color:
                     isDarkMode
-                        ? AppColors.textLight.withOpacity(0.8)
-                        : AppColors.textDark.withOpacity(0.8),
+                        ? AppColors.textLight.withValues(alpha: 0.8)
+                        : AppColors.textDark.withValues(alpha: 0.8),
               ),
             ),
           ],
@@ -366,7 +369,7 @@ class _GS1ProductDetailsScreenState extends State<GS1ProductDetailsScreen> {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryBlue.withOpacity(0.1),
+                    color: AppColors.primaryBlue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Text(
@@ -387,7 +390,7 @@ class _GS1ProductDetailsScreenState extends State<GS1ProductDetailsScreen> {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.success.withOpacity(0.1),
+                    color: AppColors.success.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Text(
@@ -465,7 +468,7 @@ class _GS1ProductDetailsScreenState extends State<GS1ProductDetailsScreen> {
                           fontSize: 12,
                           color:
                               isDarkMode
-                                  ? AppColors.textLight.withOpacity(0.7)
+                                  ? AppColors.textLight.withValues(alpha: 0.7)
                                   : AppColors.textMedium,
                         ),
                       ),
@@ -492,7 +495,7 @@ class _GS1ProductDetailsScreenState extends State<GS1ProductDetailsScreen> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryBlue.withOpacity(0.1),
+            color: AppColors.primaryBlue.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -507,8 +510,8 @@ class _GS1ProductDetailsScreenState extends State<GS1ProductDetailsScreen> {
             decoration: BoxDecoration(
               color:
                   isDarkMode
-                      ? AppColors.primaryDark.withOpacity(0.3)
-                      : AppColors.primaryBlue.withOpacity(0.1),
+                      ? AppColors.primaryDark.withValues(alpha: 0.3)
+                      : AppColors.primaryBlue.withValues(alpha: 0.1),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(12),
                 topRight: Radius.circular(12),
@@ -570,7 +573,7 @@ class _GS1ProductDetailsScreenState extends State<GS1ProductDetailsScreen> {
                 fontWeight: FontWeight.w500,
                 color:
                     isDarkMode
-                        ? AppColors.textLight.withOpacity(0.7)
+                        ? AppColors.textLight.withValues(alpha: 0.7)
                         : AppColors.textMedium,
               ),
             ),

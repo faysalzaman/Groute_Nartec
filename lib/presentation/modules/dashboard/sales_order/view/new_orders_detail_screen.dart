@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/picking_screens/gs1_product_details_screen.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/loading/gs1_product_details_screen.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 import 'package:intl/intl.dart';

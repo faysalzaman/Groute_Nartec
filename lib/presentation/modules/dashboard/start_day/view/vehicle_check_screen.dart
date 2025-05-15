@@ -15,6 +15,8 @@ import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubit/sta
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubit/start_day_state.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
+import 'package:groute_nartec/presentation/widgets/dropdowns/app_dropdown.dart';
+import 'package:groute_nartec/presentation/widgets/text_fields/custom_textfield.dart';
 import 'package:image_picker/image_picker.dart';
 
 class VehicleCheckScreen extends StatefulWidget {
@@ -364,13 +366,13 @@ class _VehicleCheckScreenState extends State<VehicleCheckScreen> {
           Row(
             children: [
               Expanded(
-                child: _buildDropdown(
+                child: _buildConditionDropdown(
                   'Tyres Condition',
                   _tyresCondition,
                   _conditionOptions,
                   (value) {
                     setState(() {
-                      _tyresCondition = value!;
+                      _tyresCondition = value;
                     });
                   },
                   icon: FontAwesomeIcons.carSide,
@@ -378,13 +380,13 @@ class _VehicleCheckScreenState extends State<VehicleCheckScreen> {
               ),
               const SizedBox(width: 16),
               Expanded(
-                child: _buildDropdown(
+                child: _buildConditionDropdown(
                   'AC Condition',
                   _acCondition,
                   _conditionOptions,
                   (value) {
                     setState(() {
-                      _acCondition = value!;
+                      _acCondition = value;
                     });
                   },
                   icon: FontAwesomeIcons.snowflake,
@@ -396,13 +398,13 @@ class _VehicleCheckScreenState extends State<VehicleCheckScreen> {
           Row(
             children: [
               Expanded(
-                child: _buildDropdown(
+                child: _buildConditionDropdown(
                   'Engine Condition',
                   _engineCondition,
                   _conditionOptions,
                   (value) {
                     setState(() {
-                      _engineCondition = value!;
+                      _engineCondition = value;
                     });
                   },
                   icon: FontAwesomeIcons.gauge,
@@ -421,11 +423,11 @@ class _VehicleCheckScreenState extends State<VehicleCheckScreen> {
     );
   }
 
-  Widget _buildDropdown(
+  Widget _buildConditionDropdown(
     String label,
     String value,
     List<String> options,
-    Function(String?) onChanged, {
+    Function(String) onChanged, {
     IconData? icon,
   }) {
     return Column(
@@ -448,41 +450,19 @@ class _VehicleCheckScreenState extends State<VehicleCheckScreen> {
           ],
         ),
         const SizedBox(height: 6),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          decoration: BoxDecoration(
-            color: AppColors.grey100,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppColors.grey300, width: 1),
-          ),
-          child: DropdownButton<String>(
-            value: value,
-            isExpanded: true,
-            underline: Container(),
-            icon: const Icon(
-              Icons.arrow_drop_down,
-              color: AppColors.primaryBlue,
-            ),
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textDark,
-            ), // Reduced from 16 to 14
-            itemHeight: 48, // Added to reduce item height
-            items:
-                options.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(
-                      value,
-                      style: TextStyle(
-                        fontSize: 14,
-                      ), // Explicitly set dropdown item text size
-                    ),
-                  );
-                }).toList(),
-            onChanged: onChanged,
-          ),
+        AppDropdown<String>(
+          items: options,
+          hintText: 'Select $label',
+          initialItem: value,
+          onChanged: onChanged,
+          borderRadius: 8,
+          borderWidth: 1,
+          borderColor: AppColors.grey300,
+          fillColor: AppColors.grey100,
+          fieldHeight: 48,
+          icon: Icons.arrow_drop_down,
+          iconColor: AppColors.primaryBlue,
+          textStyle: TextStyle(fontSize: 14, color: AppColors.textDark),
         ),
       ],
     );
@@ -511,27 +491,15 @@ class _VehicleCheckScreenState extends State<VehicleCheckScreen> {
           ],
         ),
         const SizedBox(height: 6),
-        Container(
+        CustomTextFormField(
+          controller: TextEditingController(text: _odometerReading),
+          hintText: 'Enter odometer reading',
+          keyboardType: TextInputType.number,
+          onChanged: (value) {
+            _odometerReading = value;
+          },
+          height: 48,
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 5),
-          decoration: BoxDecoration(
-            color: AppColors.grey100,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppColors.grey300, width: 1),
-          ),
-          child: TextField(
-            controller: TextEditingController(text: _odometerReading),
-            keyboardType: TextInputType.number,
-            style: TextStyle(fontSize: 16, color: AppColors.textDark),
-            onChanged: (value) {
-              _odometerReading = value;
-            },
-            decoration: const InputDecoration(
-              border: InputBorder.none,
-              suffixText: 'km',
-              suffixStyle: TextStyle(color: AppColors.textMedium, fontSize: 14),
-            ),
-          ),
         ),
       ],
     );
@@ -560,27 +528,15 @@ class _VehicleCheckScreenState extends State<VehicleCheckScreen> {
           ],
         ),
         const SizedBox(height: 6),
-        Container(
+        CustomTextFormField(
+          controller: TextEditingController(text: _petrolLevel),
+          hintText: 'Enter petrol level',
+          keyboardType: TextInputType.number,
+          onChanged: (value) {
+            _petrolLevel = value;
+          },
+          height: 48,
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 5),
-          decoration: BoxDecoration(
-            color: AppColors.grey100,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppColors.grey300, width: 1),
-          ),
-          child: TextField(
-            controller: TextEditingController(text: _petrolLevel),
-            keyboardType: TextInputType.number,
-            style: TextStyle(fontSize: 16, color: AppColors.textDark),
-            onChanged: (value) {
-              _petrolLevel = value;
-            },
-            decoration: const InputDecoration(
-              border: InputBorder.none,
-              suffixText: '%',
-              suffixStyle: TextStyle(color: AppColors.textMedium, fontSize: 14),
-            ),
-          ),
         ),
       ],
     );
@@ -609,28 +565,16 @@ class _VehicleCheckScreenState extends State<VehicleCheckScreen> {
           ],
         ),
         const SizedBox(height: 6),
-        Container(
+        CustomTextFormField(
+          controller: TextEditingController(text: _remarks),
+          hintText: 'Enter any additional comments here...',
+          keyboardType: TextInputType.multiline,
+          onChanged: (value) {
+            _remarks = value;
+          },
+          maxLines: 3,
+          height: 100,
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 5),
-          decoration: BoxDecoration(
-            color: AppColors.grey100,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppColors.grey300, width: 1),
-          ),
-          child: TextField(
-            controller: TextEditingController(text: _remarks),
-            keyboardType: TextInputType.multiline,
-            maxLines: 3,
-            style: TextStyle(fontSize: 16, color: AppColors.textDark),
-            onChanged: (value) {
-              _remarks = value;
-            },
-            decoration: const InputDecoration(
-              border: InputBorder.none,
-              hintText: 'Enter any additional comments here...',
-              hintStyle: TextStyle(color: AppColors.grey400, fontSize: 14),
-            ),
-          ),
         ),
       ],
     );
