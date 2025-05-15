@@ -1,6 +1,8 @@
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import '../../view/screens/auth/model/login_model.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../presentation/modules/auth/models/driver_model.dart';
 
 class AppPreferences {
   // Private constructor to prevent instantiation
@@ -27,6 +29,8 @@ class AppPreferences {
   static const String _keyDriverMemberId = 'driver_member_id';
   static const String _keyDriverVehicleId = 'driver_vehicle_id';
   static const String _keyDriverRouteId = 'driver_route_id';
+  static const String _keyGTrackToken = 'gtrack_token';
+  static const String _keyRememberMe = 'remember_me';
 
   // Access Token methods
   static Future<void> setAccessToken(String token) async {
@@ -42,6 +46,22 @@ class AppPreferences {
   static Future<void> removeAccessToken() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_keyAccessToken);
+  }
+
+  // GTrack Token methods
+  static Future<void> setGTrackToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyGTrackToken, token);
+  }
+
+  static Future<String?> getGTrackToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keyGTrackToken);
+  }
+
+  static Future<void> removeGTrackToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_keyGTrackToken);
   }
 
   // Driver data methods - Save entire driver object
@@ -189,8 +209,6 @@ class AppPreferences {
     await prefs.remove(_keyDriverExperience);
     await prefs.remove(_keyDriverAvailability);
     await prefs.remove(_keyDriverPhoto);
-    await prefs.remove(_keyDriverIsNFCEnabled);
-    await prefs.remove(_keyDriverNFCNumber);
     await prefs.remove(_keyDriverCreatedAt);
     await prefs.remove(_keyDriverUpdatedAt);
     await prefs.remove(_keyDriverMemberId);
@@ -198,10 +216,45 @@ class AppPreferences {
     await prefs.remove(_keyDriverRouteId);
   }
 
+  // Remember Me methods
+  static Future<void> setRememberMe(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_keyRememberMe, value);
+  }
+
+  static Future<bool> getRememberMe() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_keyRememberMe) ?? false;
+  }
+
   // Helper to clear all data (for logout)
   static Future<void> clearAllData() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_keyAccessToken);
+    await prefs.remove(_keyRememberMe);
     await clearDriverData();
+  }
+
+  // Add these new methods to update NFC settings
+
+  // Set NFC enabled status
+  static Future<void> setDriverIsNFCEnabled(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_keyDriverIsNFCEnabled, enabled);
+  }
+
+  // Set NFC card number
+  static Future<void> setDriverNFCNumber(String nfcNumber) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyDriverNFCNumber, nfcNumber);
+  }
+
+  // Toggle NFC enabled status and return the new value
+  static Future<bool> toggleNFCEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    final currentValue = prefs.getBool(_keyDriverIsNFCEnabled) ?? false;
+    final newValue = !currentValue;
+    await prefs.setBool(_keyDriverIsNFCEnabled, newValue);
+    return newValue;
   }
 }
