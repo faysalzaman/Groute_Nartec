@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubit/start_day_state.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/start_day_state.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/model/gs1_product.dart';
 import 'package:groute_nartec/repositories/gs1_repository.dart';
 import 'package:groute_nartec/repositories/start_day_repository.dart';

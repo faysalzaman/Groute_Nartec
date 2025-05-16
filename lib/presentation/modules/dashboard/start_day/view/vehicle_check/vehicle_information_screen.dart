@@ -6,8 +6,8 @@ import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/utils/app_loading.dart';
 import 'package:groute_nartec/presentation/modules/auth/cubit/auth_cubit.dart';
 import 'package:groute_nartec/presentation/modules/auth/cubit/auth_state.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubit/start_day_cubit.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubit/start_day_state.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/start_day_cubit.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/start_day_state.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 import 'package:intl/intl.dart';
 
