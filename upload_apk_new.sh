@@ -4,7 +4,7 @@
 APK_PATH=build/app/outputs/flutter-apk/app-release.apk
 FOLDER_ID="1CK55EUd0suHdmIm_cowoHI4LCzwczQfm"
 SERVICE_ACCOUNT_FILE="gcloud-service-key.json"
-APK_NAME="gtrack_release.apk"
+APK_NAME="groute_pro.apk"
 
 # Check if APK exists
 if [ ! -f "$APK_PATH" ]; then
