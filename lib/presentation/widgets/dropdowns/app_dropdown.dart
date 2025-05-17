@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:groute_nartec/core/constants/app_colors.dart';
 
 /// A reusable dropdown widget that uses Flutter's built-in DropdownButton.
 ///
@@ -24,7 +25,7 @@ class AppDropdown<T> extends StatelessWidget {
   final double borderWidth;
 
   /// Color of the dropdown border (default: Colors.grey)
-  final Color borderColor;
+  final Color? borderColor;
 
   /// Background color of the dropdown (default: Colors.white)
   final Color? fillColor;
@@ -32,8 +33,8 @@ class AppDropdown<T> extends StatelessWidget {
   /// Text style for the dropdown items
   final TextStyle? textStyle;
 
-  /// Height of the dropdown field (default: 55)
-  final double fieldHeight;
+  /// Height of the dropdown field (default: 50)
+  final double? fieldHeight;
 
   /// Width of the dropdown field (default: double.infinity)
   final double fieldWidth;
@@ -61,10 +62,10 @@ class AppDropdown<T> extends StatelessWidget {
     this.initialItem,
     this.borderRadius = 12,
     this.borderWidth = 1,
-    this.borderColor = Colors.grey,
+    this.borderColor,
     this.fillColor,
     this.textStyle,
-    this.fieldHeight = 55,
+    this.fieldHeight = 50,
     this.fieldWidth = double.infinity,
     this.icon,
     this.iconColor,
@@ -76,64 +77,98 @@ class AppDropdown<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final defaultTextStyle = textStyle ?? theme.textTheme.bodyMedium;
-    final hintStyle =
-        defaultTextStyle?.copyWith(color: Colors.grey) ??
-        theme.textTheme.bodyMedium?.copyWith(color: Colors.grey);
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    final defaultTextStyle =
+        textStyle ??
+        TextStyle(
+          fontSize: 14,
+          color: isDarkTheme ? AppColors.textLight : AppColors.textDark,
+        );
+    final hintStyle = TextStyle(
+      fontSize: 12,
+      color:
+          isDarkTheme
+              ? AppColors.textLight.withValues(alpha: 0.7)
+              : AppColors.textMedium,
+    );
 
     // Create a FormField to handle validation
     return SizedBox(
       width: fieldWidth,
+      height: fieldHeight,
       child: FormField<T>(
         initialValue: initialItem,
         validator: validator,
         builder: (FormFieldState<T> state) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                height: fieldHeight,
-                decoration: BoxDecoration(
-                  color: fillColor ?? Colors.white,
-                  borderRadius: BorderRadius.circular(borderRadius),
-                  border: Border.all(
-                    color: state.hasError ? Colors.red : borderColor,
-                    width: borderWidth,
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color:
+                        fillColor != null
+                            ? fillColor
+                            : isDarkTheme
+                            ? AppColors.grey900
+                            : AppColors.grey100,
+                    borderRadius: BorderRadius.circular(borderRadius),
+                    border: Border.all(
+                      color:
+                          state.hasError
+                              ? AppColors.error
+                              : borderColor != null
+                              ? borderColor!
+                              : isDarkTheme
+                              ? AppColors.grey700
+                              : AppColors.grey300,
+                      width: state.hasError ? 2 : borderWidth,
+                    ),
                   ),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: ButtonTheme(
-                    alignedDropdown: true,
-                    child: DropdownButton<T>(
-                      isExpanded: true,
-                      value: state.value,
-                      icon: Icon(
-                        icon ?? Icons.arrow_drop_down,
-                        color: iconColor ?? Colors.grey,
-                      ),
-                      iconSize: 24,
-                      elevation: 16,
-                      style: defaultTextStyle,
-                      hint: Text(hintText, style: hintStyle),
-                      onChanged:
-                          enabled
-                              ? (T? newValue) {
-                                state.didChange(newValue);
-                                if (newValue != null) {
-                                  onChanged(newValue);
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: DropdownButtonHideUnderline(
+                    child: ButtonTheme(
+                      alignedDropdown: true,
+                      child: DropdownButton<T>(
+                        isExpanded: true,
+                        value: state.value,
+                        icon: Icon(
+                          icon ?? Icons.arrow_drop_down,
+                          color:
+                              iconColor ??
+                              (isDarkTheme
+                                  ? AppColors.textLight
+                                  : AppColors.textDark),
+                          size: 20,
+                        ),
+                        elevation: 16,
+                        style: defaultTextStyle,
+                        hint: Text(hintText, style: hintStyle),
+                        onChanged:
+                            enabled
+                                ? (T? newValue) {
+                                  state.didChange(newValue);
+                                  if (newValue != null) {
+                                    onChanged(newValue);
+                                  }
                                 }
-                              }
-                              : null,
-                      items:
-                          items.map<DropdownMenuItem<T>>((T item) {
-                            return DropdownMenuItem<T>(
-                              value: item,
-                              child: Text(
-                                item.toString(),
-                                style: defaultTextStyle,
-                              ),
-                            );
-                          }).toList(),
+                                : null,
+                        dropdownColor:
+                            isDarkTheme ? AppColors.grey800 : AppColors.grey50,
+                        items:
+                            items.map<DropdownMenuItem<T>>((T item) {
+                              return DropdownMenuItem<T>(
+                                value: item,
+                                child: Text(
+                                  item.toString(),
+                                  style: defaultTextStyle,
+                                ),
+                              );
+                            }).toList(),
+                        isDense: true,
+                        padding: EdgeInsets.zero,
+                      ),
                     ),
                   ),
                 ),
@@ -143,7 +178,7 @@ class AppDropdown<T> extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 12, top: 8),
                   child: Text(
                     state.errorText ?? '',
-                    style: TextStyle(color: Colors.red, fontSize: 12),
+                    style: TextStyle(color: AppColors.error, fontSize: 12),
                   ),
                 ),
             ],
@@ -177,7 +212,7 @@ class MultiSelectAnimatedDropdown<T> extends StatefulWidget {
   final double borderWidth;
 
   /// Color of the dropdown border (default: Colors.grey)
-  final Color borderColor;
+  final Color? borderColor;
 
   /// Background color of the dropdown (default: Colors.white)
   final Color? fillColor;
@@ -185,8 +220,8 @@ class MultiSelectAnimatedDropdown<T> extends StatefulWidget {
   /// Text style for the dropdown items
   final TextStyle? textStyle;
 
-  /// Height of the dropdown field (default: 55)
-  final double fieldHeight;
+  /// Height of the dropdown field (default: 50)
+  final double? fieldHeight;
 
   /// Width of the dropdown field (default: double.infinity)
   final double fieldWidth;
@@ -214,10 +249,10 @@ class MultiSelectAnimatedDropdown<T> extends StatefulWidget {
     this.initialItems,
     this.borderRadius = 12,
     this.borderWidth = 1,
-    this.borderColor = Colors.grey,
+    this.borderColor,
     this.fillColor,
     this.textStyle,
-    this.fieldHeight = 55,
+    this.fieldHeight = 50,
     this.fieldWidth = double.infinity,
     this.icon,
     this.iconColor,
@@ -247,59 +282,92 @@ class _MultiSelectAnimatedDropdownState<T>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final defaultTextStyle = widget.textStyle ?? theme.textTheme.bodyMedium;
-    final hintStyle =
-        defaultTextStyle?.copyWith(color: Colors.grey) ??
-        theme.textTheme.bodyMedium?.copyWith(color: Colors.grey);
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    final defaultTextStyle =
+        widget.textStyle ??
+        TextStyle(
+          fontSize: 14,
+          color: isDarkTheme ? AppColors.textLight : AppColors.textDark,
+        );
+    final hintStyle = TextStyle(
+      fontSize: 12,
+      color:
+          isDarkTheme
+              ? AppColors.textLight.withValues(alpha: 0.7)
+              : AppColors.textMedium,
+    );
 
     return SizedBox(
       width: widget.fieldWidth,
+      height: widget.fieldHeight,
       child: FormField<List<T>>(
         initialValue: _selectedItems,
         validator: widget.validator,
         builder: (FormFieldState<List<T>> state) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              GestureDetector(
-                onTap:
-                    widget.enabled
-                        ? () {
-                          setState(() {
-                            _isOpen = !_isOpen;
-                          });
-                        }
-                        : null,
-                child: Container(
-                  height: widget.fieldHeight,
-                  decoration: BoxDecoration(
-                    color: widget.fillColor ?? Colors.white,
-                    borderRadius: BorderRadius.circular(widget.borderRadius),
-                    border: Border.all(
-                      color: state.hasError ? Colors.red : widget.borderColor,
-                      width: widget.borderWidth,
+              Expanded(
+                child: GestureDetector(
+                  onTap:
+                      widget.enabled
+                          ? () {
+                            setState(() {
+                              _isOpen = !_isOpen;
+                            });
+                          }
+                          : null,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color:
+                          widget.fillColor != null
+                              ? widget.fillColor
+                              : isDarkTheme
+                              ? AppColors.grey900
+                              : AppColors.grey100,
+                      borderRadius: BorderRadius.circular(widget.borderRadius),
+                      border: Border.all(
+                        color:
+                            state.hasError
+                                ? AppColors.error
+                                : widget.borderColor != null
+                                ? widget.borderColor!
+                                : isDarkTheme
+                                ? AppColors.grey700
+                                : AppColors.grey300,
+                        width: state.hasError ? 2 : widget.borderWidth,
+                      ),
                     ),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child:
-                            _selectedItems.isEmpty
-                                ? Text(widget.hintText, style: hintStyle)
-                                : Text(
-                                  _selectedItems
-                                      .map((e) => e.toString())
-                                      .join(', '),
-                                  style: defaultTextStyle,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                      ),
-                      Icon(
-                        widget.icon ?? Icons.arrow_drop_down,
-                        color: widget.iconColor ?? Colors.grey,
-                      ),
-                    ],
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 10,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child:
+                              _selectedItems.isEmpty
+                                  ? Text(widget.hintText, style: hintStyle)
+                                  : Text(
+                                    _selectedItems
+                                        .map((e) => e.toString())
+                                        .join(', '),
+                                    style: defaultTextStyle,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                        ),
+                        Icon(
+                          widget.icon ?? Icons.arrow_drop_down,
+                          color:
+                              widget.iconColor ??
+                              (isDarkTheme
+                                  ? AppColors.textLight
+                                  : AppColors.textDark),
+                          size: 20,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -307,10 +375,15 @@ class _MultiSelectAnimatedDropdownState<T>
                 Container(
                   margin: const EdgeInsets.only(top: 4),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: isDarkTheme ? AppColors.grey800 : Colors.white,
                     borderRadius: BorderRadius.circular(widget.borderRadius),
                     border: Border.all(
-                      color: widget.borderColor,
+                      color:
+                          widget.borderColor != null
+                              ? widget.borderColor!
+                              : isDarkTheme
+                              ? AppColors.grey700
+                              : AppColors.grey300,
                       width: widget.borderWidth,
                     ),
                     boxShadow: [
@@ -335,7 +408,13 @@ class _MultiSelectAnimatedDropdownState<T>
                         title: Text(item.toString(), style: defaultTextStyle),
                         trailing:
                             isSelected
-                                ? const Icon(Icons.check, color: Colors.green)
+                                ? Icon(
+                                  Icons.check,
+                                  color:
+                                      isDarkTheme
+                                          ? AppColors.primaryLight
+                                          : AppColors.primaryBlue,
+                                )
                                 : null,
                         onTap: () {
                           setState(() {
@@ -357,7 +436,7 @@ class _MultiSelectAnimatedDropdownState<T>
                   padding: const EdgeInsets.only(left: 12, top: 8),
                   child: Text(
                     state.errorText ?? '',
-                    style: TextStyle(color: Colors.red, fontSize: 12),
+                    style: TextStyle(color: AppColors.error, fontSize: 12),
                   ),
                 ),
             ],

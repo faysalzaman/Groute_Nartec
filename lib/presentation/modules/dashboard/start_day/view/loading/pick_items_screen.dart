@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
+import 'package:groute_nartec/core/utils/app_snackbars.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/loading/loading_cubit.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 import 'package:groute_nartec/presentation/widgets/text_fields/custom_textfield.dart';
@@ -17,11 +21,15 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
   final TextEditingController _wipLocationController = TextEditingController();
 
   // State variables
-  bool _byPallet = true;
-  bool _bySerial = false;
+
   int _quantity = 5;
   int _pickedQuantity = 0;
   List<ScannedItem> _scannedItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -40,46 +48,38 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
       automaticallyImplyLeading: true,
       body: Container(
         color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
+        child: BlocBuilder<LoadingCubit, LoadingState>(
+          buildWhen: (previous, current) => current is ChangeScanType,
+          builder: (context, state) {
+            return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 16,
               children: [
                 // Quantity information
                 _buildQuantityInfo(isDark),
-                const SizedBox(height: 16),
                 Divider(
                   height: 1,
                   color: isDark ? AppColors.grey700 : AppColors.grey300,
                 ),
-                const SizedBox(height: 16),
 
                 // Scan type selection
                 _buildScanTypeSelection(isDark),
-                const SizedBox(height: 24),
 
                 // Pallet number input
                 _buildPalletNumberInput(isDark),
-                const SizedBox(height: 24),
 
                 // Scanned items section
-                _buildScannedItemsSection(isDark),
-                const SizedBox(height: 32),
+                Expanded(child: _buildScannedItemsSection(isDark)),
 
                 // WIP Location input
                 _buildWipLocationInput(isDark),
-                const SizedBox(height: 32),
-
-                // Action buttons
-                _buildActionButtons(),
-                const SizedBox(height: 16),
+                const SizedBox(height: 8.0),
               ],
-            ),
-          ),
+            );
+          },
         ),
       ),
+      bottomNavigationBar: _buildActionButtons(),
     );
   }
 
@@ -112,25 +112,19 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
       children: [
         _buildScanTypeOption(
           label: "BY PALLET",
-          isSelected: _byPallet,
+          isSelected: LoadingCubit.get(context).byPallet,
           isDark: isDark,
           onTap: () {
-            setState(() {
-              _byPallet = true;
-              _bySerial = false;
-            });
+            LoadingCubit.get(context).setScanType(true, false);
           },
         ),
         const SizedBox(width: 24),
         _buildScanTypeOption(
           label: "BY SERIAL",
-          isSelected: _bySerial,
+          isSelected: LoadingCubit.get(context).bySerial,
           isDark: isDark,
           onTap: () {
-            setState(() {
-              _byPallet = false;
-              _bySerial = true;
-            });
+            LoadingCubit.get(context).setScanType(false, true);
           },
         ),
       ],
@@ -195,7 +189,9 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Scan Pallet Number",
+          LoadingCubit.get(context).byPallet
+              ? "Scan Pallet Number"
+              : "Scan Serial Number",
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
@@ -208,7 +204,10 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
             Expanded(
               child: CustomTextFormField(
                 controller: _palletNumberController,
-                hintText: "Pallet Number",
+                hintText:
+                    LoadingCubit.get(context).byPallet
+                        ? "Scan Pallet Number"
+                        : "Scan Serial Number",
                 keyboardType: TextInputType.text,
               ),
             ),
@@ -218,14 +217,29 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
                 color: isDark ? AppColors.grey800 : AppColors.grey200,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: IconButton(
-                onPressed: () {
-                  // Implement scan functionality
+              child: BlocConsumer<LoadingCubit, LoadingState>(
+                listener: (context, state) {
+                  if (state is ScanItemError) {
+                    AppSnackbars.danger(context, state.message);
+                  }
                 },
-                icon: Icon(
-                  Icons.qr_code_scanner,
-                  color: isDark ? AppColors.textLight : AppColors.textDark,
-                ),
+                builder: (context, state) {
+                  return IconButton(
+                    onPressed: () {
+                      // Implement scan functionality
+                      LoadingCubit.get(context).scanPackagingBySscc(
+                        palletCode: _palletNumberController.text,
+                        serialNo: _palletNumberController.text,
+                      );
+                    },
+                    icon: FaIcon(
+                      state is ScanItemLoading
+                          ? FontAwesomeIcons.hourglass
+                          : FontAwesomeIcons.qrcode,
+                      color: isDark ? AppColors.textLight : AppColors.textDark,
+                    ),
+                  );
+                },
               ),
             ),
           ],
@@ -351,29 +365,38 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
   }
 
   Widget _buildActionButtons() {
-    return Column(
-      children: [
-        CustomElevatedButton(
-          onPressed: () {
-            // Implement pick selected items functionality
-          },
-          title: "Pick selected Items",
-          width: double.infinity,
-          height: 50,
-          backgroundColor: AppColors.success,
-        ),
-        const SizedBox(height: 16),
-        CustomElevatedButton(
-          onPressed: () {
-            // Implement save functionality
-            Navigator.pop(context);
-          },
-          title: "Save",
-          width: double.infinity,
-          height: 50,
-          backgroundColor: AppColors.secondary,
-        ),
-      ],
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      margin: const EdgeInsets.only(bottom: 16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        spacing: 16,
+        children: [
+          Expanded(
+            child: CustomElevatedButton(
+              onPressed: () {
+                // Implement pick selected items functionality
+              },
+              title: "Pick selected Items",
+              width: double.infinity,
+              height: 50,
+              backgroundColor: AppColors.success,
+            ),
+          ),
+          Expanded(
+            child: CustomElevatedButton(
+              onPressed: () {
+                // Implement save functionality
+                Navigator.pop(context);
+              },
+              title: "Save",
+              width: double.infinity,
+              height: 50,
+              backgroundColor: AppColors.secondary,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,8 +1,9 @@
-// ignore_for_file: unused_local_variable
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
+import 'package:groute_nartec/core/utils/app_loading.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/loading/loading_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/loading/pick_items_screen.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
@@ -19,9 +20,7 @@ class SelectBinLocationScreen extends StatefulWidget {
 
 class _SelectBinLocationScreenState extends State<SelectBinLocationScreen> {
   // Controllers for text fields
-  final TextEditingController _binNumberController = TextEditingController(
-    text: "62855610000056",
-  );
+
   final TextEditingController _availableQuantityController =
       TextEditingController();
   final TextEditingController _whLocationCodeController = TextEditingController(
@@ -37,18 +36,17 @@ class _SelectBinLocationScreenState extends State<SelectBinLocationScreen> {
   final TextEditingController _locationCodeController = TextEditingController();
 
   // Dropdown options
-  final List<String> _binLocations = ["Select Bin Location"];
+
   String? _selectedBinLocation;
 
   @override
   void initState() {
     super.initState();
-    _selectedBinLocation = _binLocations.first;
+    LoadingCubit.get(context).getSuggestedBinLocations();
   }
 
   @override
   void dispose() {
-    _binNumberController.dispose();
     _availableQuantityController.dispose();
     _whLocationCodeController.dispose();
     _minQtyController.dispose();
@@ -99,31 +97,38 @@ class _SelectBinLocationScreenState extends State<SelectBinLocationScreen> {
   }
 
   Widget _buildBinNumberSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        const SizedBox(height: 16),
-        Text(
-          _binNumberController.text,
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: AppColors.primaryBlue,
+    final selectedSalesInvoiceDetails =
+        LoadingCubit.get(context).salesInvoiceDetails;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 16,
+        children: [
+          Text(
+            selectedSalesInvoiceDetails?.productId ?? "",
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primaryBlue,
+            ),
           ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 8),
-        const Text(
-          "DIESEL ENGINE OIL 15W40",
-          style: TextStyle(fontSize: 16, color: AppColors.textMedium),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 16),
-      ],
+          Text(
+            selectedSalesInvoiceDetails?.productName ?? "",
+            style: const TextStyle(fontSize: 16, color: AppColors.textMedium),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildBinLocationsSection() {
+    final _binLocations = LoadingCubit.get(context).binLocations;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -136,17 +141,31 @@ class _SelectBinLocationScreenState extends State<SelectBinLocationScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        AppDropdown<String>(
-          items: _binLocations,
-          hintText: "Select Bin Location",
-          initialItem: _selectedBinLocation,
-          onChanged: (value) {
-            setState(() {
-              _selectedBinLocation = value;
-            });
+        BlocBuilder<LoadingCubit, LoadingState>(
+          builder: (context, state) {
+            if (state is BinLocationLoading) {
+              return const Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Loading..."),
+                    AppLoading(color: AppColors.primaryBlue),
+                  ],
+                ),
+              );
+            }
+            return AppDropdown<String>(
+              items:
+                  _binLocations
+                      .map((binLocation) => binLocation.binNumber)
+                      .toList(),
+              hintText: "Select Bin Location",
+              initialItem: _selectedBinLocation,
+              onChanged: (value) {
+                LoadingCubit.get(context).setSelectedBinLocation(value);
+              },
+            );
           },
-          borderColor: AppColors.grey300,
-          fillColor: AppColors.white,
         ),
       ],
     );

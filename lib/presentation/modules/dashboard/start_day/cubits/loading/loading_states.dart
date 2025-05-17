@@ -14,3 +14,16 @@ final class BinLocationError extends LoadingState {
 
   BinLocationError({required this.message});
 }
+
+// Pick items states
+final class ChangeScanType extends LoadingState {}
+
+final class ScanItemLoading extends LoadingState {}
+
+final class ScanItemLoaded extends LoadingState {}
+
+final class ScanItemError extends LoadingState {
+  final String message;
+
+  ScanItemError({required this.message});
+}

@@ -1,6 +1,4 @@
-// create singleton repository class
-
-import 'package:groute_nartec/presentation/modules/dashboard/start_day/model/bin_location_model.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/bin_location_model.dart';
 
 import '../core/constants/app_preferences.dart';
 import '../core/services/http_service.dart';

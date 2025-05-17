@@ -1,7 +1,7 @@
 import 'package:groute_nartec/core/constants/app_preferences.dart';
 import 'package:groute_nartec/core/constants/constants.dart';
 import 'package:groute_nartec/core/services/http_service.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/start_day/model/gs1_product.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/gs1_product.dart';
 
 class Gs1Repository {
   final HttpService _httpService = HttpService(baseUrl: kGS1Url);

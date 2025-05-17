@@ -5,10 +5,11 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/constants/constants.dart';
+import 'package:groute_nartec/core/utils/app_loading.dart';
 import 'package:groute_nartec/core/utils/app_snackbars.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/start_day_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/start_day_state.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/start_day/model/gs1_product.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/gs1_product.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/loading/select_bin_location_screen.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
@@ -71,10 +72,10 @@ class _GS1ProductDetailsScreenState extends State<GS1ProductDetailsScreen> {
   Widget _buildLoadingView() {
     return Center(
       child: Column(
+        spacing: 16,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SpinKitRing(color: AppColors.primaryBlue, size: 40.0, lineWidth: 4.0),
-          const SizedBox(height: 16),
+          AppLoading(color: AppColors.primaryBlue),
           Text(
             'Loading product details...',
             style: TextStyle(color: AppColors.textMedium, fontSize: 16),

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:groute_nartec/presentation/modules/dashboard/start_day/model/vehicle_model.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/vehicle_model.dart';
 
 part 'coordinate_model.dart';
 part 'route_model.dart';

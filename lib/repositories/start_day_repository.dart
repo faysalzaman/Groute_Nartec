@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:groute_nartec/core/constants/app_preferences.dart';
 import 'package:groute_nartec/core/constants/constants.dart';
 import 'package:groute_nartec/core/services/http_service.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/start_day/model/vehicle_check_model.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/vehicle_check_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
