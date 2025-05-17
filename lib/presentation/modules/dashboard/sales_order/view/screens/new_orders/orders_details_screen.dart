@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:groute_nartec/core/extensions/string_extensions.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/widgets/detail_row.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/widgets/item_tile.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/widgets/order_item_tile.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/widgets/section_card.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 
-class NewOrdersDetailScreen extends StatelessWidget {
+class OrdersDetailScreen extends StatelessWidget {
   final SalesOrderModel salesOrder;
 
-  const NewOrdersDetailScreen({super.key, required this.salesOrder});
+  const OrdersDetailScreen({super.key, required this.salesOrder});
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +127,7 @@ class NewOrdersDetailScreen extends StatelessWidget {
                           ),
                         ),
                       ]
-                      : items.map((item) => ItemTile(item: item)).toList(),
+                      : items.map((item) => OrderItemTile(item: item)).toList(),
             ),
             const SizedBox(height: 16),
 

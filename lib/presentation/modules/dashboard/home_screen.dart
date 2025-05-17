@@ -13,7 +13,7 @@ import 'package:groute_nartec/presentation/modules/dashboard/promotions/dynamic_
 import 'package:groute_nartec/presentation/modules/dashboard/returns/items_returns_screen.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/route_plane/route_plan_screen.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_invoice/sales_invoice_screen.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/sales_order_management_screen.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/sales_order_management_screen.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/screens/start_of_day_screen.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 

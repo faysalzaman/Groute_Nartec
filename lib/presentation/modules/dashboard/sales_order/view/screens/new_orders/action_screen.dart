@@ -5,10 +5,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/action_screens/capture_images/display_products_screen.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/action_screens/print_invoice_delivery_screen.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/action_screens/signature_screen.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/action_screens/unloading_screen.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/action_screens/capture_images/display_products_screen.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/action_screens/print_invoice_delivery_screen.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/action_screens/signature_screen.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/action_screens/unloading_screen.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 
 class ActionScreen extends StatefulWidget {

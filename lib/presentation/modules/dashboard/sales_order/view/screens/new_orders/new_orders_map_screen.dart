@@ -12,7 +12,7 @@ import 'package:groute_nartec/presentation/modules/auth/models/driver_model.dart
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_state.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/start_journey_screen.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/start_journey_screen.dart';
 import 'package:location/location.dart' as loc;
 import 'package:permission_handler/permission_handler.dart';
 

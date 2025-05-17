@@ -8,9 +8,9 @@ import 'package:groute_nartec/core/utils/app_date_formatter.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/core/utils/app_snackbars.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/action_screen.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/new_orders_detail_screen.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/new_orders_map_screen.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/action_screen.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/screens/loading/new_orders_detail_screen.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/new_orders_map_screen.dart';
 
 /// actions to process or view order details.
 class SalesOrderCard extends StatefulWidget {

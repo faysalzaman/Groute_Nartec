@@ -3,20 +3,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groute_nartec/core/utils/app_snackbars.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/widgets/sales_order_card.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_cubit.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_state.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/widgets/sales_order_card.dart';
+import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 
-import '../cubits/sales_cubit.dart';
-import '../cubits/sales_state.dart';
-
-class NewOrdersScreen extends StatefulWidget {
-  const NewOrdersScreen({super.key});
+class OrdersScreen extends StatefulWidget {
+  const OrdersScreen({super.key});
 
   @override
-  State<NewOrdersScreen> createState() => _NewOrdersScreenState();
+  State<OrdersScreen> createState() => _OrdersScreenState();
 }
 
-class _NewOrdersScreenState extends State<NewOrdersScreen> {
+class _OrdersScreenState extends State<OrdersScreen> {
   int page = 1;
   int limit = 10;
   bool isLoading = false;
@@ -205,19 +205,14 @@ class _NewOrdersScreenState extends State<NewOrdersScreen> {
                         ? Padding(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           child: Center(
-                            child: ElevatedButton(
+                            child: CustomElevatedButton(
+                              title: 'Load More',
                               onPressed:
                                   state is SalesLoading ? null : _loadMore,
-                              child:
+                              buttonState:
                                   state is SalesLoading
-                                      ? const SizedBox(
-                                        height: 20,
-                                        width: 20,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                        ),
-                                      )
-                                      : const Text('Load More'),
+                                      ? ButtonState.loading
+                                      : ButtonState.idle,
                             ),
                           ),
                         )
