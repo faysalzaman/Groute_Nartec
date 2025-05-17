@@ -4,7 +4,7 @@ import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/utils/app_loading.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/loading/loading_cubit.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/loading/pick_items_screen.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/screens/loading/pick_items_screen.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 import 'package:groute_nartec/presentation/widgets/dropdowns/app_dropdown.dart';
@@ -128,7 +128,6 @@ class _SelectBinLocationScreenState extends State<SelectBinLocationScreen> {
   }
 
   Widget _buildBinLocationsSection() {
-    final _binLocations = LoadingCubit.get(context).binLocations;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -153,18 +152,21 @@ class _SelectBinLocationScreenState extends State<SelectBinLocationScreen> {
                   ],
                 ),
               );
+            } else {
+              final binLocations = LoadingCubit.get(context).binLocations;
+              return AppDropdown<String>(
+                items:
+                    binLocations
+                        .map((binLocation) => binLocation.binNumber)
+                        .toList(),
+                hintText: "Select Bin Location",
+                initialItem: _selectedBinLocation,
+                onChanged: (value) {
+                  LoadingCubit.get(context).setSelectedBinLocation(value);
+                  _locationCodeController.text = value;
+                },
+              );
             }
-            return AppDropdown<String>(
-              items:
-                  _binLocations
-                      .map((binLocation) => binLocation.binNumber)
-                      .toList(),
-              hintText: "Select Bin Location",
-              initialItem: _selectedBinLocation,
-              onChanged: (value) {
-                LoadingCubit.get(context).setSelectedBinLocation(value);
-              },
-            );
           },
         ),
       ],

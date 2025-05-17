@@ -10,7 +10,7 @@ import 'package:groute_nartec/core/utils/app_snackbars.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/start_day_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/start_day_state.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/gs1_product.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/loading/select_bin_location_screen.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/screens/loading/select_bin_location_screen.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 

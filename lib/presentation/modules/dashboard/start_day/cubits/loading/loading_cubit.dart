@@ -28,12 +28,13 @@ class LoadingCubit extends Cubit<LoadingState> {
   List<BinLocationModel> _binLocations = [];
 
   // Maps
-  final Map<String, List<Map>> _packagingScanResults = {};
+  final Map<String, List<Map<dynamic, dynamic>>> _scannedItems = {};
 
   // Getters
   List<BinLocationModel> get binLocations => _binLocations;
   bool get byPallet => _byPallet;
   bool get bySerial => _bySerial;
+  Map<String, List<Map<dynamic, dynamic>>> get scannedItems => _scannedItems;
 
   /*
   ##############################################################################
@@ -71,6 +72,13 @@ class LoadingCubit extends Cubit<LoadingState> {
   ##############################################################################
   */
 
+  void init() {
+    _byPallet = true;
+    _bySerial = false;
+    _scannedItems.clear();
+    emit(ChangeScanType());
+  }
+
   void setScanType(bool byPallet, bool bySerial) {
     _byPallet = byPallet;
     _bySerial = bySerial;
@@ -97,7 +105,7 @@ class LoadingCubit extends Cubit<LoadingState> {
     emit(ScanItemLoading());
     try {
       // check if the ssccNo is already scanned
-      if (_packagingScanResults.containsKey(serialNo ?? palletCode)) {
+      if (_scannedItems.containsKey(serialNo ?? palletCode)) {
         emit(ScanItemError(message: 'Packaging already scanned'));
         return;
       }
@@ -119,14 +127,14 @@ class LoadingCubit extends Cubit<LoadingState> {
             );
 
             // Initialize an empty list for this ssccNo if it doesn't exist yet
-            if (!_packagingScanResults.containsKey(palletCode)) {
-              _packagingScanResults[palletCode] = [];
+            if (!_scannedItems.containsKey(palletCode)) {
+              _scannedItems[palletCode] = [];
             }
 
             for (final pallet in containerData.container.pallets) {
               for (final ssccPackage in pallet.ssccPackages) {
                 for (final detail in ssccPackage.details) {
-                  _packagingScanResults[palletCode]!.add({
+                  _scannedItems[palletCode]!.add({
                     "ssccNo": ssccPackage.ssccNo,
                     "description": ssccPackage.description,
                     "memberId": ssccPackage.memberId,
@@ -142,13 +150,13 @@ class LoadingCubit extends Cubit<LoadingState> {
             final palletData = PalletResponseModel.fromJson(response.data);
 
             // Initialize an empty list for this ssccNo if it doesn't exist yet
-            if (!_packagingScanResults.containsKey(palletCode)) {
-              _packagingScanResults[palletCode] = [];
+            if (!_scannedItems.containsKey(palletCode)) {
+              _scannedItems[palletCode] = [];
             }
 
             for (final pallet in palletData.pallet.ssccPackages) {
               for (final detail in pallet.details) {
-                _packagingScanResults[palletCode]!.add({
+                _scannedItems[palletCode]!.add({
                   "ssccNo": pallet.ssccNo,
                   "description": pallet.description,
                   "memberId": pallet.memberId,
@@ -163,12 +171,12 @@ class LoadingCubit extends Cubit<LoadingState> {
             final ssccData = SSCCResponseModel.fromJson(response.data);
 
             // Initialize an empty list for this ssccNo if it doesn't exist yet
-            if (!_packagingScanResults.containsKey(palletCode)) {
-              _packagingScanResults[palletCode] = [];
+            if (!_scannedItems.containsKey(palletCode)) {
+              _scannedItems[palletCode] = [];
             }
 
             for (final detail in ssccData.sscc.details) {
-              _packagingScanResults[palletCode]!.add({
+              _scannedItems[palletCode]!.add({
                 "ssccNo": ssccData.sscc.ssccNo,
                 "description": ssccData.sscc.description,
                 "memberId": ssccData.sscc.memberId,
@@ -184,12 +192,12 @@ class LoadingCubit extends Cubit<LoadingState> {
         else if (serialNo != null) {
           final serialResponse = SerialResponseModel.fromJson(response.data);
           // Initialize an empty list for this ssccNo if it doesn't exist yet
-          if (!_packagingScanResults.containsKey(serialNo)) {
-            _packagingScanResults[serialNo] = [];
+          if (!_scannedItems.containsKey(serialNo)) {
+            _scannedItems[serialNo] = [];
           }
 
           for (final item in serialResponse.data.items) {
-            _packagingScanResults[serialNo]!.add({
+            _scannedItems[serialNo]!.add({
               "ssccNo": item.masterPackaging.ssccNo,
               "description": item.masterPackaging.description,
               "memberId": item.masterPackaging.memberId,
@@ -201,8 +209,7 @@ class LoadingCubit extends Cubit<LoadingState> {
           }
         }
 
-        // Emit the loaded state with the scan results for this SSCC
-        // emit(PackagingScanLoaded(response: _packagingScanResults));
+        // Make sure to emit state change to trigger UI update
         emit(ScanItemLoaded());
       } else {
         final errorMessage =
@@ -212,5 +219,10 @@ class LoadingCubit extends Cubit<LoadingState> {
     } catch (error) {
       emit(ScanItemError(message: error.toString()));
     }
+  }
+
+  void clearScannedItems() {
+    _scannedItems.clear();
+    emit(ScanItemLoaded());
   }
 }

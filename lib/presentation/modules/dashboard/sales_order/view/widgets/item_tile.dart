@@ -4,7 +4,7 @@ import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/widgets/item_detail_text.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/loading/loading_cubit.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/loading/gs1_product_details_screen.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/screens/loading/gs1_product_details_screen.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 
 class ItemTile extends StatelessWidget {
