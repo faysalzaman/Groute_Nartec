@@ -46,7 +46,5 @@ app.*.map.json
 
 # FVM Version Cache
 .fvm/
-
-.service-account-key.json
 .dev/
 
