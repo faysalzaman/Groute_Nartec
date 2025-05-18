@@ -30,21 +30,12 @@ if [ -z "$GCLOUD_SERVICE_ACCOUNT_JSON" ]; then
 fi
 
 echo "Writing service account JSON to file..."
-# Write service account JSON to file - use echo with proper quoting to preserve formatting
-echo "$GCLOUD_SERVICE_ACCOUNT_JSON" > $SERVICE_ACCOUNT_FILE
+# Write service account JSON to file
+printf '%s' "$GCLOUD_SERVICE_ACCOUNT_JSON" > $SERVICE_ACCOUNT_FILE
 
 # Verify the service account file was created and has content
 if [ ! -s "$SERVICE_ACCOUNT_FILE" ]; then
     echo "Error: Service account file is empty or was not created"
-    exit 1
-fi
-
-# Debug: Check the content of the service account file (remove sensitive info)
-echo "Checking service account file format..."
-if ! jq empty $SERVICE_ACCOUNT_FILE 2>/dev/null; then
-    echo "Error: Service account file is not valid JSON"
-    echo "First 100 characters: $(head -c 100 $SERVICE_ACCOUNT_FILE)"
-    echo "Last 100 characters: $(tail -c 100 $SERVICE_ACCOUNT_FILE)"
     exit 1
 fi
 
