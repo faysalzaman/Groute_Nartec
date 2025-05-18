@@ -13,8 +13,7 @@ workflows:
       groups:
         - SECRET
     scripts:
-      - echo "Installing jq..."
-      - which jq || (brew install jq || sudo apt-get update && sudo apt-get install -y jq || npm install -g jq)
+      - brew install jq
       - flutter build apk --release --dart-define=ENVIRONMENT=production
       - bash upload_apk_new.sh
     artifacts:
