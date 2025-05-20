@@ -197,7 +197,7 @@ class _GS1ProductDetailsScreenState extends State<GS1ProductDetailsScreen> {
             children: [
               _buildDetailRow('Packaging Type', product.packagingType ?? 'N/A'),
               _buildDetailRow('Child Product', product.childProduct ?? 'N/A'),
-              _buildDetailRow('Quantity', product.quantity ?? 'N/A'),
+              _buildDetailRow('Quantity', product.quantity ?? '0'),
             ],
           ),
 

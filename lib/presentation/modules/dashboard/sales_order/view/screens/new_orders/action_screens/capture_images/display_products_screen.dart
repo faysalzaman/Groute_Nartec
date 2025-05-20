@@ -119,11 +119,11 @@ class _DisplayProductScreenState extends State<DisplayProductScreen> {
                                 ),
                                 _buildInfoRow(
                                   'Quantity',
-                                  item.quantity?.toString() ?? 'N/A',
+                                  item.quantity?.toString() ?? '0',
                                 ),
                                 _buildInfoRow(
                                   'QTY Picked',
-                                  item.quantityPicked ?? 'N/A',
+                                  item.quantityPicked ?? '0',
                                 ),
                               ],
                             ),

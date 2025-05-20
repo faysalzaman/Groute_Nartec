@@ -57,7 +57,7 @@ class NewOrdersDetailScreen extends StatelessWidget {
                 ),
                 DetailRow(
                   label: 'Total Amount:',
-                  value: salesOrder.totalAmount?.formattedCurrency ?? 'N/A',
+                  value: salesOrder.totalAmount?.formattedCurrency ?? '0',
                   icon: Icons.attach_money,
                   valueStyle: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
@@ -168,7 +168,7 @@ class NewOrdersDetailScreen extends StatelessWidget {
                 ),
                 DetailRow(
                   label: 'Picked:',
-                  value: salesOrder.pickDate?.formattedDate ?? 'N/A',
+                  value: salesOrder.pickDate?.formattedDate ?? '0',
                   icon: Icons.inventory,
                 ),
                 DetailRow(

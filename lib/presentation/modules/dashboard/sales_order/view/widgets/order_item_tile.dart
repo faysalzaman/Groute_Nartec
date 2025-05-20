@@ -42,10 +42,10 @@ class OrderItemTile extends StatelessWidget {
             children: [
               ItemDetailText(
                 text:
-                    'Qty: ${item.quantity ?? 'N/A'} ${item.unitOfMeasure ?? ''}',
+                    'Qty: ${item.quantity ?? '0'} ${item.unitOfMeasure ?? ''}',
               ),
               ItemDetailText(
-                text: 'Price: ${item.price?.formattedCurrency ?? 'N/A'}',
+                text: 'Price: ${item.price?.formattedCurrency ?? '0'}',
                 isBold: true,
               ),
             ],
@@ -54,11 +54,9 @@ class OrderItemTile extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              ItemDetailText(text: 'Qty Picked: ${item.quantityPicked ?? '0'}'),
               ItemDetailText(
-                text: 'Qty Picked: ${item.quantityPicked ?? 'N/A'}',
-              ),
-              ItemDetailText(
-                text: 'Total: ${item.totalPrice?.formattedCurrency ?? 'N/A'}',
+                text: 'Total: ${item.totalPrice?.formattedCurrency ?? '0'}',
                 isBold: true,
               ),
             ],

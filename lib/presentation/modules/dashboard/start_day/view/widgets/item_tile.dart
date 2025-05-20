@@ -1,3 +1,4 @@
+import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:groute_nartec/core/extensions/string_extensions.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
@@ -20,14 +21,39 @@ class ItemTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            item.productName ?? 'Unknown Product',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.primary, // Use primary color
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  item.productDescription ?? 'Unknown Product',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.primary, // Use primary color
+                  ),
+                ),
+              ),
+              Column(
+                children: [
+                  BarcodeWidget(
+                    data: item.productId ?? "",
+                    barcode: Barcode.qrCode(),
+                    width: 100,
+                    height: 50,
+                  ),
+                  Text(
+                    '${item.productId}',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
+
           if (item.productDescription != null &&
               item.productDescription!.isNotEmpty) ...[
             const SizedBox(height: 4),
@@ -46,10 +72,10 @@ class ItemTile extends StatelessWidget {
             children: [
               ItemDetailText(
                 text:
-                    'Qty: ${item.quantity ?? 'N/A'} ${item.unitOfMeasure ?? ''}',
+                    'Qty: ${item.quantity ?? '0'} ${item.unitOfMeasure ?? ''}',
               ),
               ItemDetailText(
-                text: 'Price: ${item.price?.formattedCurrency ?? 'N/A'}',
+                text: 'Price: ${item.price?.formattedCurrency ?? '0'}',
                 isBold: true,
               ),
             ],
@@ -58,11 +84,9 @@ class ItemTile extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              ItemDetailText(text: 'Qty Picked: ${item.quantityPicked ?? '0'}'),
               ItemDetailText(
-                text: 'Qty Picked: ${item.quantityPicked ?? 'N/A'}',
-              ),
-              ItemDetailText(
-                text: 'Total: ${item.totalPrice?.formattedCurrency ?? 'N/A'}',
+                text: 'Total: ${item.totalPrice?.formattedCurrency ?? '0'}',
                 isBold: true,
               ),
             ],
