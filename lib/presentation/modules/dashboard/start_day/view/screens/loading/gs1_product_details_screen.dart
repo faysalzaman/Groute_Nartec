@@ -1,3 +1,4 @@
+import 'package:barcode_widget/barcode_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -417,16 +418,12 @@ class _GS1ProductDetailsScreenState extends State<GS1ProductDetailsScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.white,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.grey300, width: 1),
                 ),
-                child: SizedBox(
-                  width: 80,
-                  height: 80,
-                  child: Icon(
-                    Icons.qr_code,
-                    size: 64,
-                    color: AppColors.grey400,
-                  ),
+                child: BarcodeWidget(
+                  data: product.barcode ?? "",
+                  barcode: Barcode.qrCode(),
+                  width: 100,
+                  height: 50,
                 ),
               ),
 
