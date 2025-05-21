@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/utils/app_date_formatter.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
@@ -171,8 +172,8 @@ class _SalesOrderCardState extends State<SalesOrderCard> {
                         Expanded(
                           child: Row(
                             children: [
-                              Icon(
-                                Icons.shopping_cart_outlined,
+                              FaIcon(
+                                FontAwesomeIcons.cartShopping,
                                 size: 18,
                                 color:
                                     isDarkMode
@@ -182,8 +183,79 @@ class _SalesOrderCardState extends State<SalesOrderCard> {
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  'Order # ${widget.salesOrder.serialNo != null ? widget.salesOrder.serialNo : widget.salesOrder.salesInvoiceNumber ?? 'N/A'}',
-                                  style: theme.textTheme.titleMedium?.copyWith(
+                                  'Order # ${widget.salesOrder.salesInvoiceNumber ?? 'N/A'}',
+                                  style: theme.textTheme.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color:
+                                        isDarkMode
+                                            ? AppColors.textLight
+                                            : AppColors.textDark,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              FaIcon(
+                                FontAwesomeIcons.truck,
+                                size: 18,
+                                color:
+                                    isDarkMode
+                                        ? AppColors.primaryLight
+                                        : AppColors.primaryBlue,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'PO # ${widget.salesOrder.purchaseOrderNumber ?? 'N/A'}',
+                                  style: theme.textTheme.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color:
+                                        isDarkMode
+                                            ? AppColors.textLight
+                                            : AppColors.textDark,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              FaIcon(
+                                FontAwesomeIcons.hashtag,
+                                size: 18,
+                                color:
+                                    isDarkMode
+                                        ? AppColors.primaryLight
+                                        : AppColors.primaryBlue,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'Ref # ${widget.salesOrder.serialNo ?? 'N/A'}',
+                                  style: theme.textTheme.titleSmall?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color:
                                         isDarkMode
