@@ -813,8 +813,8 @@ class _VehicleCheckScreenState extends State<VehicleCheckScreen> {
             context.read<AuthCubit>().driver?.vehicle?.id ?? "",
             _tyresCondition,
             _acCondition,
-            _engineCondition,
             _petrolLevel,
+            _engineCondition,
             _odometerReading,
             _remarks,
           );
