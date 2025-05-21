@@ -1,16 +1,9 @@
-// ignore_for_file: deprecated_member_use, use_build_context_synchronously, unused_element
-
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/utils/app_date_formatter.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
-import 'package:groute_nartec/core/utils/app_snackbars.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/action_screen.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/screens/loading/new_orders_detail_screen.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/new_orders_map_screen.dart';
 
 /// actions to process or view order details.
 class SalesOrderCard extends StatefulWidget {
@@ -70,131 +63,6 @@ class _SalesOrderCardState extends State<SalesOrderCard> {
     });
   }
 
-  // Function to handle location fetching and navigation
-  Future<void> _processOrder(BuildContext context) async {
-    if (!mounted) return; // Check if widget is still mounted
-
-    setState(() {
-      _isProcessing = true;
-    });
-
-    try {
-      // 1. Check Location Permissions & Services
-      bool serviceEnabled;
-      LocationPermission permission;
-
-      serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        if (mounted) {
-          AppSnackbars.danger(
-            context,
-            "Location services are disabled. Please enable them.",
-          );
-        }
-        setState(() {
-          _isProcessing = false;
-        });
-        return;
-      }
-
-      permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          if (mounted) {
-            AppSnackbars.danger(
-              context,
-              "Location permissions are denied. Please enable them.",
-            );
-          }
-          setState(() {
-            _isProcessing = false;
-          });
-          return;
-        }
-      }
-
-      if (permission == LocationPermission.deniedForever) {
-        if (mounted) {
-          AppSnackbars.danger(
-            context,
-            "Location permissions are permanently denied. Please enable them in settings.",
-          );
-        }
-        setState(() {
-          _isProcessing = false;
-        });
-        return;
-      }
-
-      // 2. Get Current Location
-      Position currentPosition = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
-      LatLng currentDeviceLocation = LatLng(
-        currentPosition.latitude,
-        currentPosition.longitude,
-      );
-
-      // 3. Get Destination Location (Customer)
-      final customerLat = double.tryParse(
-        widget.salesOrder.customer?.latitude?.toString() ?? '',
-      );
-      final customerLng = double.tryParse(
-        widget.salesOrder.customer?.longitude?.toString() ?? '',
-      );
-
-      if (customerLat == null || customerLng == null) {
-        if (mounted) {
-          AppSnackbars.danger(
-            context,
-            "Invalid customer location data. Please check the order details.",
-          );
-        }
-        setState(() {
-          _isProcessing = false;
-        });
-        return;
-      }
-      LatLng destinationLocation = LatLng(customerLat, customerLng);
-
-      // 4. Navigate to Map Screen
-      if (mounted) {
-        if (widget.salesOrder.status?.toLowerCase() == 'completed') {
-          AppNavigator.push(
-            context,
-            ActionScreen(
-              salesOrder: widget.salesOrder,
-              salesOrderLocation: destinationLocation,
-              currentDeviceLocation: currentDeviceLocation,
-            ),
-          );
-        } else {
-          AppNavigator.push(
-            context,
-            NewOrdersMapScreen(
-              salesOrder: widget.salesOrder,
-              salesOrderLocation: destinationLocation,
-              currentDeviceLocation: currentDeviceLocation,
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      // Handle potential errors during location fetching
-      if (mounted) {
-        AppSnackbars.danger(context, "Failed to get location: $e");
-      }
-    } finally {
-      // Ensure the loading indicator is turned off
-      if (mounted) {
-        setState(() {
-          _isProcessing = false;
-        });
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -248,8 +116,6 @@ class _SalesOrderCardState extends State<SalesOrderCard> {
       color:
           isDarkMode
               ? AppColors.darkBackground.withValues(alpha: 0.95)
-              : isCurrentDate
-              ? AppColors.orange.withValues(alpha: 0.05)
               : AppColors.white,
       child: Stack(
         children: [
@@ -316,7 +182,7 @@ class _SalesOrderCardState extends State<SalesOrderCard> {
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  'Order #${widget.salesOrder.salesInvoiceNumber ?? 'N/A'}',
+                                  'Order # ${widget.salesOrder.serialNo != null ? widget.salesOrder.serialNo : widget.salesOrder.salesInvoiceNumber ?? 'N/A'}',
                                   style: theme.textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color:

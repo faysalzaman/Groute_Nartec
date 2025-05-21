@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:groute_nartec/core/utils/app_loading.dart';
 import 'package:groute_nartec/core/utils/app_snackbars.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_state.dart';
@@ -45,7 +46,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   Widget build(BuildContext context) {
     final salesOrders = context.watch<SalesCubit>().salesOrders;
     return CustomScaffold(
-      title: 'New Orders',
+      title: 'Loading / Unloading',
       body: BlocConsumer<SalesCubit, SalesState>(
         listener: (context, state) {
           if (state is SalesError) {
@@ -57,7 +58,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
         },
         builder: (context, state) {
           if (state is SalesInitial) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: AppLoading());
           } else if (state is SalesLoading && page == 1) {
             // Replace simple CircularProgressIndicator with a placeholder loading UI
             return ListView.builder(
