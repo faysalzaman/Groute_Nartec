@@ -281,7 +281,7 @@ class _GS1ProductDetailsScreenState extends State<GS1ProductDetailsScreen> {
                 ),
                 child: CachedNetworkImage(
                   imageUrl:
-                      '$kGS1Url${product.frontImage!.replaceAll('\\', '/')}',
+                      '$kGTrackUrl${product.frontImage!.replaceAll('\\', '/')}',
                   fit: BoxFit.contain,
                   placeholder:
                       (context, url) => Center(

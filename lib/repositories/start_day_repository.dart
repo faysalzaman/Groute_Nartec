@@ -14,7 +14,7 @@ class StartDayRepository {
 
   Future<VehicleCheckModel> getVehicleCheckHistory() async {
     final token = await AppPreferences.getAccessToken();
-    final path = 'v1/vehicles/driver/last-check';
+    final path = '/api/v1/vehicles/driver/last-check';
 
     final response = await _httpService.request(
       path,
@@ -50,7 +50,7 @@ class StartDayRepository {
     String remarks,
   ) async {
     try {
-      var url = Uri.parse("${kGrouteUrl}v1/vehicles/check");
+      var url = Uri.parse("${kGrouteUrl}/api/v1/vehicles/check");
 
       final token = await AppPreferences.getAccessToken();
 

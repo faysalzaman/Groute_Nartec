@@ -112,8 +112,8 @@ class LoadingCubit extends Cubit<LoadingState> {
 
       final path =
           palletCode != null
-              ? 'scanPackaging/sscc?ssccNo=$palletCode'
-              : 'ssccPackaging/details?serialNo=$serialNo&association=true';
+              ? '/api/scanPackaging/sscc?ssccNo=$palletCode'
+              : '/api/ssccPackaging/details?serialNo=$serialNo&association=true';
 
       // call the API
       final response = await _httpService.request(path);
