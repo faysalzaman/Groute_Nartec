@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.nartec.groute_nartec"
     compileSdk = 35
-    ndkVersion = "27.0.12077973"
+    ndkVersion = "25.1.8937393"
     // ndkVersion = "25.1.8937393"
     // ndkVersion = "27.0.12077973"
     // ndkVersion = flutter.ndkVersion

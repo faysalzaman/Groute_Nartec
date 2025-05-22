@@ -15,11 +15,10 @@ class BinLocationRepository {
   Future<List<BinLocationModel>> getBinLocations() async {
     final token = await AppPreferences.getAccessToken();
 
-    final path = 'v1/bin-locations?page=1&limit=10000';
+    final path = '/api/v1/bin-locations?page=1&limit=10000';
 
     final response = await _httpService.request(
       path,
-      method: HttpMethod.get,
       headers: {'Authorization': 'Bearer $token'},
     );
 

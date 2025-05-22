@@ -6,7 +6,7 @@ class DriverRepositry {
   final HttpService _httpService = HttpService();
 
   Future<Driver?> login(String email, String password) async {
-    final path = 'v1/drivers/login';
+    final path = '/api/v1/drivers/login';
 
     final response = await _httpService.request(
       path,
@@ -43,7 +43,7 @@ class DriverRepositry {
   }
 
   Future<Driver?> loginWithNfc(String nfcNumber) async {
-    final path = 'v1/drivers/login?nfcLogin=$nfcNumber';
+    final path = '/api/v1/drivers/login?nfcLogin=$nfcNumber';
 
     final response = await _httpService.request(
       path,
@@ -85,7 +85,7 @@ class DriverRepositry {
   }
 
   Future<String> verifyEmail(String email) async {
-    final path = 'v1/drivers/verify-email';
+    final path = '/api/v1/drivers/verify-email';
 
     final response = await _httpService.request(
       path,
@@ -106,7 +106,7 @@ class DriverRepositry {
   }
 
   Future<void> verifyOtp(String otp, String token) async {
-    final path = 'v1/drivers/verify-otp';
+    final path = '/api/v1/drivers/verify-otp';
 
     final response = await _httpService.request(
       path,
@@ -130,7 +130,7 @@ class DriverRepositry {
     bool isNFCEnabled,
     String nfcNumber,
   ) async {
-    final path = 'v1/drivers/update-by-mobile';
+    final path = '/api/v1/drivers/update-by-mobile';
 
     final token = await AppPreferences.getAccessToken();
 
@@ -158,7 +158,7 @@ class DriverRepositry {
     String email,
     String token,
   ) async {
-    final path = 'v1/drivers/reset-password';
+    final path = '/api/v1/drivers/reset-password';
 
     final response = await _httpService.request(
       path,
