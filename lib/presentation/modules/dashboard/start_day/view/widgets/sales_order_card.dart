@@ -426,7 +426,7 @@ class _SalesOrderCardState extends State<SalesOrderCard>
               border: Border.all(color: Colors.red, width: 1.5),
             ),
             child: Text(
-              'Nice',
+              'New',
               style: TextStyle(
                 color: Color.lerp(Colors.red, Colors.white, blinkValue),
                 fontWeight: FontWeight.bold,
