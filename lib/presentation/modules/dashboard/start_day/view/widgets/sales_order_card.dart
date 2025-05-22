@@ -153,8 +153,26 @@ class _SalesOrderCardState extends State<SalesOrderCard>
 
                     _buildOrderInfoRow(
                       context,
+                      icon: FontAwesomeIcons.calendar,
+                      text:
+                          'Delivery Date: ${widget.salesOrder.deliveryDate != null ? AppDateFormatter.fromString(widget.salesOrder.deliveryDate!) : 'N/A'}',
+                      isDarkMode: isDarkMode,
+                    ),
+                    const SizedBox(height: 16),
+
+                    _buildOrderInfoRow(
+                      context,
+                      icon: FontAwesomeIcons.calendar,
+                      text:
+                          'Order Date: ${widget.salesOrder.orderDate != null ? AppDateFormatter.fromString(widget.salesOrder.orderDate!) : 'N/A'}',
+                      isDarkMode: isDarkMode,
+                    ),
+                    const SizedBox(height: 16),
+
+                    _buildOrderInfoRow(
+                      context,
                       icon: FontAwesomeIcons.hashtag,
-                      text: 'Ref # ${widget.salesOrder.serialNo ?? 'N/A'}',
+                      text: 'Ref # ${widget.salesOrder.refNo ?? 'N/A'}',
                       isDarkMode: isDarkMode,
                     ),
                     const SizedBox(height: 16),

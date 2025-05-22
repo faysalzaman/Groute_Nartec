@@ -2,7 +2,7 @@ class SalesOrderModel {
   String? id;
   String? salesInvoiceNumber;
   String? purchaseOrderNumber;
-  String? serialNo;
+  String? refNo;
   String? orderDate;
   String? deliveryDate;
   String? totalAmount;
@@ -28,7 +28,7 @@ class SalesOrderModel {
     this.id,
     this.salesInvoiceNumber,
     this.purchaseOrderNumber,
-    this.serialNo,
+    this.refNo,
     this.orderDate,
     this.deliveryDate,
     this.totalAmount,
@@ -55,7 +55,7 @@ class SalesOrderModel {
     id = json['id'];
     salesInvoiceNumber = json['salesInvoiceNumber'];
     purchaseOrderNumber = json['purchaseOrderNumber'];
-    serialNo = json['serialNo'];
+    refNo = json['refNo'];
     orderDate = json['orderDate'];
     deliveryDate = json['deliveryDate'];
     totalAmount = json['totalAmount'];
@@ -89,7 +89,7 @@ class SalesOrderModel {
     data['id'] = id;
     data['salesInvoiceNumber'] = salesInvoiceNumber;
     data['purchaseOrderNumber'] = purchaseOrderNumber;
-    data['serialNo'] = serialNo;
+    data['refNo'] = refNo;
     data['orderDate'] = orderDate;
     data['deliveryDate'] = deliveryDate;
     data['totalAmount'] = totalAmount;
