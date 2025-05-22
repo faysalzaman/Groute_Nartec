@@ -45,13 +45,13 @@ class LoadingCubit extends Cubit<LoadingState> {
     salesInvoiceDetails = details;
   }
 
-  void getSuggestedBinLocations() async {
+  void getSuggestedBinLocations(String productId) async {
     try {
       if (state is BinLocationLoading) return;
 
       emit(BinLocationLoading());
 
-      _binLocations = await _binLocationRepository.getBinLocations();
+      _binLocations = await _binLocationRepository.getSuggestedBins(productId);
 
       emit(BinLocationLoaded());
     } catch (error) {

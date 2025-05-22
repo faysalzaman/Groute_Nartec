@@ -1,44 +1,69 @@
-class GS1Product {
+import 'dart:convert';
+
+class Product {
   String? id;
+  String? name;
+  String? nameAr;
+  String? nameNL;
+  String? unit;
+  String? size;
+  String? origin;
+  String? countrySale;
+  String? productType;
+  String? packagingType;
+  String? gpc;
+  double? price;
+  String? description;
+  String? descriptionAr;
+  String? descriptionNL;
+  String? image;
+  String? status;
+  String? gtin;
+  String? sku;
+  String? brandName;
+  String? brandNameAr;
+  String? brandNameNL;
+  String? batch;
+  String? uniqueProductCode;
+  String? expiryDate;
+  String? packagingDate;
+  int? quantity;
+  String? gln;
+  List<String>? binLocation;
+  String? createdAt;
+  String? updatedAt;
+  String? categoryId;
+  String? memberId;
+  dynamic category;
+
+  // Legacy fields for backward compatibility
   String? userId;
   String? gcpGLNID;
   String? importCode;
   String? productnameenglish;
   String? productnamearabic;
-  String? brandName;
-  String? productType;
-  String? origin;
-  String? packagingType;
   String? mnfCode;
   String? mnfGLN;
   String? provGLN;
-  String? unit;
-  String? size;
   String? frontImage;
   String? backImage;
   String? childProduct;
-  String? quantity;
   String? barcode;
-  String? gpc;
   String? gpcCode;
-  String? countrySale;
   String? hSCODES;
   String? hsDescription;
   String? gcpType;
   String? prodLang;
   String? detailsPage;
   String? detailsPageAr;
-  int? status;
+  int? status_int;
   String? deletedAt;
-  String? createdAt;
-  String? updatedAt;
   String? memberID;
   int? adminId;
   String? saveAs;
   String? gtinType;
   String? productUrl;
   String? productLinkUrl;
-  String? brandNameAr;
   String? digitalInfoType;
   String? readyForGepir;
   int? gepirPosted;
@@ -47,47 +72,69 @@ class GS1Product {
   String? image3;
   String? gpcType;
 
-  GS1Product({
+  Product({
     this.id,
+    this.name,
+    this.nameAr,
+    this.nameNL,
+    this.unit,
+    this.size,
+    this.origin,
+    this.countrySale,
+    this.productType,
+    this.packagingType,
+    this.gpc,
+    this.price,
+    this.description,
+    this.descriptionAr,
+    this.descriptionNL,
+    this.image,
+    this.status,
+    this.gtin,
+    this.sku,
+    this.brandName,
+    this.brandNameAr,
+    this.brandNameNL,
+    this.batch,
+    this.uniqueProductCode,
+    this.expiryDate,
+    this.packagingDate,
+    this.quantity,
+    this.gln,
+    this.binLocation,
+    this.createdAt,
+    this.updatedAt,
+    this.categoryId,
+    this.memberId,
+    this.category,
+    // Legacy fields
     this.userId,
     this.gcpGLNID,
     this.importCode,
     this.productnameenglish,
     this.productnamearabic,
-    this.brandName,
-    this.productType,
-    this.origin,
-    this.packagingType,
     this.mnfCode,
     this.mnfGLN,
     this.provGLN,
-    this.unit,
-    this.size,
     this.frontImage,
     this.backImage,
     this.childProduct,
-    this.quantity,
     this.barcode,
-    this.gpc,
     this.gpcCode,
-    this.countrySale,
     this.hSCODES,
     this.hsDescription,
     this.gcpType,
     this.prodLang,
     this.detailsPage,
     this.detailsPageAr,
-    this.status,
+    this.status_int,
     this.deletedAt,
-    this.createdAt,
-    this.updatedAt,
     this.memberID,
     this.adminId,
     this.saveAs,
     this.gtinType,
     this.productUrl,
     this.productLinkUrl,
-    this.brandNameAr,
     this.digitalInfoType,
     this.readyForGepir,
     this.gepirPosted,
@@ -97,107 +144,106 @@ class GS1Product {
     this.gpcType,
   });
 
-  GS1Product.fromJson(Map<String, dynamic> json) {
+  Product.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    name = json['name'];
+    nameAr = json['nameAr'];
+    nameNL = json['nameNL'];
+    unit = json['unit'];
+    size = json['size'];
+    origin = json['origin'];
+    countrySale = json['countrySale'];
+    productType = json['productType'];
+    packagingType = json['packagingType'];
+    gpc = json['gpc'];
+    price = json['price']?.toDouble();
+    description = json['description'];
+    descriptionAr = json['descriptionAr'];
+    descriptionNL = json['descriptionNL'];
+    image = json['image'];
+    status = json['status'];
+    gtin = json['gtin'];
+    sku = json['sku'];
+    brandName = json['brandName'];
+    brandNameAr = json['brandNameAr'];
+    brandNameNL = json['brandNameNL'];
+    batch = json['batch'];
+    uniqueProductCode = json['uniqueProductCode'];
+    expiryDate = json['expiryDate'];
+    packagingDate = json['packagingDate'];
+    quantity = json['quantity'];
+    gln = json['gln'];
+    if (json['binLocation'] != null) {
+      if (json['binLocation'] is List) {
+        binLocation = List<String>.from(json['binLocation']);
+      } else if (json['binLocation'] is String) {
+        try {
+          binLocation = List<String>.from(jsonDecode(json['binLocation']));
+        } catch (e) {
+          binLocation = [json['binLocation']];
+        }
+      }
+    }
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+    categoryId = json['categoryId'];
+    memberId = json['memberId'];
+    category = json['category'];
+
+    // Legacy field mapping for backward compatibility
     userId = json['user_id'];
     gcpGLNID = json['gcpGLNID'];
     importCode = json['import_code'];
-    productnameenglish = json['productnameenglish'];
-    productnamearabic = json['productnamearabic'];
-    brandName = json['BrandName'];
-    productType = json['ProductType'];
-    origin = json['Origin'];
-    packagingType = json['PackagingType'];
-    mnfCode = json['MnfCode'];
-    mnfGLN = json['MnfGLN'];
-    provGLN = json['ProvGLN'];
-    unit = json['unit'];
-    size = json['size'];
-    frontImage = json['front_image'];
+    productnameenglish = json['productnameenglish'] ?? name;
+    productnamearabic = json['productnamearabic'] ?? nameAr;
+    barcode = json['barcode'] ?? gtin;
+    frontImage = json['front_image'] ?? image;
     backImage = json['back_image'];
-    childProduct = json['childProduct'];
-    quantity = json['quantity'];
-    barcode = json['barcode'];
-    gpc = json['gpc'];
     gpcCode = json['gpc_code'];
-    countrySale = json['countrySale'];
-    hSCODES = json['HSCODES'];
-    hsDescription = json['HsDescription'];
-    gcpType = json['gcp_type'];
-    prodLang = json['prod_lang'];
     detailsPage = json['details_page'];
     detailsPageAr = json['details_page_ar'];
-    status = json['status'];
+    status_int = json['status'] is int ? json['status'] : null;
     deletedAt = json['deleted_at'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
-    memberID = json['memberID'];
+    memberID = json['memberID'] ?? memberId;
     adminId = json['admin_id'];
-    saveAs = json['save_as'];
-    gtinType = json['gtin_type'];
-    productUrl = json['product_url'];
-    productLinkUrl = json['product_link_url'];
-    brandNameAr = json['BrandNameAr'];
-    digitalInfoType = json['digitalInfoType'];
-    readyForGepir = json['readyForGepir'];
-    gepirPosted = json['gepirPosted'];
-    image1 = json['image_1'];
-    image2 = json['image_2'];
-    image3 = json['image_3'];
-    gpcType = json['gpc_type'];
-    productType = json['product_type'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
-    data['user_id'] = userId;
-    data['gcpGLNID'] = gcpGLNID;
-    data['import_code'] = importCode;
-    data['productnameenglish'] = productnameenglish;
-    data['productnamearabic'] = productnamearabic;
-    data['BrandName'] = brandName;
-    data['ProductType'] = productType;
-    data['Origin'] = origin;
-    data['PackagingType'] = packagingType;
-    data['MnfCode'] = mnfCode;
-    data['MnfGLN'] = mnfGLN;
-    data['ProvGLN'] = provGLN;
+    data['name'] = name;
+    data['nameAr'] = nameAr;
+    data['nameNL'] = nameNL;
     data['unit'] = unit;
     data['size'] = size;
-    data['front_image'] = frontImage;
-    data['back_image'] = backImage;
-    data['childProduct'] = childProduct;
-    data['quantity'] = quantity;
-    data['barcode'] = barcode;
-    data['gpc'] = gpc;
-    data['gpc_code'] = gpcCode;
+    data['origin'] = origin;
     data['countrySale'] = countrySale;
-    data['HSCODES'] = hSCODES;
-    data['HsDescription'] = hsDescription;
-    data['gcp_type'] = gcpType;
-    data['prod_lang'] = prodLang;
-    data['details_page'] = detailsPage;
-    data['details_page_ar'] = detailsPageAr;
+    data['productType'] = productType;
+    data['packagingType'] = packagingType;
+    data['gpc'] = gpc;
+    data['price'] = price;
+    data['description'] = description;
+    data['descriptionAr'] = descriptionAr;
+    data['descriptionNL'] = descriptionNL;
+    data['image'] = image;
     data['status'] = status;
-    data['deleted_at'] = deletedAt;
-    data['created_at'] = createdAt;
-    data['updated_at'] = updatedAt;
-    data['memberID'] = memberID;
-    data['admin_id'] = adminId;
-    data['save_as'] = saveAs;
-    data['gtin_type'] = gtinType;
-    data['product_url'] = productUrl;
-    data['product_link_url'] = productLinkUrl;
-    data['BrandNameAr'] = brandNameAr;
-    data['digitalInfoType'] = digitalInfoType;
-    data['readyForGepir'] = readyForGepir;
-    data['gepirPosted'] = gepirPosted;
-    data['image_1'] = image1;
-    data['image_2'] = image2;
-    data['image_3'] = image3;
-    data['gpc_type'] = gpcType;
-    data['product_type'] = productType;
+    data['gtin'] = gtin;
+    data['sku'] = sku;
+    data['brandName'] = brandName;
+    data['brandNameAr'] = brandNameAr;
+    data['brandNameNL'] = brandNameNL;
+    data['batch'] = batch;
+    data['uniqueProductCode'] = uniqueProductCode;
+    data['expiryDate'] = expiryDate;
+    data['packagingDate'] = packagingDate;
+    data['quantity'] = quantity;
+    data['gln'] = gln;
+    data['binLocation'] = binLocation;
+    data['createdAt'] = createdAt;
+    data['updatedAt'] = updatedAt;
+    data['categoryId'] = categoryId;
+    data['memberId'] = memberId;
+    data['category'] = category;
     return data;
   }
 }

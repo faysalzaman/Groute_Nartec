@@ -17,7 +17,7 @@ import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 
 class GS1ProductDetailsScreen extends StatefulWidget {
   final String barcode;
-  final Function(GS1Product? product)? onProductSelected;
+  final Function(Product? product)? onProductSelected;
 
   const GS1ProductDetailsScreen({
     super.key,
@@ -49,12 +49,12 @@ class _GS1ProductDetailsScreenState extends State<GS1ProductDetailsScreen> {
           AppSnackbars.danger(context, state.error);
         } else if (state is GS1ProductSuccessState) {
           if (widget.onProductSelected != null) {
-            widget.onProductSelected!(context.read<StartDayCubit>().gs1Product);
+            widget.onProductSelected!(context.read<StartDayCubit>().product);
           }
         }
       },
       builder: (context, state) {
-        final product = context.read<StartDayCubit>().gs1Product;
+        final product = context.read<StartDayCubit>().product;
 
         return CustomScaffold(
           title: 'Product Details',
@@ -117,7 +117,7 @@ class _GS1ProductDetailsScreenState extends State<GS1ProductDetailsScreen> {
     );
   }
 
-  Widget _buildProductDetailsView(GS1Product product) {
+  Widget _buildProductDetailsView(Product product) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return SingleChildScrollView(
@@ -198,7 +198,7 @@ class _GS1ProductDetailsScreenState extends State<GS1ProductDetailsScreen> {
             children: [
               _buildDetailRow('Packaging Type', product.packagingType ?? 'N/A'),
               _buildDetailRow('Child Product', product.childProduct ?? 'N/A'),
-              _buildDetailRow('Quantity', product.quantity ?? '0'),
+              _buildDetailRow('Quantity', product.quantity.toString() ?? '0'),
             ],
           ),
 
@@ -249,7 +249,7 @@ class _GS1ProductDetailsScreenState extends State<GS1ProductDetailsScreen> {
     );
   }
 
-  Widget _buildProductHeader(GS1Product product, bool isDarkMode) {
+  Widget _buildProductHeader(Product product, bool isDarkMode) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(

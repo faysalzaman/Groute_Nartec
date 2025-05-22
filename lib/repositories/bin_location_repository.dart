@@ -1,6 +1,5 @@
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/bin_location_model.dart';
 
-import '../core/constants/app_preferences.dart';
 import '../core/services/http_service.dart';
 
 class BinLocationRepository {
@@ -12,15 +11,11 @@ class BinLocationRepository {
 
   final _httpService = HttpService();
 
-  Future<List<BinLocationModel>> getBinLocations() async {
-    final token = await AppPreferences.getAccessToken();
+  Future<List<BinLocationModel>> getSuggestedBins(String productId) async {
+    final path =
+        '/api/v1/bin-locations/product/$productId?page=1&limit=1000000';
 
-    final path = '/api/v1/bin-locations?page=1&limit=10000';
-
-    final response = await _httpService.request(
-      path,
-      headers: {'Authorization': 'Bearer $token'},
-    );
+    final response = await _httpService.request(path);
 
     if (response.success) {
       final data = response.data['data']['binLocations'] as List;

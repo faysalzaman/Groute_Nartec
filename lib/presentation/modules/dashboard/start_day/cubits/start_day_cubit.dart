@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/start_day_state.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/gs1_product.dart';
-import 'package:groute_nartec/repositories/gs1_repository.dart';
+import 'package:groute_nartec/repositories/product_repository.dart';
 import 'package:groute_nartec/repositories/start_day_repository.dart';
 
 class StartDayCubit extends Cubit<StartDayState> {
@@ -12,7 +12,7 @@ class StartDayCubit extends Cubit<StartDayState> {
   final StartDayRepository _startDayRepository = StartDayRepository();
   final Gs1Repository _gs1Repository = Gs1Repository();
 
-  GS1Product? gs1Product;
+  Product? product;
 
   Future<void> getVehicleCheckHistory() async {
     emit(VehicleCheckHistoryLoading());
@@ -65,7 +65,7 @@ class StartDayCubit extends Cubit<StartDayState> {
     emit(GS1ProductLoadingState());
 
     try {
-      gs1Product = await _gs1Repository.getGS1ProductDetails(barcode);
+      product = await _gs1Repository.getProductById(barcode);
       emit(GS1ProductSuccessState());
     } catch (e) {
       emit(GS1ProductErrorState(e.toString()));

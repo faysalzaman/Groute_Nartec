@@ -4,6 +4,7 @@ import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/utils/app_loading.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/loading/loading_cubit.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/start_day_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/screens/loading/pick_items_screen.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
@@ -42,7 +43,8 @@ class _SelectBinLocationScreenState extends State<SelectBinLocationScreen> {
   @override
   void initState() {
     super.initState();
-    LoadingCubit.get(context).getSuggestedBinLocations();
+    final product = context.read<StartDayCubit>().product;
+    LoadingCubit.get(context).getSuggestedBinLocations(product?.id ?? '');
   }
 
   @override
