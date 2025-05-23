@@ -5,6 +5,7 @@ import 'package:groute_nartec/core/utils/app_date_formatter.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/screens/loading/new_orders_detail_screen.dart';
+import 'package:groute_nartec/presentation/widgets/buttons/custom_outline_button.dart';
 
 /// A card widget displaying sales order information with
 /// actions to process or view order details.
@@ -155,7 +156,7 @@ class _SalesOrderCardState extends State<SalesOrderCard>
                       context,
                       icon: FontAwesomeIcons.calendar,
                       text:
-                          'Delivery Date: ${widget.salesOrder.deliveryDate != null ? AppDateFormatter.fromString(widget.salesOrder.deliveryDate!) : 'N/A'}',
+                          'Delivery Date: ${widget.salesOrder.deliveryDate != null ? AppDateFormatter.fromString(widget.salesOrder.deliveryDate, showTime: true) : 'N/A'}',
                       isDarkMode: isDarkMode,
                     ),
                     const SizedBox(height: 16),
@@ -164,7 +165,7 @@ class _SalesOrderCardState extends State<SalesOrderCard>
                       context,
                       icon: FontAwesomeIcons.calendar,
                       text:
-                          'Order Date: ${widget.salesOrder.orderDate != null ? AppDateFormatter.fromString(widget.salesOrder.orderDate!) : 'N/A'}',
+                          'Order Date: ${widget.salesOrder.orderDate != null ? AppDateFormatter.fromString(widget.salesOrder.orderDate, showTime: true) : 'N/A'}',
                       isDarkMode: isDarkMode,
                     ),
                     const SizedBox(height: 16),
@@ -393,34 +394,18 @@ class _SalesOrderCardState extends State<SalesOrderCard>
               ),
             ),
           ),
-          OutlinedButton.icon(
-            onPressed:
-                () => AppNavigator.push(
-                  context,
-                  NewOrdersDetailScreen(salesOrder: widget.salesOrder),
-                ),
-            style: OutlinedButton.styleFrom(
-              side: BorderSide(
-                color:
-                    isDarkMode ? AppColors.primaryLight : AppColors.primaryBlue,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            icon: FaIcon(
-              FontAwesomeIcons.arrowRight,
-              size: 16,
-              color:
-                  isDarkMode ? AppColors.primaryLight : AppColors.primaryBlue,
-            ),
-            label: Text(
-              'Start Picking',
-              style: TextStyle(
-                color:
-                    isDarkMode ? AppColors.primaryLight : AppColors.primaryBlue,
-              ),
-            ),
+          CustomOutlineButton(
+            title: "Start Picking",
+            height: 30,
+            width: 120,
+            borderColor: AppColors.green,
+            textColor: AppColors.green,
+            onPressed: () {
+              AppNavigator.push(
+                context,
+                NewOrdersDetailScreen(salesOrder: widget.salesOrder),
+              );
+            },
           ),
         ],
       ),

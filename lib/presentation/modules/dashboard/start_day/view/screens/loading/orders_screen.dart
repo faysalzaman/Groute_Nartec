@@ -1,11 +1,10 @@
-// ignore_for_file: deprecated_member_use, use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groute_nartec/core/utils/app_loading.dart';
 import 'package:groute_nartec/core/utils/app_snackbars.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_state.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/widgets/order_card_shimmer.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/widgets/sales_order_card.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
@@ -60,112 +59,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
           if (state is SalesInitial) {
             return Center(child: AppLoading());
           } else if (state is SalesLoading && page == 1) {
-            // Replace simple CircularProgressIndicator with a placeholder loading UI
+            // Use the custom OrderCardShimmer for loading state
             return ListView.builder(
               itemCount: 5, // Show 5 placeholder items
               itemBuilder: (context, index) {
-                return Card(
-                  margin: const EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 16,
-                  ),
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(12),
-                            topRight: Radius.circular(12),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  width: 150,
-                                  height: 16,
-                                  color: Colors.grey[200],
-                                ),
-                                Container(
-                                  width: 80,
-                                  height: 14,
-                                  color: Colors.grey[200],
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            Container(
-                              width: 180,
-                              height: 15,
-                              color: Colors.grey[200],
-                            ),
-                            const SizedBox(height: 4),
-                            Container(
-                              width: double.infinity,
-                              height: 14,
-                              color: Colors.grey[200],
-                            ),
-                            const SizedBox(height: 12),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  width: 80,
-                                  height: 14,
-                                  color: Colors.grey[200],
-                                ),
-                                Container(
-                                  width: 100,
-                                  height: 16,
-                                  color: Colors.grey[200],
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Container(
-                              width: 80,
-                              height: 32,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Container(
-                              width: 80,
-                              height: 32,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
+                return const OrderCardShimmer();
               },
             );
           } else if (salesOrders.isEmpty) {
