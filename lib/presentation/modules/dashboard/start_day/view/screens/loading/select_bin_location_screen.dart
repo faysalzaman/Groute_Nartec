@@ -64,7 +64,6 @@ class _SelectBinLocationScreenState extends State<SelectBinLocationScreen> {
       title: "Suggested Bin Number",
       automaticallyImplyLeading: true,
       body: Container(
-        color: AppColors.lightBackground,
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: Padding(

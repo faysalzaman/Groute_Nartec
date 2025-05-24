@@ -156,7 +156,7 @@ class _SalesOrderCardState extends State<SalesOrderCard>
                       context,
                       icon: FontAwesomeIcons.calendar,
                       text:
-                          'Delivery Date: ${widget.salesOrder.deliveryDate != null ? AppDateFormatter.fromString(widget.salesOrder.deliveryDate, showTime: true) : 'N/A'}',
+                          'Delivery Date: ${widget.salesOrder.deliveryDate != null ? AppDateFormatter.fromString(widget.salesOrder.deliveryDate, showTime: false) : 'N/A'}',
                       isDarkMode: isDarkMode,
                     ),
                     const SizedBox(height: 16),
@@ -165,7 +165,7 @@ class _SalesOrderCardState extends State<SalesOrderCard>
                       context,
                       icon: FontAwesomeIcons.calendar,
                       text:
-                          'Order Date: ${widget.salesOrder.orderDate != null ? AppDateFormatter.fromString(widget.salesOrder.orderDate, showTime: true) : 'N/A'}',
+                          'Order Date: ${widget.salesOrder.orderDate != null ? AppDateFormatter.fromString(widget.salesOrder.orderDate, showTime: false) : 'N/A'}',
                       isDarkMode: isDarkMode,
                     ),
                     const SizedBox(height: 16),
@@ -231,13 +231,6 @@ class _SalesOrderCardState extends State<SalesOrderCard>
               fontWeight: FontWeight.bold,
             ),
           ),
-          // const Spacer(),
-          // Text(
-          //   formattedDate,
-          //   style: theme.textTheme.bodySmall?.copyWith(
-          //     color: AppColors.white.withValues(alpha: 0.9),
-          //   ),
-          // ),
         ],
       ),
     );
@@ -356,7 +349,7 @@ class _SalesOrderCardState extends State<SalesOrderCard>
             ],
           ),
           Text(
-            'Total: ${widget.salesOrder.totalAmount ?? 'N/A'}',
+            'Total: ${widget.salesOrder.totalAmount ?? '0'}',
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.bold,
               color: AppColors.secondary,
