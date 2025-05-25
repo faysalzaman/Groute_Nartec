@@ -476,19 +476,19 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
               },
             ),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: CustomElevatedButton(
-              onPressed: () {
-                // Implement save functionality
-                Navigator.pop(context);
-              },
-              title: "Save",
-              width: double.infinity,
-              height: 40,
-              backgroundColor: AppColors.secondary,
-            ),
-          ),
+          // const SizedBox(width: 16),
+          // Expanded(
+          //   child: CustomElevatedButton(
+          //     onPressed: () {
+          //       // Implement save functionality
+          //       Navigator.pop(context);
+          //     },
+          //     title: "Save",
+          //     width: double.infinity,
+          //     height: 40,
+          //     backgroundColor: AppColors.secondary,
+          //   ),
+          // ),
         ],
       ),
     );
