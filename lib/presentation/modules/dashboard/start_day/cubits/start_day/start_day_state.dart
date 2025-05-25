@@ -30,6 +30,27 @@ class VehicleCheckHistoryError extends StartDayState {
 
 /*
 ##############################################################################
+! Location Section
+############################################################################## 
+*/
+
+class LocationLoadingState extends StartDayState {}
+
+class LocationSuccessState extends StartDayState {
+  final double latitude;
+  final double longitude;
+
+  LocationSuccessState({required this.latitude, required this.longitude});
+}
+
+class LocationErrorState extends StartDayState {
+  final String error;
+
+  LocationErrorState(this.error);
+}
+
+/*
+##############################################################################
 ! Start Picking Section
 ############################################################################## 
 */

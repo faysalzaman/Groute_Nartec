@@ -33,6 +33,8 @@ class LastVehicleCheck {
   String? createdAt;
   String? updatedAt;
   Vehicle? vehicle;
+  double? latitude;
+  double? longitude;
 
   LastVehicleCheck({
     this.id,
@@ -48,6 +50,8 @@ class LastVehicleCheck {
     this.createdAt,
     this.updatedAt,
     this.vehicle,
+    this.latitude,
+    this.longitude,
   });
 
   LastVehicleCheck.fromJson(Map<String, dynamic> json) {
@@ -65,6 +69,8 @@ class LastVehicleCheck {
     updatedAt = json['updatedAt'];
     vehicle =
         json['vehicle'] != null ? Vehicle.fromJson(json['vehicle']) : null;
+    latitude = json['latitude'];
+    longitude = json['longitude'];
   }
 
   Map<String, dynamic> toJson() {
@@ -84,6 +90,8 @@ class LastVehicleCheck {
     if (vehicle != null) {
       data['vehicle'] = vehicle!.toJson();
     }
+    data['latitude'] = latitude;
+    data['longitude'] = longitude;
     return data;
   }
 }

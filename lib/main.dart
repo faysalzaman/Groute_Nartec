@@ -4,7 +4,7 @@ import 'package:groute_nartec/core/themes/app_theme.dart' show AppTheme;
 import 'package:groute_nartec/presentation/modules/auth/cubit/auth_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/loading/loading_cubit.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/start_day_cubit.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/start_day/start_day_cubit.dart';
 import 'package:groute_nartec/presentation/modules/splash_screen.dart';
 
 void main() {
