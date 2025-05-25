@@ -65,6 +65,29 @@ class _GS1ProductDetailsScreenState extends State<GS1ProductDetailsScreen> {
                   : product != null
                   ? _buildProductDetailsView(product)
                   : _buildErrorView(),
+          bottomNavigationBar: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: CustomElevatedButton(
+                    height: 40,
+                    title: 'Start Picking',
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SelectBinLocationScreen(),
+                        ),
+                      );
+                    },
+                    backgroundColor: AppColors.success,
+                  ),
+                ),
+              ],
+            ),
+          ),
         );
       },
     );
@@ -204,29 +227,6 @@ class _GS1ProductDetailsScreenState extends State<GS1ProductDetailsScreen> {
 
           const SizedBox(height: 24),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                child: CustomElevatedButton(
-                  height: 40,
-                  title: 'Start Picking',
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SelectBinLocationScreen(),
-                      ),
-                    );
-                  },
-                  backgroundColor: AppColors.success,
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
           // Product metadata - smaller text
           Text(
             'Product ID: ${product.id}',
@@ -365,48 +365,48 @@ class _GS1ProductDetailsScreenState extends State<GS1ProductDetailsScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (product.brandName != null) ...[
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryBlue.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Text(
-                    product.brandName!,
-                    style: TextStyle(
-                      color: AppColors.primaryBlue,
-                      fontWeight: FontWeight.w600,
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
                     ),
-                  ),
-                ),
-              ],
-
-              if (product.origin != null) ...[
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.success.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Text(
-                    product.origin!,
-                    style: TextStyle(
-                      color: AppColors.success,
-                      fontWeight: FontWeight.w600,
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryBlue.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Text(
+                      product.brandName ?? '',
+                      style: TextStyle(
+                        color: AppColors.primaryBlue,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
               ],
             ],
           ),
-
+          const SizedBox(height: 16),
+          if (product.origin != null) ...[
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: AppColors.success.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Text(
+                product.origin ?? '',
+                style: TextStyle(
+                  color: AppColors.success,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
           const SizedBox(height: 16),
 
           // Barcode section
@@ -426,8 +426,6 @@ class _GS1ProductDetailsScreenState extends State<GS1ProductDetailsScreen> {
                   height: 50,
                 ),
               ),
-
-              const SizedBox(width: 16),
 
               // Barcode details
               Expanded(

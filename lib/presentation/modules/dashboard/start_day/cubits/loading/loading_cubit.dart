@@ -8,6 +8,9 @@ import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/lo
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/loading/serial_response_model.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/loading/sscc_response_model.dart';
 import 'package:groute_nartec/repositories/bin_location_repository.dart';
+import 'package:groute_nartec/repositories/product_on_pallet_repository.dart';
+
+import '../../models/loading/product_on_pallet.dart';
 
 part 'loading_states.dart';
 
@@ -18,23 +21,29 @@ class LoadingCubit extends Cubit<LoadingState> {
 
   final BinLocationRepository _binLocationRepository = BinLocationRepository();
   final HttpService _httpService = HttpService(baseUrl: kGTrackUrl);
+  final HttpService _grouteService = HttpService();
 
   SalesInvoiceDetails? salesInvoiceDetails;
   BinLocationModel? selectedBinLocation;
   bool _byPallet = true;
   bool _bySerial = false;
+  int quantityPicked = 0;
 
   // Lists
   List<BinLocationModel> _binLocations = [];
 
   // Maps
   final Map<String, List<Map<dynamic, dynamic>>> _scannedItems = {};
+  final Map<String, List<ProductOnPallet>> _productOnPallets = {};
+  final Map<String, Set<String>> _selectedProductsOnPallet = {};
 
   // Getters
   List<BinLocationModel> get binLocations => _binLocations;
   bool get byPallet => _byPallet;
   bool get bySerial => _bySerial;
   Map<String, List<Map<dynamic, dynamic>>> get scannedItems => _scannedItems;
+  Map<String, List<ProductOnPallet>> get productOnPallets => _productOnPallets;
+  Map<String, Set<String>> get selectedItems => _selectedProductsOnPallet;
 
   /*
   ##############################################################################
@@ -61,7 +70,7 @@ class LoadingCubit extends Cubit<LoadingState> {
 
   void setSelectedBinLocation(String binNumber) {
     selectedBinLocation = binLocations.firstWhere(
-      (binLocation) => binLocation.binNumber == binNumber,
+      (binLocation) => binLocation.binNumber == binNumber.split("-").first,
     );
     emit(BinLocationLoaded());
   }
@@ -76,6 +85,9 @@ class LoadingCubit extends Cubit<LoadingState> {
     _byPallet = true;
     _bySerial = false;
     _scannedItems.clear();
+    _productOnPallets.clear();
+    _selectedProductsOnPallet.clear();
+    quantityPicked = int.parse(salesInvoiceDetails?.quantityPicked ?? "0");
     emit(ChangeScanType());
   }
 
@@ -221,8 +233,159 @@ class LoadingCubit extends Cubit<LoadingState> {
     }
   }
 
+  void scanBySerialOrPallet({String? palletCode, String? serialNo}) async {
+    if (state is ScanItemLoading) {
+      return;
+    }
+
+    if (palletCode != null) {
+      if (palletCode.isEmpty) {
+        emit(ScanItemError(message: 'Pallet code is required'));
+        return;
+      }
+    } else if (serialNo != null) {
+      if (serialNo.isEmpty) {
+        emit(ScanItemError(message: 'Serial number is required'));
+        return;
+      }
+    }
+    emit(ScanItemLoading());
+    try {
+      // check if the ssccNo is already scanned
+      if (_productOnPallets.containsKey(serialNo ?? palletCode)) {
+        emit(
+          ScanItemError(
+            message:
+                '${serialNo != null ? "Serial" : "Pallet ID"} already scanned!',
+          ),
+        );
+        return;
+      }
+
+      // Check if you have specific serial number already in the list
+      _productOnPallets.values.forEach((p) {
+        if (p.any((x) => x.serialNumber == serialNo)) {
+          emit(
+            ScanItemError(
+              message:
+                  '${serialNo != null ? "Serial" : "Pallet ID"} already scanned!',
+            ),
+          );
+          return;
+        }
+      });
+
+      final productOnPallets = await ProductOnPalletRepository.instance
+          .getProductOnPallets(
+            palletCode: palletCode,
+            serialNo: serialNo,
+            gln: selectedBinLocation?.gln.toString() ?? '',
+          );
+
+      if (!_productOnPallets.containsKey(serialNo ?? palletCode!)) {
+        _productOnPallets[serialNo ?? palletCode!] = [];
+      }
+      _productOnPallets[serialNo ?? palletCode!]?.addAll(productOnPallets);
+      // Make sure to emit state change to trigger UI update
+      emit(ScanItemLoaded());
+    } catch (error) {
+      emit(ScanItemError(message: error.toString()));
+    }
+  }
+
+  void pickItems() async {
+    try {
+      if (state is PickItemsLoading) return;
+
+      emit(PickItemsLoading());
+      if (selectedItems.isEmpty) {
+        emit(PickItemsError(message: 'No items selected'));
+        return;
+      }
+
+      final success = await ProductOnPalletRepository.instance.pickItems(
+        productOnPalletIds: selectedItems.values.expand((x) => x).toList(),
+        salesInvoiceDetailId: salesInvoiceDetails?.id.toString() ?? '',
+        quantityPicked: quantityPicked,
+      );
+
+      if (success) {
+        // reset everything
+        init();
+        emit(PickItemsLoaded());
+      } else {
+        emit(PickItemsError(message: 'Failed to pick items'));
+      }
+    } catch (e) {
+      emit(PickItemsError(message: e.toString()));
+    }
+  }
+
   void clearScannedItems() {
     _scannedItems.clear();
+    _productOnPallets.clear();
+    _selectedProductsOnPallet.clear();
+    quantityPicked = int.parse(salesInvoiceDetails?.quantityPicked ?? "0");
     emit(ScanItemLoaded());
+  }
+
+  /*
+  ##############################################################################
+  ! Selection Methods
+  ##############################################################################
+  */
+  void toggleItemSelection(String packageCode, String itemId) {
+    // Initialize the selected set for this key if needed
+    if (!_selectedProductsOnPallet.containsKey(packageCode)) {
+      _selectedProductsOnPallet[packageCode] = <String>{};
+    }
+
+    // Toggle selection
+    if (_selectedProductsOnPallet[packageCode]!.contains(itemId)) {
+      _selectedProductsOnPallet[packageCode]!.remove(itemId);
+      if (quantityPicked > 0) quantityPicked--;
+    } else {
+      if (quantityPicked < int.parse(salesInvoiceDetails?.quantity ?? "0")) {
+        _selectedProductsOnPallet[packageCode]!.add(itemId);
+        quantityPicked++;
+      } else {
+        emit(
+          ScanItemError(
+            message:
+                "Quantity picked cannot exceed ${salesInvoiceDetails?.quantity}",
+          ),
+        );
+      }
+    }
+
+    emit(SelectionChanged());
+  }
+
+  bool isItemSelected(String packageCode, String itemId) {
+    if (!_selectedProductsOnPallet.containsKey(packageCode)) {
+      return false;
+    }
+    return _selectedProductsOnPallet[packageCode]!.contains(itemId);
+  }
+
+  void clearSelectedItems() {
+    _selectedProductsOnPallet.clear();
+    emit(SelectionChanged());
+  }
+
+  List<ProductOnPallet> getSelectedProducts() {
+    final selectedProducts = <ProductOnPallet>[];
+
+    _selectedProductsOnPallet.forEach((packageCode, selectedIds) {
+      final itemsForKey = _productOnPallets[packageCode] ?? [];
+      for (final item in itemsForKey) {
+        final itemId = item.id ?? '${item.serialNumber}-${item.palletId}';
+        if (selectedIds.contains(itemId)) {
+          selectedProducts.add(item);
+        }
+      }
+    });
+
+    return selectedProducts;
   }
 }

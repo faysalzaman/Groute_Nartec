@@ -5,7 +5,7 @@ import 'package:groute_nartec/core/utils/app_loading.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/loading/loading_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/start_day/start_day_cubit.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/screens/loading/pick_items_screen.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/screens/loading/pick_items_screen_v2.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 import 'package:groute_nartec/presentation/widgets/dropdowns/app_dropdown.dart';
@@ -83,7 +83,7 @@ class _SelectBinLocationScreenState extends State<SelectBinLocationScreen> {
                 const SizedBox(height: 16),
 
                 // Details Fields
-                _buildDetailsSection(),
+                // _buildDetailsSection(),
 
                 // Next Button
                 const SizedBox(height: 24),
@@ -158,13 +158,16 @@ class _SelectBinLocationScreenState extends State<SelectBinLocationScreen> {
               return AppDropdown<String>(
                 items:
                     binLocations
-                        .map((binLocation) => binLocation.binNumber)
+                        .map(
+                          (binLocation) =>
+                              "${binLocation.binNumber}-${binLocation.binType}",
+                        )
                         .toList(),
                 hintText: "Select Bin Location",
                 initialItem: _selectedBinLocation,
                 onChanged: (value) {
                   LoadingCubit.get(context).setSelectedBinLocation(value);
-                  _locationCodeController.text = value;
+                  _locationCodeController.text = value.split("-").first;
                 },
               );
             }

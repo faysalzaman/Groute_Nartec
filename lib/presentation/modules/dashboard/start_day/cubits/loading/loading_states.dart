@@ -27,3 +27,16 @@ final class ScanItemError extends LoadingState {
 
   ScanItemError({required this.message});
 }
+
+final class PickItemsLoading extends LoadingState {}
+
+final class PickItemsLoaded extends LoadingState {}
+
+final class PickItemsError extends LoadingState {
+  final String message;
+
+  PickItemsError({required this.message});
+}
+
+// Selection states
+final class SelectionChanged extends LoadingState {}
