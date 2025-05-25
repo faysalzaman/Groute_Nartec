@@ -1,14 +1,16 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/utils/app_loading.dart';
 import 'package:groute_nartec/presentation/modules/auth/cubit/auth_cubit.dart';
 import 'package:groute_nartec/presentation/modules/auth/cubit/auth_state.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/start_day/start_day_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/start_day/start_day_state.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/widgets/location_map_widget.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 import 'package:intl/intl.dart';
 
@@ -21,7 +23,8 @@ class VehicleInformationScreen extends StatefulWidget {
 }
 
 class _VehicleInformationScreenState extends State<VehicleInformationScreen> {
-  bool isMapLoading = true;
+  final Completer<GoogleMapController> _mapController =
+      Completer<GoogleMapController>();
 
   @override
   void initState() {
@@ -93,7 +96,7 @@ class _VehicleInformationScreenState extends State<VehicleInformationScreen> {
         children: [
           FaIcon(icon, size: 18, color: AppColors.white),
           const SizedBox(width: 12),
-          Text(
+          SelectableText(
             title,
             style: const TextStyle(
               fontSize: 18,
@@ -194,7 +197,7 @@ class _VehicleInformationScreenState extends State<VehicleInformationScreen> {
 
     return Column(
       children: [
-        Text(
+        SelectableText(
           'Vehicle Photo',
           style: TextStyle(
             fontSize: 14,
@@ -248,7 +251,7 @@ class _VehicleInformationScreenState extends State<VehicleInformationScreen> {
         children: [
           FaIcon(FontAwesomeIcons.truck, size: 36, color: AppColors.grey500),
           const SizedBox(height: 8),
-          Text(
+          SelectableText(
             'No photo available',
             style: TextStyle(fontSize: 12, color: AppColors.grey500),
           ),
@@ -267,7 +270,7 @@ class _VehicleInformationScreenState extends State<VehicleInformationScreen> {
               FaIcon(icon, size: 14, color: AppColors.primaryBlue),
               const SizedBox(width: 8),
             ],
-            Text(
+            SelectableText(
               label,
               style: TextStyle(
                 fontSize: 12,
@@ -286,7 +289,7 @@ class _VehicleInformationScreenState extends State<VehicleInformationScreen> {
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: AppColors.grey300, width: 1),
           ),
-          child: Text(
+          child: SelectableText(
             value,
             style: TextStyle(fontSize: 14, color: AppColors.textDark),
           ),
@@ -372,7 +375,7 @@ class _VehicleInformationScreenState extends State<VehicleInformationScreen> {
                     color: AppColors.primaryBlue,
                   ),
                   const SizedBox(width: 8),
-                  Text(
+                  SelectableText(
                     'Last checked: $formattedDate',
                     style: TextStyle(
                       fontSize: 12,
@@ -435,22 +438,36 @@ class _VehicleInformationScreenState extends State<VehicleInformationScreen> {
                     FontAwesomeIcons.gaugeHigh,
                   ),
                 ),
-                const SizedBox(width: 12),
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+            Row(
+              children: [
                 Expanded(
                   child: _buildCheckInfoItem(
-                    'Remarks',
-                    checkHistory.remarks.toString().trim(),
-                    FontAwesomeIcons.comment,
+                    'Latitude / Longitude',
+                    '${checkHistory.latitude} / ${checkHistory.longitude}',
+                    FontAwesomeIcons.locationDot,
                   ),
                 ),
               ],
+            ),
+
+            const SizedBox(height: 12),
+
+            _buildCheckInfoItem(
+              'Remarks',
+              checkHistory.remarks.toString().trim(),
+              FontAwesomeIcons.comment,
             ),
 
             // Map display
             if (checkHistory.latitude != null &&
                 checkHistory.longitude != null) ...[
               const SizedBox(height: 20),
-              Text(
+              SelectableText(
                 'Location Map',
                 style: TextStyle(
                   fontSize: 14,
@@ -469,7 +486,7 @@ class _VehicleInformationScreenState extends State<VehicleInformationScreen> {
             if (checkHistory.photos != null &&
                 checkHistory.photos!.isNotEmpty) ...[
               const SizedBox(height: 20),
-              Text(
+              SelectableText(
                 'Vehicle Check Photos',
                 style: TextStyle(
                   fontSize: 14,
@@ -506,7 +523,7 @@ class _VehicleInformationScreenState extends State<VehicleInformationScreen> {
           children: [
             Icon(Icons.error_outline, color: Colors.red[400], size: 48),
             const SizedBox(height: 16),
-            Text(
+            SelectableText(
               'Failed to load check history',
               style: TextStyle(
                 fontSize: 16,
@@ -515,7 +532,7 @@ class _VehicleInformationScreenState extends State<VehicleInformationScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
+            SelectableText(
               state.error,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: Colors.red[400]),
@@ -526,7 +543,7 @@ class _VehicleInformationScreenState extends State<VehicleInformationScreen> {
                 context.read<StartDayCubit>().getVehicleCheckHistory();
               },
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: const SelectableText('Retry'),
               style: ElevatedButton.styleFrom(
                 foregroundColor: AppColors.white,
                 backgroundColor: AppColors.primaryBlue,
@@ -556,7 +573,7 @@ class _VehicleInformationScreenState extends State<VehicleInformationScreen> {
           ],
         ),
         child: const Center(
-          child: Text(
+          child: SelectableText(
             'No recent vehicle check found',
             style: TextStyle(color: AppColors.textMedium),
           ),
@@ -594,7 +611,7 @@ class _VehicleInformationScreenState extends State<VehicleInformationScreen> {
             ],
           ),
           const SizedBox(height: 6),
-          Text(
+          SelectableText(
             value,
             style: TextStyle(
               fontSize: 14,
@@ -644,12 +661,42 @@ class _VehicleInformationScreenState extends State<VehicleInformationScreen> {
   }
 
   Widget _buildLocationMap(double latitude, double longitude) {
-    return LocationMapWidget(
-      latitude: latitude,
-      longitude: longitude,
-      markerTitle: 'Vehicle Check Location',
-      height: 300,
-      showControls: true,
+    // Create a LatLng object from the provided coordinates
+    final LatLng position = LatLng(latitude, longitude);
+
+    // Create a marker at the position
+    final Set<Marker> markers = {
+      Marker(
+        markerId: const MarkerId('vehicleLocation'),
+        position: position,
+        infoWindow: const InfoWindow(title: 'Vehicle Check Location'),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+      ),
+    };
+
+    return Container(
+      height: 300, // Big square for the map
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.grey300),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: position, zoom: 15.0),
+          markers: markers,
+          mapType: MapType.normal,
+          myLocationEnabled: false,
+          myLocationButtonEnabled: false,
+          zoomControlsEnabled: true,
+          zoomGesturesEnabled: true,
+          compassEnabled: true,
+          onMapCreated: (GoogleMapController controller) {
+            _mapController.complete(controller);
+          },
+        ),
+      ),
     );
   }
 }
