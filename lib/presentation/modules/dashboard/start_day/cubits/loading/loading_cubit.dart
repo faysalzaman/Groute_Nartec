@@ -301,9 +301,9 @@ class LoadingCubit extends Cubit<LoadingState> {
       emit(state is ScanBinLocationLoading ? state : ScanBinLocationLoading());
       final result = await _vehicleRepository.scanDriverBinNumber(binNumber);
 
-      if (result) {
+      if (result.isNotEmpty) {
         isSaveButtonEnabled = true;
-        emit(ScanBinLocationLoaded());
+        emit(ScanBinLocationLoaded(message: result));
       } else {
         emit(ScanBinLocationError(message: 'Failed to scan bin location'));
       }

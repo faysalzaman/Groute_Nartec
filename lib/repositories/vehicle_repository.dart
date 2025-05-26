@@ -9,13 +9,13 @@ class VehicleRepository {
 
   final _httpService = HttpService();
 
-  Future<bool> scanDriverBinNumber(String binNumber) async {
+  Future<String> scanDriverBinNumber(String binNumber) async {
     final path = '/api/v1/vehicles/scanBin/$binNumber';
 
     final response = await _httpService.request(path);
 
     if (response.success) {
-      return true;
+      return response.data['message'] as String;
     } else {
       throw Exception('Failed to load bin locations');
     }

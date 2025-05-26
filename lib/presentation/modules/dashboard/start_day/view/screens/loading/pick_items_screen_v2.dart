@@ -422,12 +422,18 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        BlocBuilder<LoadingCubit, LoadingState>(
+        BlocConsumer<LoadingCubit, LoadingState>(
           buildWhen:
               (previous, current) =>
                   current is ScanBinLocationLoading ||
                   current is ScanBinLocationLoaded ||
                   current is ScanBinLocationError,
+          listener: (context, state) {
+            if (state is ScanBinLocationLoaded) {
+              AppSnackbars.success(context, state.message);
+              _binNumberController.clear();
+            }
+          },
           builder: (context, state) {
             return CustomTextFormField(
               controller: _binNumberController,
@@ -491,13 +497,16 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
                     if (LoadingCubit.get(
                       context,
                     ).selectedItems.values.isEmpty) {
-                      AppSnackbars.warning(context, "Submit");
+                      AppSnackbars.warning(
+                        context,
+                        "Please select items to pick",
+                      );
                       return;
                     }
 
                     LoadingCubit.get(context).pickItems();
                   },
-                  title: "Pick selected Items",
+                  title: "Submit",
                   width: double.infinity,
                   height: 40,
                   backgroundColor: AppColors.success,
