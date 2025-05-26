@@ -38,5 +38,15 @@ final class PickItemsError extends LoadingState {
   PickItemsError({required this.message});
 }
 
+final class ScanBinLocationLoading extends LoadingState {}
+
+final class ScanBinLocationLoaded extends LoadingState {}
+
+final class ScanBinLocationError extends LoadingState {
+  final String message;
+
+  ScanBinLocationError({required this.message});
+}
+
 // Selection states
 final class SelectionChanged extends LoadingState {}

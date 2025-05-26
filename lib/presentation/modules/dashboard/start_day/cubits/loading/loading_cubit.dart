@@ -9,6 +9,7 @@ import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/lo
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/loading/sscc_response_model.dart';
 import 'package:groute_nartec/repositories/bin_location_repository.dart';
 import 'package:groute_nartec/repositories/product_on_pallet_repository.dart';
+import 'package:groute_nartec/repositories/vehicle_repository.dart';
 
 import '../../models/loading/product_on_pallet.dart';
 
@@ -20,14 +21,15 @@ class LoadingCubit extends Cubit<LoadingState> {
   static LoadingCubit get(context) => BlocProvider.of(context);
 
   final BinLocationRepository _binLocationRepository = BinLocationRepository();
+  final VehicleRepository _vehicleRepository = VehicleRepository();
   final HttpService _httpService = HttpService(baseUrl: kGTrackUrl);
-  final HttpService _grouteService = HttpService();
 
   SalesInvoiceDetails? salesInvoiceDetails;
   BinLocationModel? selectedBinLocation;
   bool _byPallet = true;
   bool _bySerial = false;
   int quantityPicked = 0;
+  bool isSaveButtonEnabled = false;
 
   // Lists
   List<BinLocationModel> _binLocations = [];
@@ -88,6 +90,7 @@ class LoadingCubit extends Cubit<LoadingState> {
     _productOnPallets.clear();
     _selectedProductsOnPallet.clear();
     quantityPicked = int.parse(salesInvoiceDetails?.quantityPicked ?? "0");
+    isSaveButtonEnabled = false;
     emit(ChangeScanType());
   }
 
@@ -293,9 +296,29 @@ class LoadingCubit extends Cubit<LoadingState> {
     }
   }
 
+  void scanVehicleLocation(String binNumber) async {
+    try {
+      emit(state is ScanBinLocationLoading ? state : ScanBinLocationLoading());
+      final result = await _vehicleRepository.scanDriverBinNumber(binNumber);
+
+      if (result) {
+        isSaveButtonEnabled = true;
+        emit(ScanBinLocationLoaded());
+      } else {
+        emit(ScanBinLocationError(message: 'Failed to scan bin location'));
+      }
+    } catch (error) {
+      emit(ScanBinLocationError(message: error.toString()));
+    }
+  }
+
   void pickItems() async {
     try {
       if (state is PickItemsLoading) return;
+      if (isSaveButtonEnabled == false) {
+        emit(PickItemsError(message: 'Please select items to pick'));
+        return;
+      }
 
       emit(PickItemsLoading());
       if (selectedItems.isEmpty) {

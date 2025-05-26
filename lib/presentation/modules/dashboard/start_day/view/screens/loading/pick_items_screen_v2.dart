@@ -22,7 +22,7 @@ class PickItemsScreen extends StatefulWidget {
 class _PickItemsScreenState extends State<PickItemsScreen> {
   // Controllers for text fields
   final TextEditingController _palletNumberController = TextEditingController();
-  final TextEditingController _wipLocationController = TextEditingController();
+  final TextEditingController _binNumberController = TextEditingController();
 
   @override
   void initState() {
@@ -33,7 +33,7 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
   @override
   void dispose() {
     _palletNumberController.dispose();
-    _wipLocationController.dispose();
+    _binNumberController.dispose();
     super.dispose();
   }
 
@@ -83,7 +83,7 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
                 Expanded(child: _buildScannedItemsSection(isDark)),
 
                 // // WIP Location input
-                // _buildWipLocationInput(isDark),
+                _buildVehicleLocationScanInput(isDark),
                 const SizedBox(height: 8.0),
               ],
             ),
@@ -409,12 +409,12 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
     );
   }
 
-  Widget _buildWipLocationInput(bool isDark) {
+  Widget _buildVehicleLocationScanInput(bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Scan WIP Location",
+          "Scan Vehile Location",
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
@@ -422,10 +422,33 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        CustomTextFormField(
-          controller: _wipLocationController,
-          hintText: "WIP Location",
-          keyboardType: TextInputType.text,
+        BlocBuilder<LoadingCubit, LoadingState>(
+          buildWhen:
+              (previous, current) =>
+                  current is ScanBinLocationLoading ||
+                  current is ScanBinLocationLoaded ||
+                  current is ScanBinLocationError,
+          builder: (context, state) {
+            return CustomTextFormField(
+              controller: _binNumberController,
+              hintText: "Vehicle Location",
+              keyboardType: TextInputType.text,
+              suffixIcon:
+                  state is ScanBinLocationLoading
+                      ? FontAwesomeIcons.circle
+                      : FontAwesomeIcons.qrcode,
+              onSuffixIconPressed: () {
+                // Implement scan functionality
+                if (_binNumberController.text.isEmpty) {
+                  AppSnackbars.warning(context, "Please enter a value to scan");
+                  return;
+                }
+                LoadingCubit.get(
+                  context,
+                ).scanVehicleLocation(_binNumberController.text);
+              },
+            );
+          },
         ),
       ],
     );
@@ -437,7 +460,20 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
       margin: const EdgeInsets.only(bottom: 16.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
+        spacing: 16,
         children: [
+          Expanded(
+            child: CustomElevatedButton(
+              onPressed: () {
+                // Implement save functionality
+                Navigator.pop(context);
+              },
+              title: "Back",
+              width: double.infinity,
+              height: 40,
+              backgroundColor: AppColors.secondary,
+            ),
+          ),
           Expanded(
             child: BlocConsumer<LoadingCubit, LoadingState>(
               listener: (context, state) {
@@ -469,26 +505,15 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
                   height: 40,
                   backgroundColor: AppColors.success,
                   buttonState:
-                      state is PickItemsLoading
+                      LoadingCubit.get(context).isSaveButtonEnabled == false
+                          ? ButtonState.disabled
+                          : state is PickItemsLoading
                           ? ButtonState.loading
                           : ButtonState.idle,
                 );
               },
             ),
           ),
-          // const SizedBox(width: 16),
-          // Expanded(
-          //   child: CustomElevatedButton(
-          //     onPressed: () {
-          //       // Implement save functionality
-          //       Navigator.pop(context);
-          //     },
-          //     title: "Save",
-          //     width: double.infinity,
-          //     height: 40,
-          //     backgroundColor: AppColors.secondary,
-          //   ),
-          // ),
         ],
       ),
     );

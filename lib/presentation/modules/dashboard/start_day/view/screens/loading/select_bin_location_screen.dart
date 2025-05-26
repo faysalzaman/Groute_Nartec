@@ -22,15 +22,10 @@ class SelectBinLocationScreen extends StatefulWidget {
 class _SelectBinLocationScreenState extends State<SelectBinLocationScreen> {
   // Controllers for text fields
 
-  final TextEditingController _availableQuantityController =
-      TextEditingController();
   final TextEditingController _whLocationCodeController = TextEditingController(
     text: "1106",
   );
-  final TextEditingController _minQtyController = TextEditingController(
-    text: "0",
-  );
-  final TextEditingController _maxQtyController = TextEditingController();
+
   final TextEditingController _itemBinTypeController = TextEditingController(
     text: "x",
   );
@@ -49,10 +44,7 @@ class _SelectBinLocationScreenState extends State<SelectBinLocationScreen> {
 
   @override
   void dispose() {
-    _availableQuantityController.dispose();
     _whLocationCodeController.dispose();
-    _minQtyController.dispose();
-    _maxQtyController.dispose();
     _itemBinTypeController.dispose();
     _locationCodeController.dispose();
     super.dispose();
@@ -83,7 +75,7 @@ class _SelectBinLocationScreenState extends State<SelectBinLocationScreen> {
                 const SizedBox(height: 16),
 
                 // Details Fields
-                // _buildDetailsSection(),
+                _buildDetailsSection(),
 
                 // Next Button
                 const SizedBox(height: 24),
@@ -178,47 +170,75 @@ class _SelectBinLocationScreenState extends State<SelectBinLocationScreen> {
   }
 
   Widget _buildDetailsSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildDetailField(
-          label: "Group Code",
-          controller: TextEditingController(text: "Riyadh"),
-          enabled: false,
-        ),
-        const SizedBox(height: 16),
-        _buildDetailField(
-          label: "Available Quantity",
-          controller: _availableQuantityController,
-          enabled: false,
-        ),
-        const SizedBox(height: 16),
-        _buildDetailField(
-          label: "WH Location Code",
-          controller: _whLocationCodeController,
-          enabled: false,
-        ),
-        const SizedBox(height: 16),
-        _buildDetailField(
-          label: "Min Qty",
-          controller: _minQtyController,
-          enabled: false,
-        ),
-        const SizedBox(height: 16),
-        _buildDetailField(
-          label: "Max Qty",
-          controller: _maxQtyController,
-          enabled: false,
-        ),
-        const SizedBox(height: 16),
-        _buildDetailField(
-          label: "Item Bin Type",
-          controller: _itemBinTypeController,
-          enabled: false,
-        ),
-        const SizedBox(height: 16),
-        _buildScanLocationField(),
-      ],
+    return BlocBuilder<LoadingCubit, LoadingState>(
+      buildWhen: (previous, current) => current is! BinLocationLoading,
+      builder: (context, state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildDetailField(
+              label: "Group Code",
+              controller: TextEditingController(
+                text:
+                    LoadingCubit.get(
+                      context,
+                    ).selectedBinLocation?.groupWarehouse ??
+                    "Riyadh",
+              ),
+              enabled: false,
+            ),
+            const SizedBox(height: 16),
+            _buildDetailField(
+              label: "Available Quantity",
+              controller: TextEditingController(
+                text:
+                    LoadingCubit.get(
+                      context,
+                    ).selectedBinLocation?.availableQty.toString() ??
+                    "0",
+              ),
+              enabled: false,
+            ),
+
+            const SizedBox(height: 16),
+            _buildDetailField(
+              label: "Min Qty",
+              controller: TextEditingController(
+                text:
+                    LoadingCubit.get(
+                      context,
+                    ).selectedBinLocation?.minimum.toString() ??
+                    "0",
+              ),
+              enabled: false,
+            ),
+            const SizedBox(height: 16),
+            _buildDetailField(
+              label: "Max Qty",
+              controller: TextEditingController(
+                text:
+                    LoadingCubit.get(
+                      context,
+                    ).selectedBinLocation?.maximum.toString() ??
+                    "0",
+              ),
+              enabled: false,
+            ),
+            const SizedBox(height: 16),
+            _buildDetailField(
+              label: "Item Bin Type",
+              controller: TextEditingController(
+                text:
+                    LoadingCubit.get(context).selectedBinLocation?.binType ??
+                    "x",
+              ),
+              enabled: false,
+            ),
+            const SizedBox(height: 16),
+            _buildScanLocationField(),
+          ],
+        );
+      },
     );
   }
 
