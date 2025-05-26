@@ -156,7 +156,7 @@ class _SalesOrderCardState extends State<SalesOrderCard>
                       context,
                       icon: FontAwesomeIcons.calendar,
                       text:
-                          'Delivery Date: ${widget.salesOrder.deliveryDate != null ? AppDateFormatter.fromString(widget.salesOrder.deliveryDate, showTime: false) : 'N/A'}',
+                          'Delivery Date: ${widget.salesOrder.deliveryDate != null ? AppDateFormatter.fromString(widget.salesOrder.deliveryDate, showTime: true) : 'N/A'}',
                       isDarkMode: isDarkMode,
                     ),
                     const SizedBox(height: 16),
@@ -165,7 +165,7 @@ class _SalesOrderCardState extends State<SalesOrderCard>
                       context,
                       icon: FontAwesomeIcons.calendar,
                       text:
-                          'Order Date: ${widget.salesOrder.orderDate != null ? AppDateFormatter.fromString(widget.salesOrder.orderDate, showTime: false) : 'N/A'}',
+                          'Order Date: ${widget.salesOrder.orderDate != null ? AppDateFormatter.fromString(widget.salesOrder.orderDate, showTime: true) : 'N/A'}',
                       isDarkMode: isDarkMode,
                     ),
                     const SizedBox(height: 16),

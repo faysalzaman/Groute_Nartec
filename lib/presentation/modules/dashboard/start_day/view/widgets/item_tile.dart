@@ -93,24 +93,46 @@ class ItemTile extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           // Start Picking Button
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              CustomElevatedButton(
-                title: "Start Picking",
-                onPressed: () {
-                  LoadingCubit.get(context).setSalesInvoiceDetails(item);
-                  // Navigate to GS1 product details screen
-                  AppNavigator.push(
-                    context,
-                    GS1ProductDetailsScreen(barcode: item.productId ?? ''),
-                  );
-                },
-                height: 25,
-                width: 120,
+          item.quantityPicked == item.quantity
+              ? Align(
+                alignment: Alignment.centerRight,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.errorContainer,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.all(8),
+                  child: Text(
+                    'Picked',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.error,
+                    ),
+                  ),
+                ),
+              )
+              : Visibility(
+                visible: item.quantityPicked != item.quantity,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    CustomElevatedButton(
+                      title: "Start Picking",
+                      onPressed: () {
+                        LoadingCubit.get(context).setSalesInvoiceDetails(item);
+                        // Navigate to GS1 product details screen
+                        AppNavigator.push(
+                          context,
+                          GS1ProductDetailsScreen(
+                            barcode: item.productId ?? '',
+                          ),
+                        );
+                      },
+                      height: 25,
+                      width: 120,
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
 
           const Divider(height: 20, thickness: 0.5), // Thinner divider
         ],
