@@ -491,10 +491,7 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
                     if (LoadingCubit.get(
                       context,
                     ).selectedItems.values.isEmpty) {
-                      AppSnackbars.warning(
-                        context,
-                        "Please select items to pick",
-                      );
+                      AppSnackbars.warning(context, "Submit");
                       return;
                     }
 
