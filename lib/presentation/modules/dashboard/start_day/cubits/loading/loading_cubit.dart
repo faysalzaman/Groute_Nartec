@@ -326,8 +326,10 @@ class LoadingCubit extends Cubit<LoadingState> {
         return;
       }
 
+      final selectedItemsIds = selectedItems.values.expand((x) => x).toList();
+
       final success = await ProductOnPalletRepository.instance.pickItems(
-        productOnPalletIds: selectedItems.values.expand((x) => x).toList(),
+        productOnPalletIds: selectedItemsIds,
         salesInvoiceDetailId: salesInvoiceDetails?.id.toString() ?? '',
         quantityPicked: quantityPicked,
       );

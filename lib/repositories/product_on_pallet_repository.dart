@@ -18,12 +18,14 @@ class ProductOnPalletRepository {
     required String gln,
   }) async {
     try {
-      final path = '/api/v1/product-pallets/search';
+      final path = '/api/v1/product-pallets/by-pallet-or-serial';
 
-      final payload =
-          palletCode != null
-              ? {"searchTerm": palletCode, "searchType": "pallet", "gln": gln}
-              : {"searchTerm": serialNo, "searchType": "serial", "gln": gln};
+      // final payload =
+      //     palletCode != null
+      //         ? {"searchTerm": palletCode, "searchType": "pallet", "gln": gln}
+      //         : {"searchTerm": serialNo, "searchType": "serial", "gln": gln};
+
+      final payload = {"searchTerm": palletCode ?? serialNo, "gln": gln};
 
       // call the API
       final response = await _httpService.request(
