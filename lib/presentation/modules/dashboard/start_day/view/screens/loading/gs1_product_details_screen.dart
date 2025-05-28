@@ -7,7 +7,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/constants/constants.dart';
 import 'package:groute_nartec/core/utils/app_loading.dart';
+import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/core/utils/app_snackbars.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/loading/loading_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/start_day/start_day_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/start_day/start_day_state.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/gs1_product.dart';
@@ -75,12 +77,8 @@ class _GS1ProductDetailsScreenState extends State<GS1ProductDetailsScreen> {
                     height: 40,
                     title: 'Start Picking',
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SelectBinLocationScreen(),
-                        ),
-                      );
+                      LoadingCubit.get(context).product = product;
+                      AppNavigator.push(context, SelectBinLocationScreen());
                     },
                     backgroundColor: AppColors.success,
                   ),

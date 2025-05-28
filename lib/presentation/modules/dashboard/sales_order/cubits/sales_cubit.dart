@@ -46,6 +46,22 @@ class SalesCubit extends Cubit<SalesState> {
   Map<String, List<ProductOnPallet>> get productOnPallets => _productOnPallets;
   Map<String, Set<String>> get selectedItems => _selectedProductsOnPallet;
 
+  int get totalItemsCount {
+    int count = 0;
+    _productOnPallets.forEach((_, items) {
+      count += items.length;
+    });
+    return count;
+  }
+
+  int get totalSelectedItemsCount {
+    int count = 0;
+    _selectedProductsOnPallet.forEach((_, items) {
+      count += items.length;
+    });
+    return count;
+  }
+
   // Others
 
   Future<void> getSalesOrder(int page, int limit) async {
@@ -278,9 +294,84 @@ class SalesCubit extends Cubit<SalesState> {
     emit(ScanItemLoaded());
   }
 
-  /*
-  !   Selection Methods  !
-  */
+  void clearSelectedItems() {
+    _selectedProductsOnPallet.clear();
+    quantityPicked = int.parse(
+      selectedSalesInvoiceDetail?.quantityPicked ?? "0",
+    );
+    emit(SelectionChanged());
+  }
+
+  void selectAllItems() {
+    // First clear any existing selections to avoid duplicates
+    clearSelectedItems();
+
+    // In unloading, we start with max quantity and decrement, opposite of loading
+    int remainingQuantity = quantityPicked;
+
+    // Loop through all packages and select items until we reach the maximum
+    for (var entry in _productOnPallets.entries) {
+      String packageCode = entry.key;
+      List<ProductOnPallet> items = entry.value;
+
+      // Initialize set for this package if needed
+      if (!_selectedProductsOnPallet.containsKey(packageCode)) {
+        _selectedProductsOnPallet[packageCode] = <String>{};
+      }
+
+      // Add items from this package until we reach the limit
+      for (var item in items) {
+        if (remainingQuantity <= 0) break;
+
+        final itemId = item.id ?? '${item.serialNumber}-${item.palletId}';
+        _selectedProductsOnPallet[packageCode]!.add(itemId);
+        remainingQuantity--;
+      }
+
+      // Stop if we've reached the maximum
+      if (remainingQuantity <= 0) break;
+    }
+
+    // Update quantity picked
+    quantityPicked = remainingQuantity;
+
+    emit(SelectionChanged());
+  }
+
+  bool areAllItemsSelected() {
+    // For unloading, we have reached max selection if we've used all our quantity
+    return quantityPicked <= 0 ||
+        (totalItemsCount > 0 && totalSelectedItemsCount == totalItemsCount);
+  }
+
+  void removeItem(String packageCode, ProductOnPallet item) {
+    // Get the unique ID for this item
+    final String itemId = item.id ?? '${item.serialNumber}-${item.palletId}';
+
+    // First, check if the item is selected and deselect it
+    if (_selectedProductsOnPallet.containsKey(packageCode) &&
+        _selectedProductsOnPallet[packageCode]!.contains(itemId)) {
+      _selectedProductsOnPallet[packageCode]!.remove(itemId);
+      quantityPicked++; // In unloading, removing a selected item increases available quantity
+    }
+
+    // Then remove the item from the productOnPallets map
+    if (_productOnPallets.containsKey(packageCode)) {
+      _productOnPallets[packageCode]!.removeWhere((palletItem) {
+        final currentItemId =
+            palletItem.id ??
+            '${palletItem.serialNumber}-${palletItem.palletId}';
+        return currentItemId == itemId;
+      });
+
+      // If the package is now empty, remove it entirely
+      if (_productOnPallets[packageCode]!.isEmpty) {
+        _productOnPallets.remove(packageCode);
+      }
+    }
+
+    emit(ItemRemoved());
+  }
 
   void toggleItemSelection(String packageCode, String itemId) {
     // Initialize the selected set for this key if needed
@@ -309,11 +400,6 @@ class SalesCubit extends Cubit<SalesState> {
       return false;
     }
     return _selectedProductsOnPallet[packageCode]!.contains(itemId);
-  }
-
-  void clearSelectedItems() {
-    _selectedProductsOnPallet.clear();
-    emit(SelectionChanged());
   }
 
   List<ProductOnPallet> getSelectedProducts() {

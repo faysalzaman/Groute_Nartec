@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/utils/app_loading.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
+import 'package:groute_nartec/core/utils/app_snackbars.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/loading/loading_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/start_day/start_day_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/screens/loading/pick_items_screen_v2.dart';
@@ -34,6 +35,9 @@ class _SelectBinLocationScreenState extends State<SelectBinLocationScreen> {
   // Dropdown options
 
   String? _selectedBinLocation;
+
+  // Bool
+  bool isNextButtonEnabled = false;
 
   @override
   void initState() {
@@ -159,7 +163,7 @@ class _SelectBinLocationScreenState extends State<SelectBinLocationScreen> {
                 initialItem: _selectedBinLocation,
                 onChanged: (value) {
                   LoadingCubit.get(context).setSelectedBinLocation(value);
-                  _locationCodeController.text = value.split("-").first;
+                  // _locationCodeController.text = value.split("-").first;
                 },
               );
             }
@@ -286,6 +290,17 @@ class _SelectBinLocationScreenState extends State<SelectBinLocationScreen> {
               child: IconButton(
                 onPressed: () {
                   // Implement scan functionality
+                  if (_locationCodeController.text ==
+                      LoadingCubit.get(
+                        context,
+                      ).selectedBinLocation?.binNumber) {
+                    setState(() {
+                      AppSnackbars.normal(context, "Bin Number Matched!");
+                      isNextButtonEnabled = true;
+                    });
+                  } else {
+                    AppSnackbars.danger(context, "Bin Number mis matched!");
+                  }
                 },
                 icon: const Icon(Icons.qr_code_scanner, color: AppColors.white),
               ),
@@ -298,12 +313,17 @@ class _SelectBinLocationScreenState extends State<SelectBinLocationScreen> {
 
   Widget _buildNextButton() {
     return CustomElevatedButton(
-      onPressed: () {
-        AppNavigator.push(context, PickItemsScreen());
-      },
+      onPressed:
+          isNextButtonEnabled
+              ? () {
+                AppNavigator.push(context, PickItemsScreen());
+              }
+              : null,
       title: "Next",
       width: double.infinity,
-      height: 50,
+      height: 40,
+      buttonState:
+          isNextButtonEnabled ? ButtonState.idle : ButtonState.disabled,
     );
   }
 }

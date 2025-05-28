@@ -54,3 +54,6 @@ final class ScanBinLocationError extends LoadingState {
 
 // Selection states
 final class SelectionChanged extends LoadingState {}
+
+// Item states
+final class ItemRemoved extends LoadingState {}

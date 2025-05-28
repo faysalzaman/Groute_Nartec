@@ -3,6 +3,7 @@ import 'package:groute_nartec/core/constants/constants.dart';
 import 'package:groute_nartec/core/services/http_service.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/bin_location_model.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/gs1_product.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/loading/container_response_model.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/loading/pallet_response_model.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/loading/serial_response_model.dart';
@@ -30,6 +31,7 @@ class LoadingCubit extends Cubit<LoadingState> {
   bool _bySerial = false;
   int quantityPicked = 0;
   bool isSaveButtonEnabled = false;
+  Product? product;
 
   // Lists
   List<BinLocationModel> _binLocations = [];
@@ -46,6 +48,24 @@ class LoadingCubit extends Cubit<LoadingState> {
   Map<String, List<Map<dynamic, dynamic>>> get scannedItems => _scannedItems;
   Map<String, List<ProductOnPallet>> get productOnPallets => _productOnPallets;
   Map<String, Set<String>> get selectedItems => _selectedProductsOnPallet;
+
+  // Get total item count across all packages
+  int get totalItemsCount {
+    int count = 0;
+    _productOnPallets.forEach((_, items) {
+      count += items.length;
+    });
+    return count;
+  }
+
+  // Get total selected items count
+  int get totalSelectedItemsCount {
+    int count = 0;
+    _selectedProductsOnPallet.forEach((_, items) {
+      count += items.length;
+    });
+    return count;
+  }
 
   /*
   ##############################################################################
@@ -283,6 +303,7 @@ class LoadingCubit extends Cubit<LoadingState> {
             palletCode: palletCode,
             serialNo: serialNo,
             gln: selectedBinLocation?.gln.toString() ?? '',
+            productId: "${product?.id}",
           );
 
       if (!_productOnPallets.containsKey(serialNo ?? palletCode!)) {
@@ -396,7 +417,82 @@ class LoadingCubit extends Cubit<LoadingState> {
 
   void clearSelectedItems() {
     _selectedProductsOnPallet.clear();
+    quantityPicked = 0;
     emit(SelectionChanged());
+  }
+
+  void selectAllItems() {
+    // First clear any existing selections to avoid duplicates
+    clearSelectedItems();
+
+    // Maximum number of items that can be selected
+    final int maxQuantity = int.parse(salesInvoiceDetails?.quantity ?? "0");
+    int selectedCount = 0;
+
+    // Loop through all packages and select items until we reach the maximum
+    for (var entry in _productOnPallets.entries) {
+      String packageCode = entry.key;
+      List<ProductOnPallet> items = entry.value;
+
+      // Initialize set for this package if needed
+      if (!_selectedProductsOnPallet.containsKey(packageCode)) {
+        _selectedProductsOnPallet[packageCode] = <String>{};
+      }
+
+      // Add items from this package until we reach the limit
+      for (var item in items) {
+        if (selectedCount >= maxQuantity) break;
+
+        final itemId = item.id ?? '${item.serialNumber}-${item.palletId}';
+        _selectedProductsOnPallet[packageCode]!.add(itemId);
+        selectedCount++;
+      }
+
+      // Stop if we've reached the maximum
+      if (selectedCount >= maxQuantity) break;
+    }
+
+    // Update quantity picked
+    quantityPicked = selectedCount;
+
+    emit(SelectionChanged());
+  }
+
+  bool areAllItemsSelected() {
+    final int maxQuantity = int.parse(salesInvoiceDetails?.quantity ?? "0");
+    return totalSelectedItemsCount >= maxQuantity ||
+        (totalItemsCount > 0 && totalSelectedItemsCount == totalItemsCount);
+  }
+
+  void removeItem(String packageCode, ProductOnPallet item) {
+    print(packageCode);
+    print(item);
+    // Get the unique ID for this item
+    final String itemId = item.id ?? '${item.serialNumber}-${item.palletId}';
+
+    // First, check if the item is selected and deselect it
+    if (_selectedProductsOnPallet.containsKey(packageCode) &&
+        _selectedProductsOnPallet[packageCode]!.contains(itemId)) {
+      _selectedProductsOnPallet[packageCode]!.remove(itemId);
+      quantityPicked--;
+    }
+
+    // Then remove the item from the productOnPallets map
+    if (_productOnPallets.containsKey(packageCode)) {
+      _productOnPallets[packageCode]!.removeWhere((palletItem) {
+        final currentItemId =
+            palletItem.id ??
+            '${palletItem.serialNumber}-${palletItem.palletId}';
+        return currentItemId == itemId;
+      });
+
+      // If the package is now empty, remove it entirely
+      if (_productOnPallets[packageCode]!.isEmpty) {
+        _productOnPallets.remove(packageCode);
+      }
+    }
+
+    emit(ItemRemoved());
   }
 
   List<ProductOnPallet> getSelectedProducts() {
