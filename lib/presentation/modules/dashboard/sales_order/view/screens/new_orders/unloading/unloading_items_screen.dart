@@ -2,31 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
-import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/core/utils/app_snackbars.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/loading/loading_cubit.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_cubit.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_state.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/loading/product_on_pallet.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/screens/loading/orders_screen.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/widgets/product_on_pallet_card.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 import 'package:groute_nartec/presentation/widgets/text_fields/custom_textfield.dart';
 
-class PickItemsScreen extends StatefulWidget {
-  const PickItemsScreen({super.key});
+class UnloadItemsScreen extends StatefulWidget {
+  const UnloadItemsScreen({super.key});
 
   @override
-  State<PickItemsScreen> createState() => _PickItemsScreenState();
+  State<UnloadItemsScreen> createState() => _UnloadItemsScreenState();
 }
 
-class _PickItemsScreenState extends State<PickItemsScreen> {
+class _UnloadItemsScreenState extends State<UnloadItemsScreen> {
   // Controllers for text fields
   final TextEditingController _palletNumberController = TextEditingController();
   final TextEditingController _binNumberController = TextEditingController();
 
   @override
   void initState() {
-    LoadingCubit.get(context).init();
+    SalesCubit.get(context).init();
     super.initState();
   }
 
@@ -45,7 +44,7 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
     return CustomScaffold(
       title: "Scan By Serial | Pallet",
       automaticallyImplyLeading: true,
-      body: BlocConsumer<LoadingCubit, LoadingState>(
+      body: BlocConsumer<SalesCubit, SalesState>(
         listenWhen:
             (previous, current) =>
                 current is ScanItemError || current is ScanItemLoaded,
@@ -101,18 +100,18 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "Quantity: ${LoadingCubit.get(context).salesInvoiceDetails?.quantity}",
+              "Quantity: ${SalesCubit.get(context).selectedSalesInvoiceDetail?.quantity}",
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
                 color: isDark ? AppColors.textLight : AppColors.textDark,
               ),
             ),
-            BlocBuilder<LoadingCubit, LoadingState>(
+            BlocBuilder<SalesCubit, SalesState>(
               buildWhen: (previous, current) => current is SelectionChanged,
               builder: (context, state) {
                 return Text(
-                  "Picked Quantity: ${LoadingCubit.get(context).quantityPicked}",
+                  "Picked Quantity: ${SalesCubit.get(context).quantityPicked}",
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -134,19 +133,19 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
       children: [
         _buildScanTypeOption(
           label: "BY PALLET",
-          isSelected: LoadingCubit.get(context).byPallet,
+          isSelected: SalesCubit.get(context).byPallet,
           isDark: isDark,
           onTap: () {
-            LoadingCubit.get(context).setScanType(true, false);
+            SalesCubit.get(context).setScanType(true, false);
           },
         ),
         const SizedBox(width: 24),
         _buildScanTypeOption(
           label: "BY SERIAL",
-          isSelected: LoadingCubit.get(context).bySerial,
+          isSelected: SalesCubit.get(context).bySerial,
           isDark: isDark,
           onTap: () {
-            LoadingCubit.get(context).setScanType(false, true);
+            SalesCubit.get(context).setScanType(false, true);
           },
         ),
       ],
@@ -201,7 +200,7 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
   }
 
   Widget _buildPalletNumberInput(bool isDark) {
-    final bool byPallet = LoadingCubit.get(context).byPallet;
+    final bool byPallet = SalesCubit.get(context).byPallet;
     final String hintText =
         byPallet ? "Enter Pallet/SSCC Number" : "Enter Serial Number";
     final String labelText = byPallet ? "Pallet/SSCC Number" : "Serial Number";
@@ -221,7 +220,7 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
               ),
             ),
             const SizedBox(width: 16),
-            BlocBuilder<LoadingCubit, LoadingState>(
+            BlocBuilder<SalesCubit, SalesState>(
               buildWhen:
                   (previous, current) =>
                       current is ScanItemLoading ||
@@ -252,7 +251,7 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
   }
 
   Widget _buildScannedItemsSection(bool isDark) {
-    final cubit = LoadingCubit.get(context);
+    final cubit = SalesCubit.get(context);
     final productOnPallets = cubit.productOnPallets;
 
     return Column(
@@ -272,7 +271,7 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
             ),
             TextButton(
               onPressed: () {
-                LoadingCubit.get(context).clearScannedItems();
+                SalesCubit.get(context).clearScannedItems();
               },
               child: const Text(
                 "Clear All",
@@ -301,7 +300,7 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
   }
 
   Widget _buildScannedItemsList(bool isDark) {
-    final cubit = LoadingCubit.get(context);
+    final cubit = SalesCubit.get(context);
     final productOnPallets = cubit.productOnPallets;
 
     return Column(
@@ -332,7 +331,7 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
                   final String itemId =
                       item.id ?? '${item.serialNumber}-${item.palletId}';
 
-                  return BlocBuilder<LoadingCubit, LoadingState>(
+                  return BlocBuilder<SalesCubit, SalesState>(
                     buildWhen:
                         (previous, current) => current is SelectionChanged,
                     builder: (context, state) {
@@ -422,7 +421,7 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        BlocConsumer<LoadingCubit, LoadingState>(
+        BlocConsumer<SalesCubit, SalesState>(
           buildWhen:
               (previous, current) =>
                   current is ScanBinLocationLoading ||
@@ -449,7 +448,7 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
                   AppSnackbars.warning(context, "Please enter a value to scan");
                   return;
                 }
-                LoadingCubit.get(
+                SalesCubit.get(
                   context,
                 ).scanVehicleLocation(_binNumberController.text);
               },
@@ -481,16 +480,14 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
             ),
           ),
           Expanded(
-            child: BlocConsumer<LoadingCubit, LoadingState>(
+            child: BlocConsumer<SalesCubit, SalesState>(
               listener: (context, state) {
-                if (state is PickItemsLoaded) {
+                if (state is UnloadItemsLoaded) {
                   AppSnackbars.success(context, "Items picked successfully");
                   Navigator.pop(context); // go to bin location screen
-                  Navigator.pop(context); // go to gs1 details screen
-                  Navigator.pop(context); // go to sales invoice details screen
+                  Navigator.pop(context); // go to product details screen
                   Navigator.pop(context); // go to sales orders
-                  AppNavigator.push(context, OrdersScreen());
-                } else if (state is PickItemsError) {
+                } else if (state is UnloadItemsError) {
                   AppSnackbars.danger(context, state.message);
                 }
               },
@@ -498,9 +495,7 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
                 return CustomElevatedButton(
                   onPressed: () {
                     // Implement pick selected items functionality
-                    if (LoadingCubit.get(
-                      context,
-                    ).selectedItems.values.isEmpty) {
+                    if (SalesCubit.get(context).selectedItems.values.isEmpty) {
                       AppSnackbars.warning(
                         context,
                         "Please select items to pick",
@@ -508,16 +503,16 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
                       return;
                     }
 
-                    LoadingCubit.get(context).pickItems();
+                    SalesCubit.get(context).unloadItems();
                   },
                   title: "Submit",
                   width: double.infinity,
                   height: 40,
                   backgroundColor: AppColors.success,
                   buttonState:
-                      LoadingCubit.get(context).isSaveButtonEnabled == false
+                      SalesCubit.get(context).isSaveButtonEnabled == false
                           ? ButtonState.disabled
-                          : state is PickItemsLoading
+                          : state is UnloadItemsLoading
                           ? ButtonState.loading
                           : ButtonState.idle,
                 );
@@ -535,7 +530,7 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
       return;
     }
 
-    final LoadingCubit cubit = LoadingCubit.get(context);
+    final SalesCubit cubit = SalesCubit.get(context);
     final bool byPallet = cubit.byPallet;
 
     if (byPallet) {

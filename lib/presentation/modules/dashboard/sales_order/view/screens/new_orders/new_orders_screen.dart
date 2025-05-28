@@ -73,9 +73,7 @@ class _NewOrdersScreenState extends State<NewOrdersScreen> {
           }
         },
         builder: (context, state) {
-          if (state is SalesInitial) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is SalesLoading && page == 1) {
+          if (state is SalesLoading && page == 1) {
             // Replace simple CircularProgressIndicator with a placeholder loading UI
             return ListView.builder(
               itemCount: 5, // Show 5 placeholder items

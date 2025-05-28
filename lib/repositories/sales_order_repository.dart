@@ -12,9 +12,16 @@ import 'package:mime/mime.dart';
 class SalesOrderRepository {
   final HttpService _httpService = HttpService();
 
-  Future<List<SalesOrderModel>> getSalesOrders(int page, int limit) async {
+  Future<List<SalesOrderModel>> getSalesOrders(
+    int page,
+    int limit, {
+    String? status,
+  }) async {
     final token = await AppPreferences.getAccessToken();
-    final path = '/api/v1/sales-orders/driver?page=$page&limit=$limit';
+    String path = '/api/v1/sales-orders/driver?page=$page&limit=$limit';
+    if (status != null) {
+      path += "&status=$status";
+    }
 
     final response = await _httpService.request(
       path,

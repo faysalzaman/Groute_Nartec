@@ -1,20 +1,20 @@
 // ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api, deprecated_member_use
 
+import 'dart:io';
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/utils/app_snackbars.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_state.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
-import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
-import 'dart:ui' as ui;
-import 'package:permission_handler/permission_handler.dart';
-import 'dart:io';
-
+import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:permission_handler/permission_handler.dart';
+import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 
 class SignatureScreen extends StatefulWidget {
   const SignatureScreen({
@@ -140,24 +140,8 @@ class _SignatureScreenState extends State<SignatureScreen> {
         }
       },
       builder: (context, state) {
-        return Scaffold(
-          backgroundColor: Colors.grey[50], // Subtle background color
-          appBar: AppBar(
-            backgroundColor: AppColors.primaryBlue,
-            elevation: 0, // Remove shadow
-            title: const Text("Receiver Signature"),
-            centerTitle: true,
-            titleTextStyle: const TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.5,
-            ),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_outlined, size: 22),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ),
+        return CustomScaffold(
+          title: "Receiver Signature",
           body: SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(

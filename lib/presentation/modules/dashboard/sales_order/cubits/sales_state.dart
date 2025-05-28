@@ -49,3 +49,51 @@ class SalesOrderUploadImageError extends SalesState {
 
   SalesOrderUploadImageError(this.error);
 }
+
+// Bin location states
+
+class BinLocationLoading extends SalesState {}
+
+class BinLocationLoaded extends SalesState {}
+
+class BinLocationError extends SalesState {
+  final String message;
+
+  BinLocationError({required this.message});
+}
+
+// Unloading items states
+class ChangeScanType extends SalesState {}
+
+class ScanItemLoading extends SalesState {}
+
+class ScanItemLoaded extends SalesState {}
+
+class ScanItemError extends SalesState {
+  final String message;
+  ScanItemError({required this.message});
+}
+
+class ScanBinLocationLoading extends SalesState {}
+
+class ScanBinLocationLoaded extends SalesState {
+  final String message;
+  ScanBinLocationLoaded({required this.message});
+}
+
+class ScanBinLocationError extends SalesState {
+  final String message;
+  ScanBinLocationError({required this.message});
+}
+
+class UnloadItemsLoading extends SalesState {}
+
+class UnloadItemsLoaded extends SalesState {}
+
+class UnloadItemsError extends SalesState {
+  final String message;
+  UnloadItemsError({required this.message});
+}
+
+// Selection states
+class SelectionChanged extends SalesState {}

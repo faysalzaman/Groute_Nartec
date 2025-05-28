@@ -9,6 +9,7 @@ import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_state.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
+import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 
 class PrintDeliveryInvoiceScreen extends StatefulWidget {
   const PrintDeliveryInvoiceScreen({
@@ -47,13 +48,9 @@ class _PrintDeliveryInvoiceScreenState
         }
       },
       builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(
-            backgroundColor: AppColors.primaryBlue,
-            title: const Text('Delivery Invoice'),
-          ),
+        return CustomScaffold(
+          title: "Delivery Invoice",
           body: Container(
-            color: AppColors.white,
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -61,7 +58,6 @@ class _PrintDeliveryInvoiceScreenState
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: AppColors.white,
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(

@@ -2,10 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:groute_nartec/core/constants/app_colors.dart' show AppColors;
 import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/action_screens/capture_images/image_capture_screen.dart';
+import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 
 class DisplayProductScreen extends StatefulWidget {
   const DisplayProductScreen({
@@ -31,9 +31,8 @@ class _DisplayProductScreenState extends State<DisplayProductScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      appBar: AppBar(title: const Text('Picklist Details'), elevation: 2),
+    return CustomScaffold(
+      title: "Picklist Details",
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -41,7 +40,6 @@ class _DisplayProductScreenState extends State<DisplayProductScreen> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
-            color: AppColors.white,
             elevation: 5,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -87,8 +85,6 @@ class _DisplayProductScreenState extends State<DisplayProductScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          elevation: 5,
-                          color: AppColors.white,
                           margin: const EdgeInsets.only(bottom: 8),
                           child: ListTile(
                             title: Text(
