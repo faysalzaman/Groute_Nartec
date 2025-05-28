@@ -432,9 +432,10 @@ class _StartJourneyScreenState extends State<StartJourneyScreen>
             mapType: MapType.normal,
             trafficEnabled: true,
             buildingsEnabled: true,
+
             onMapCreated: (controller) {
               _mapController = controller;
-              // Apply custom map style
+              // Apply custom map style after the map is created
               _setMapStyle();
             },
             polylines: _polylines,
