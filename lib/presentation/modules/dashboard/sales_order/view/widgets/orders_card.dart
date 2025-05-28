@@ -1,19 +1,12 @@
-// // ignore_for_file: deprecated_member_use, use_build_context_synchronously, unused_element, unused_field
-
 // import 'package:flutter/material.dart';
-// import 'package:geolocator/geolocator.dart';
-// import 'package:google_maps_flutter/google_maps_flutter.dart';
+// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 // import 'package:groute_nartec/core/constants/app_colors.dart';
 // import 'package:groute_nartec/core/utils/app_date_formatter.dart';
 // import 'package:groute_nartec/core/utils/app_navigator.dart';
-// import 'package:groute_nartec/core/utils/app_snackbars.dart';
 // import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
-// import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/action_screen.dart';
-// import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/new_orders_map_screen.dart';
-// import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/orders_details_screen.dart';
-// import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
+// import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/screens/loading/new_orders_detail_screen.dart';
+// import 'package:groute_nartec/presentation/widgets/buttons/custom_outline_button.dart';
 
-// /// actions to process or view order details.
 // class OrdersCard extends StatefulWidget {
 //   final SalesOrderModel salesOrder;
 
@@ -23,154 +16,94 @@
 //   State<OrdersCard> createState() => _OrdersCardState();
 // }
 
-// class _OrdersCardState extends State<OrdersCard> {
-//   bool _isProcessing = false; // State variable for loading indicator
+// class _OrdersCardState extends State<OrdersCard>
+//     with SingleTickerProviderStateMixin {
+//   late AnimationController _blinkController;
+//   late Animation<double> _blinkAnimation;
 
-//   // Function to handle location fetching and navigation
-//   Future<void> _processOrder(BuildContext context) async {
-//     if (!mounted) return; // Check if widget is still mounted
+//   @override
+//   void initState() {
+//     super.initState();
 
-//     setState(() {
-//       _isProcessing = true;
-//     });
+//     // Set up proper animation controller for blinking effect
+//     _blinkController = AnimationController(
+//       duration: const Duration(milliseconds: 500),
+//       vsync: this,
+//     );
+
+//     _blinkAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+//       CurvedAnimation(parent: _blinkController, curve: Curves.easeInOut),
+//     );
+
+//     // Start blinking animation if it's today's order
+//     if (_isCurrentDateOrder()) {
+//       _blinkController.repeat(reverse: true);
+//     }
+//   }
+
+//   @override
+//   void dispose() {
+//     _blinkController.dispose();
+//     super.dispose();
+//   }
+
+//   // Function to check if the order date is the current date
+//   bool _isCurrentDateOrder() {
+//     if (widget.salesOrder.assignedTime == null) return false;
 
 //     try {
-//       // 1. Check Location Permissions & Services
-//       bool serviceEnabled;
-//       LocationPermission permission;
+//       final assignedTime = DateTime.parse(widget.salesOrder.assignedTime!);
+//       final now = DateTime.now();
 
-//       serviceEnabled = await Geolocator.isLocationServiceEnabled();
-//       if (!serviceEnabled) {
-//         if (mounted) {
-//           AppSnackbars.danger(
-//             context,
-//             "Location services are disabled. Please enable them.",
-//           );
-//         }
-//         setState(() {
-//           _isProcessing = false;
-//         });
-//         return;
-//       }
-
-//       permission = await Geolocator.checkPermission();
-//       if (permission == LocationPermission.denied) {
-//         permission = await Geolocator.requestPermission();
-//         if (permission == LocationPermission.denied) {
-//           if (mounted) {
-//             AppSnackbars.danger(
-//               context,
-//               "Location permissions are denied. Please enable them.",
-//             );
-//           }
-//           setState(() {
-//             _isProcessing = false;
-//           });
-//           return;
-//         }
-//       }
-
-//       if (permission == LocationPermission.deniedForever) {
-//         if (mounted) {
-//           AppSnackbars.danger(
-//             context,
-//             "Location permissions are permanently denied. Please enable them in settings.",
-//           );
-//         }
-//         setState(() {
-//           _isProcessing = false;
-//         });
-//         return;
-//       }
-
-//       // 2. Get Current Location
-//       Position currentPosition = await Geolocator.getCurrentPosition(
-//         desiredAccuracy: LocationAccuracy.high,
-//       );
-//       LatLng currentDeviceLocation = LatLng(
-//         currentPosition.latitude,
-//         currentPosition.longitude,
-//       );
-
-//       // 3. Get Destination Location (Customer)
-//       final customerLat = double.tryParse(
-//         widget.salesOrder.customer?.latitude?.toString() ?? '',
-//       );
-//       final customerLng = double.tryParse(
-//         widget.salesOrder.customer?.longitude?.toString() ?? '',
-//       );
-
-//       if (customerLat == null || customerLng == null) {
-//         if (mounted) {
-//           AppSnackbars.danger(
-//             context,
-//             "Invalid customer location data. Please check the order details.",
-//           );
-//         }
-//         setState(() {
-//           _isProcessing = false;
-//         });
-//         return;
-//       }
-//       LatLng destinationLocation = LatLng(customerLat, customerLng);
-
-//       // 4. Navigate to Map Screen
-//       if (mounted) {
-//         if (widget.salesOrder.status?.toLowerCase() == 'completed') {
-//           AppNavigator.push(
-//             context,
-//             ActionScreen(
-//               salesOrder: widget.salesOrder,
-//               salesOrderLocation: destinationLocation,
-//               currentDeviceLocation: currentDeviceLocation,
-//             ),
-//           );
-//         } else {
-//           AppNavigator.push(
-//             context,
-//             NewOrdersMapScreen(
-//               salesOrder: widget.salesOrder,
-//               salesOrderLocation: destinationLocation,
-//               currentDeviceLocation: currentDeviceLocation,
-//             ),
-//           );
-//         }
-//       }
-//     } catch (e) {
-//       // Handle potential errors during location fetching
-//       if (mounted) {
-//         AppSnackbars.danger(context, "Failed to get location: $e");
-//       }
-//     } finally {
-//       // Ensure the loading indicator is turned off
-//       if (mounted) {
-//         setState(() {
-//           _isProcessing = false;
-//         });
-//       }
+//       return assignedTime.year == now.year &&
+//           assignedTime.month == now.month &&
+//           assignedTime.day == now.day;
+//     } catch (_) {
+//       return false;
 //     }
+//   }
+
+//   // Helper method to handle card styling based on theme and order status
+//   CardStyle _getCardStyle(BuildContext context) {
+//     final theme = Theme.of(context);
+//     final isDarkMode = theme.brightness == Brightness.dark;
+//     final isCurrentDate = _isCurrentDateOrder();
+
+//     return CardStyle(
+//       shadowColor:
+//           isDarkMode
+//               ? AppColors.primaryDark.withValues(alpha: 0.4)
+//               : isCurrentDate
+//               ? AppColors.orange.withValues(alpha: 0.4)
+//               : AppColors.primaryBlue.withValues(alpha: 0.2),
+//       borderSide:
+//           isDarkMode
+//               ? BorderSide(
+//                 color: AppColors.primaryLight.withValues(alpha: 0.1),
+//                 width: 0.5,
+//               )
+//               : isCurrentDate
+//               ? BorderSide(
+//                 color: AppColors.orange.withValues(alpha: 0.3),
+//                 width: 1.0,
+//               )
+//               : BorderSide.none,
+//       backgroundColor:
+//           isDarkMode
+//               ? AppColors.darkBackground.withValues(alpha: 0.95)
+//               : AppColors.white,
+//     );
 //   }
 
 //   @override
 //   Widget build(BuildContext context) {
 //     final theme = Theme.of(context);
 //     final isDarkMode = theme.brightness == Brightness.dark;
+//     final isCurrentDate = _isCurrentDateOrder();
+//     final cardStyle = _getCardStyle(context);
 
-//     // Format date
-//     String formattedDate = 'N/A';
-//     if (widget.salesOrder.orderDate != null) {
-//       try {
-//         final dateTime = DateTime.parse(widget.salesOrder.orderDate!);
-//         formattedDate = AppDateFormatter.formatDate(dateTime);
-//       } catch (e) {
-//         formattedDate = widget.salesOrder.orderDate ?? 'N/A';
-//       }
-//     }
-
-//     // Get item count
+//     // Get order information
 //     final itemCount = widget.salesOrder.salesInvoiceDetails?.length ?? 0;
-
-//     // Get customer name and address
 //     final customerName =
 //         widget.salesOrder.customer?.companyNameEnglish ?? 'Unknown Customer';
 //     final deliveryAddress =
@@ -179,239 +112,323 @@
 //     return Card(
 //       margin: const EdgeInsets.only(bottom: 16),
 //       elevation: isDarkMode ? 1 : 2,
-//       shadowColor:
-//           isDarkMode
-//               ? AppColors.primaryDark.withValues(alpha: 0.4)
-//               : AppColors.primaryBlue.withValues(alpha: 0.2),
+//       shadowColor: cardStyle.shadowColor,
 //       shape: RoundedRectangleBorder(
 //         borderRadius: BorderRadius.circular(12),
-//         side:
-//             isDarkMode
-//                 ? BorderSide(
-//                   color: AppColors.primaryLight.withValues(alpha: 0.1),
-//                   width: 0.5,
-//                 )
-//                 : BorderSide.none,
+//         side: cardStyle.borderSide,
 //       ),
-//       color:
-//           isDarkMode
-//               ? AppColors.darkBackground.withValues(alpha: 0.95)
-//               : AppColors.white,
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
+//       color: cardStyle.backgroundColor,
+//       child: Stack(
 //         children: [
-//           // Status banner
-//           Container(
-//             width: double.infinity,
-//             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-//             decoration: BoxDecoration(
-//               color: _getStatusColor(widget.salesOrder.status),
-//               borderRadius: const BorderRadius.only(
-//                 topLeft: Radius.circular(12),
-//                 topRight: Radius.circular(12),
-//               ),
-//             ),
-//             child: Row(
-//               children: [
-//                 Text(
-//                   widget.salesOrder.status?.toUpperCase() ?? 'NEW',
-//                   style: theme.textTheme.titleSmall?.copyWith(
-//                     color: AppColors.white,
-//                     fontWeight: FontWeight.bold,
-//                   ),
-//                 ),
-//                 const Spacer(),
-//                 Text(
-//                   formattedDate,
-//                   style: theme.textTheme.bodySmall?.copyWith(
-//                     color: AppColors.white.withValues(alpha: 0.9),
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
+//           Column(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               // Status banner
+//               _buildStatusBanner(context, isCurrentDate),
 
-//           Padding(
-//             padding: const EdgeInsets.all(16),
-//             child: Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 // Order number
-//                 Row(
-//                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                   children: [
-//                     Expanded(
-//                       child: Row(
-//                         children: [
-//                           Icon(
-//                             Icons.shopping_cart_outlined,
-//                             size: 18,
-//                             color:
-//                                 isDarkMode
-//                                     ? AppColors.primaryLight
-//                                     : AppColors.primaryBlue,
-//                           ),
-//                           const SizedBox(width: 8),
-//                           Expanded(
-//                             child: Text(
-//                               'Order #${widget.salesOrder.salesInvoiceNumber ?? 'N/A'}',
-//                               style: theme.textTheme.titleMedium?.copyWith(
-//                                 fontWeight: FontWeight.bold,
-//                                 color:
-//                                     isDarkMode
-//                                         ? AppColors.textLight
-//                                         : AppColors.textDark,
-//                               ),
-//                               maxLines: 1,
-//                               overflow: TextOverflow.ellipsis,
-//                             ),
-//                           ),
-//                         ],
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//                 const SizedBox(height: 16),
-
-//                 // Customer details
-//                 Row(
+//               // Order details
+//               Padding(
+//                 padding: const EdgeInsets.all(16),
+//                 child: Column(
 //                   crossAxisAlignment: CrossAxisAlignment.start,
 //                   children: [
-//                     Icon(
-//                       Icons.business_outlined,
-//                       size: 18,
-//                       color:
-//                           isDarkMode
-//                               ? AppColors.primaryLight
-//                               : AppColors.primaryBlue,
+//                     _buildOrderInfoRow(
+//                       context,
+//                       icon: FontAwesomeIcons.cartShopping,
+//                       text:
+//                           'Order # ${widget.salesOrder.salesInvoiceNumber ?? 'N/A'}',
+//                       isDarkMode: isDarkMode,
 //                     ),
-//                     const SizedBox(width: 8),
-//                     Expanded(
-//                       child: Column(
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         children: [
-//                           Text(
-//                             customerName,
-//                             style: theme.textTheme.titleSmall?.copyWith(
-//                               fontWeight: FontWeight.w500,
-//                               color:
-//                                   isDarkMode
-//                                       ? AppColors.textLight
-//                                       : AppColors.textDark,
-//                             ),
-//                           ),
-//                           const SizedBox(height: 4),
-//                           Text(
-//                             deliveryAddress,
-//                             style: theme.textTheme.bodyMedium?.copyWith(
-//                               color:
-//                                   isDarkMode
-//                                       ? AppColors.grey400
-//                                       : AppColors.textMedium,
-//                             ),
-//                             maxLines: 2,
-//                             overflow: TextOverflow.ellipsis,
-//                           ),
-//                         ],
-//                       ),
+//                     const SizedBox(height: 16),
+
+//                     _buildOrderInfoRow(
+//                       context,
+//                       icon: FontAwesomeIcons.truck,
+//                       text:
+//                           'PO # ${widget.salesOrder.purchaseOrderNumber ?? 'N/A'}',
+//                       isDarkMode: isDarkMode,
 //                     ),
+//                     const SizedBox(height: 16),
+
+//                     _buildOrderInfoRow(
+//                       context,
+//                       icon: FontAwesomeIcons.calendar,
+//                       text:
+//                           'Delivery Date: ${widget.salesOrder.deliveryDate != null ? AppDateFormatter.fromString(widget.salesOrder.deliveryDate, showTime: true) : 'N/A'}',
+//                       isDarkMode: isDarkMode,
+//                     ),
+//                     const SizedBox(height: 16),
+
+//                     _buildOrderInfoRow(
+//                       context,
+//                       icon: FontAwesomeIcons.calendar,
+//                       text:
+//                           'Order Date: ${widget.salesOrder.orderDate != null ? AppDateFormatter.fromString(widget.salesOrder.orderDate, showTime: true) : 'N/A'}',
+//                       isDarkMode: isDarkMode,
+//                     ),
+//                     const SizedBox(height: 16),
+
+//                     _buildOrderInfoRow(
+//                       context,
+//                       icon: FontAwesomeIcons.hashtag,
+//                       text: 'Ref # ${widget.salesOrder.refNo ?? 'N/A'}',
+//                       isDarkMode: isDarkMode,
+//                     ),
+//                     const SizedBox(height: 16),
+
+//                     // Customer details
+//                     _buildCustomerInfo(
+//                       context,
+//                       customerName,
+//                       deliveryAddress,
+//                       isDarkMode,
+//                     ),
+
+//                     const SizedBox(height: 16),
+
+//                     // Order summary
+//                     _buildOrderSummary(context, itemCount, isDarkMode),
 //                   ],
 //                 ),
+//               ),
 
-//                 const SizedBox(height: 16),
-
-//                 // Order summary
-//                 Container(
-//                   padding: const EdgeInsets.all(12),
-//                   decoration: BoxDecoration(
-//                     color:
-//                         isDarkMode
-//                             ? AppColors.primaryDark.withValues(alpha: 0.3)
-//                             : AppColors.lightBackground,
-//                     borderRadius: BorderRadius.circular(8),
-//                   ),
-//                   child: Row(
-//                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                     children: [
-//                       Row(
-//                         children: [
-//                           Icon(
-//                             Icons.inventory_2_outlined,
-//                             size: 16,
-//                             color:
-//                                 isDarkMode
-//                                     ? AppColors.primaryLight
-//                                     : AppColors.primaryBlue,
-//                           ),
-//                           const SizedBox(width: 6),
-//                           Text(
-//                             '$itemCount item${itemCount != 1 ? 's' : ''}',
-//                             style: theme.textTheme.bodyMedium?.copyWith(
-//                               color:
-//                                   isDarkMode
-//                                       ? AppColors.grey300
-//                                       : AppColors.textMedium,
-//                               fontWeight: FontWeight.w500,
-//                             ),
-//                           ),
-//                         ],
-//                       ),
-//                       Text(
-//                         'Total: ${widget.salesOrder.totalAmount ?? 'N/A'}',
-//                         style: theme.textTheme.titleSmall?.copyWith(
-//                           fontWeight: FontWeight.bold,
-//                           color:
-//                               isDarkMode
-//                                   ? AppColors.secondary
-//                                   : AppColors.secondary,
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               ],
-//             ),
+//               // Action buttons
+//               _buildFooterSection(context, isDarkMode),
+//             ],
 //           ),
 
-//           // Action buttons
-//           Padding(
-//             padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-//             child: Row(
-//               mainAxisAlignment: MainAxisAlignment.end,
-//               children: [
-//                 CustomElevatedButton(
-//                   title: 'View Details',
-//                   onPressed: () {
-//                     AppNavigator.push(
-//                       context,
-//                       OrdersDetailScreen(salesOrder: widget.salesOrder),
-//                     );
-//                   },
-//                   width: 120,
-//                   height: 40,
-//                 ),
-//                 const SizedBox(width: 8),
-//                 CustomElevatedButton(
-//                   title: 'Process',
-//                   onPressed: () {
-//                     AppNavigator.push(
-//                       context,
-//                       NewOrdersMapScreen(
-//                         salesOrder: widget.salesOrder,
-//                         salesOrderLocation:
-//                             widget.salesOrder.customer?.latitude,
-//                         currentDeviceLocation:
-//                             widget.salesOrder.customer?.longitude,
-//                       ),
-//                     );
-//                   },
-//                   width: 120,
-//                   height: 40,
-//                 ),
-//               ],
+//           // New badge for current date orders
+//           if (isCurrentDate) _buildNewBadge(),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildStatusBanner(BuildContext context, bool isCurrentDate) {
+//     final theme = Theme.of(context);
+
+//     return Container(
+//       width: double.infinity,
+//       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+//       decoration: BoxDecoration(
+//         color:
+//             isCurrentDate
+//                 ? AppColors.orange
+//                 : _getStatusColor(widget.salesOrder.status),
+//         borderRadius: const BorderRadius.only(
+//           topLeft: Radius.circular(12),
+//           topRight: Radius.circular(12),
+//         ),
+//       ),
+//       child: Row(
+//         children: [
+//           Text(
+//             widget.salesOrder.status?.toUpperCase() ?? 'NEW',
+//             style: theme.textTheme.titleSmall?.copyWith(
+//               color: AppColors.white,
+//               fontWeight: FontWeight.bold,
 //             ),
 //           ),
 //         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildOrderInfoRow(
+//     BuildContext context, {
+//     required IconData icon,
+//     required String text,
+//     required bool isDarkMode,
+//   }) {
+//     final theme = Theme.of(context);
+
+//     return Row(
+//       children: [
+//         FaIcon(
+//           icon,
+//           size: 18,
+//           color: isDarkMode ? AppColors.primaryLight : AppColors.primaryBlue,
+//         ),
+//         const SizedBox(width: 8),
+//         Expanded(
+//           child: Text(
+//             text,
+//             style: theme.textTheme.titleSmall?.copyWith(
+//               fontWeight: FontWeight.bold,
+//               color: isDarkMode ? AppColors.textLight : AppColors.textDark,
+//             ),
+//             maxLines: 1,
+//             overflow: TextOverflow.ellipsis,
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+
+//   Widget _buildCustomerInfo(
+//     BuildContext context,
+//     String customerName,
+//     String address,
+//     bool isDarkMode,
+//   ) {
+//     final theme = Theme.of(context);
+
+//     return Row(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         FaIcon(
+//           FontAwesomeIcons.user,
+//           size: 18,
+//           color: isDarkMode ? AppColors.primaryLight : AppColors.primaryBlue,
+//         ),
+//         const SizedBox(width: 8),
+//         Expanded(
+//           child: Column(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               Text(
+//                 customerName,
+//                 style: theme.textTheme.titleSmall?.copyWith(
+//                   fontWeight: FontWeight.w500,
+//                   color: isDarkMode ? AppColors.textLight : AppColors.textDark,
+//                 ),
+//               ),
+//               const SizedBox(height: 4),
+//               Text(
+//                 address,
+//                 style: theme.textTheme.bodyMedium?.copyWith(
+//                   color: isDarkMode ? AppColors.grey400 : AppColors.textMedium,
+//                 ),
+//                 maxLines: 2,
+//                 overflow: TextOverflow.ellipsis,
+//               ),
+//             ],
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+
+//   Widget _buildOrderSummary(
+//     BuildContext context,
+//     int itemCount,
+//     bool isDarkMode,
+//   ) {
+//     final theme = Theme.of(context);
+
+//     return Container(
+//       padding: const EdgeInsets.all(12),
+//       decoration: BoxDecoration(
+//         color:
+//             isDarkMode
+//                 ? AppColors.primaryDark.withValues(alpha: 0.3)
+//                 : AppColors.lightBackground,
+//         borderRadius: BorderRadius.circular(8),
+//       ),
+//       child: Row(
+//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//         children: [
+//           Row(
+//             children: [
+//               FaIcon(
+//                 FontAwesomeIcons.box,
+//                 size: 18,
+//                 color:
+//                     isDarkMode ? AppColors.primaryLight : AppColors.primaryBlue,
+//               ),
+//               const SizedBox(width: 6),
+//               Text(
+//                 '$itemCount item${itemCount != 1 ? 's' : ''}',
+//                 style: theme.textTheme.bodyMedium?.copyWith(
+//                   color: isDarkMode ? AppColors.grey300 : AppColors.textMedium,
+//                   fontWeight: FontWeight.w500,
+//                 ),
+//               ),
+//             ],
+//           ),
+//           Text(
+//             'Total: ${widget.salesOrder.totalAmount ?? '0'}',
+//             style: theme.textTheme.titleSmall?.copyWith(
+//               fontWeight: FontWeight.bold,
+//               color: AppColors.secondary,
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildFooterSection(BuildContext context, bool isDarkMode) {
+//     final formattedDate = AppDateFormatter.fromString(
+//       widget.salesOrder.assignedTime ?? '',
+//       showTime: true,
+//     );
+//     return Padding(
+//       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+//       child: Row(
+//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//         children: [
+//           // Assign date
+//           Container(
+//             padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+//             decoration: BoxDecoration(
+//               color:
+//                   isDarkMode
+//                       ? AppColors.primaryDark.withValues(alpha: 0.3)
+//                       : AppColors.lightBackground,
+//               borderRadius: BorderRadius.circular(8),
+//             ),
+//             child: Text(
+//               formattedDate,
+//               style: TextStyle(
+//                 color: isDarkMode ? AppColors.grey300 : AppColors.textMedium,
+//               ),
+//             ),
+//           ),
+//           CustomOutlineButton(
+//             title: "Start Picking",
+//             height: 30,
+//             width: 120,
+//             borderColor: AppColors.green,
+//             textColor: AppColors.green,
+//             onPressed: () {
+//               AppNavigator.push(
+//                 context,
+//                 NewOrdersDetailScreen(salesOrder: widget.salesOrder),
+//               );
+//             },
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildNewBadge() {
+//     return Positioned(
+//       top: 0,
+//       right: 0,
+//       child: AnimatedBuilder(
+//         animation: _blinkAnimation,
+//         builder: (context, child) {
+//           final blinkValue = _blinkAnimation.value;
+//           return Container(
+//             margin: const EdgeInsets.all(8),
+//             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+//             decoration: BoxDecoration(
+//               color: Color.lerp(Colors.transparent, Colors.red, blinkValue),
+//               borderRadius: BorderRadius.circular(12),
+//               border: Border.all(color: Colors.red, width: 1.5),
+//             ),
+//             child: Text(
+//               'New',
+//               style: TextStyle(
+//                 color: Color.lerp(Colors.red, Colors.white, blinkValue),
+//                 fontWeight: FontWeight.bold,
+//                 fontSize: 10,
+//               ),
+//             ),
+//           );
+//         },
 //       ),
 //     );
 //   }
@@ -436,4 +453,17 @@
 //         return AppColors.primaryBlue;
 //     }
 //   }
+// }
+
+// /// Helper class to manage card styling based on theme and status
+// class CardStyle {
+//   final Color shadowColor;
+//   final BorderSide borderSide;
+//   final Color backgroundColor;
+
+//   CardStyle({
+//     required this.shadowColor,
+//     required this.borderSide,
+//     required this.backgroundColor,
+//   });
 // }

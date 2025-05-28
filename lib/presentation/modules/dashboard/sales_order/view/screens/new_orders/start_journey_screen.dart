@@ -38,6 +38,8 @@ class _StartJourneyScreenState extends State<StartJourneyScreen>
   Set<Polyline> _polylines = {};
   List<LatLng> polylineCoordinates = [];
   Set<Marker> _markers = {};
+  String? estimatedArrivalTime;
+  String? distance; // Add this line
 
   @override
   void initState() {
@@ -109,6 +111,10 @@ class _StartJourneyScreenState extends State<StartJourneyScreen>
           int durationInSeconds =
               decoded['routes'][0]['legs'][0]['duration']['value'];
 
+          // Extract the distance (in meters) from the API response
+          int distanceInMeters =
+              decoded['routes'][0]['legs'][0]['distance']['value'];
+
           // Calculate the estimated time of arrival
           DateTime now = DateTime.now();
           DateTime eta = now.add(Duration(seconds: durationInSeconds));
@@ -118,7 +124,14 @@ class _StartJourneyScreenState extends State<StartJourneyScreen>
               '${eta.hour}:${eta.minute.toString().padLeft(2, '0')}';
           print('ETA: $formattedEta');
 
+          // Format the distance in kilometers
+          String formattedDistance = (distanceInMeters / 1000).toStringAsFixed(
+            1,
+          );
+
           setState(() {
+            estimatedArrivalTime = formattedEta;
+            distance = formattedDistance; // Add this line
             _polylines.clear();
             _polylines.add(
               Polyline(
@@ -271,6 +284,56 @@ class _StartJourneyScreenState extends State<StartJourneyScreen>
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+                          if (estimatedArrivalTime != null ||
+                              distance != null) ...[
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                if (estimatedArrivalTime != null) ...[
+                                  Icon(
+                                    Icons.schedule,
+                                    color: AppColors.grey600,
+                                    size: 16,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'ETA: $estimatedArrivalTime',
+                                    style: TextStyle(
+                                      color: AppColors.grey600,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                                if (estimatedArrivalTime != null &&
+                                    distance != null) ...[
+                                  const SizedBox(width: 16),
+                                  Container(
+                                    width: 1,
+                                    height: 12,
+                                    color: AppColors.grey300,
+                                  ),
+                                  const SizedBox(width: 16),
+                                ],
+                                if (distance != null) ...[
+                                  Icon(
+                                    Icons.straighten,
+                                    color: AppColors.grey600,
+                                    size: 16,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '$distance km',
+                                    style: TextStyle(
+                                      color: AppColors.grey600,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ],
                         ],
                       ),
                     ),
@@ -366,6 +429,9 @@ class _StartJourneyScreenState extends State<StartJourneyScreen>
             markers: _markers,
             myLocationEnabled: true,
             myLocationButtonEnabled: true,
+            mapType: MapType.normal,
+            trafficEnabled: true,
+            buildingsEnabled: true,
             onMapCreated: (controller) {
               _mapController = controller;
               // Apply custom map style
