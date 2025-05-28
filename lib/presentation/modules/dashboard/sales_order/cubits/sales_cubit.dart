@@ -290,20 +290,14 @@ class SalesCubit extends Cubit<SalesState> {
 
     // Toggle selection
     if (_selectedProductsOnPallet[packageCode]!.contains(itemId)) {
-      _selectedProductsOnPallet[packageCode]!.remove(itemId);
-      if (quantityPicked > 0) quantityPicked--;
+      _selectedProductsOnPallet[packageCode]?.remove(itemId);
+      if (quantityPicked >= 0) quantityPicked++;
     } else {
-      if (quantityPicked <
-          int.parse(selectedSalesInvoiceDetail?.quantity ?? "0")) {
-        _selectedProductsOnPallet[packageCode]!.add(itemId);
-        quantityPicked++;
+      if (quantityPicked > 0) {
+        _selectedProductsOnPallet[packageCode]?.add(itemId);
+        quantityPicked--;
       } else {
-        emit(
-          ScanItemError(
-            message:
-                "Quantity picked cannot exceed ${selectedSalesInvoiceDetail?.quantity}",
-          ),
-        );
+        emit(ScanItemError(message: "You have reached your max limit"));
       }
     }
 

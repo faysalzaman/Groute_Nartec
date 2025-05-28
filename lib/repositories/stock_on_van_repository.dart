@@ -57,7 +57,7 @@ class StockOnVanRepository {
 
       final payload = {
         "stocksOnVanIds": stocksOnVanIds,
-        // "salesInvoiceDetailId": salesInvoiceDetailId,
+        "salesInvoiceDetailId": salesInvoiceDetailId,
         "quantityPicked": quantityPicked.toString(),
       };
 

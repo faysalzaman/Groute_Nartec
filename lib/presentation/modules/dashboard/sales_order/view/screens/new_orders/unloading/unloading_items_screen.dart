@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
+import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/core/utils/app_snackbars.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_state.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/new_orders_screen.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/loading/product_on_pallet.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/widgets/product_on_pallet_card.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
@@ -487,6 +489,9 @@ class _UnloadItemsScreenState extends State<UnloadItemsScreen> {
                   Navigator.pop(context); // go to bin location screen
                   Navigator.pop(context); // go to product details screen
                   Navigator.pop(context); // go to sales orders
+                  Navigator.pop(context); // delivery action screen
+                  Navigator.pop(context); // delivery action screen
+                  AppNavigator.pushReplacement(context, NewOrdersScreen());
                 } else if (state is UnloadItemsError) {
                   AppSnackbars.danger(context, state.message);
                 }

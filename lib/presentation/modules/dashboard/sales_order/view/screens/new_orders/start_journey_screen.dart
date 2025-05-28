@@ -13,6 +13,7 @@ import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_state.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/action_screen.dart';
+import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 import 'package:http/http.dart' as http;
 
 class StartJourneyScreen extends StatefulWidget {
@@ -205,17 +206,8 @@ class _StartJourneyScreenState extends State<StartJourneyScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.primaryBlue,
-        title: const Text('Journey'),
-        centerTitle: true,
-        titleTextStyle: const TextStyle(
-          color: AppColors.white,
-          fontSize: 17,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
+    return CustomScaffold(
+      title: "Journey",
       bottomNavigationBar: BlocConsumer<SalesCubit, SalesState>(
         listener: (context, state) {
           if (state is SalesStatusUpdateSuccessState) {
