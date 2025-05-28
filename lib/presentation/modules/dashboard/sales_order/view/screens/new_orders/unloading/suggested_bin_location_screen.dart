@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/utils/app_loading.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
+import 'package:groute_nartec/core/utils/app_snackbars.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_state.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/unloading/unloading_items_screen.dart';
@@ -34,6 +35,9 @@ class _SelectBinLocationScreenState extends State<SuggestedBinLocationScreen> {
   // Dropdown options
 
   String? _selectedBinLocation;
+
+  // Others
+  bool isNextButtonEnabled = false;
 
   @override
   void initState() {
@@ -160,7 +164,7 @@ class _SelectBinLocationScreenState extends State<SuggestedBinLocationScreen> {
                 initialItem: _selectedBinLocation,
                 onChanged: (value) {
                   SalesCubit.get(context).setSelectedBinLocation(value);
-                  _locationCodeController.text = value.split("-").first;
+                  // _locationCodeController.text = value.split("-").first;
                 },
               );
             }
@@ -286,6 +290,15 @@ class _SelectBinLocationScreenState extends State<SuggestedBinLocationScreen> {
               child: IconButton(
                 onPressed: () {
                   // Implement scan functionality
+                  if (_locationCodeController.text ==
+                      SalesCubit.get(context).selectedBinLocation?.binNumber) {
+                    setState(() {
+                      AppSnackbars.normal(context, "Bin Number Matched!");
+                      isNextButtonEnabled = true;
+                    });
+                  } else {
+                    AppSnackbars.danger(context, "Bin Number mis matched!");
+                  }
                 },
                 icon: const Icon(Icons.qr_code_scanner, color: AppColors.white),
               ),
@@ -303,7 +316,9 @@ class _SelectBinLocationScreenState extends State<SuggestedBinLocationScreen> {
       },
       title: "Next",
       width: double.infinity,
-      height: 50,
+      height: 40,
+      buttonState:
+          isNextButtonEnabled ? ButtonState.idle : ButtonState.disabled,
     );
   }
 }

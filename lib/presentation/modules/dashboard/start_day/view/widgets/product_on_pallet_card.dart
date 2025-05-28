@@ -7,12 +7,14 @@ class ProductOnPalletCard extends StatelessWidget {
   final ProductOnPallet item;
   final bool isSelected;
   final Function(bool?) onSelectionChanged;
+  final Function()? onRemove;
 
   const ProductOnPalletCard({
     Key? key,
     required this.item,
     required this.isSelected,
     required this.onSelectionChanged,
+    this.onRemove,
   }) : super(key: key);
 
   @override
@@ -106,10 +108,7 @@ class ProductOnPalletCard extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
-                                  color:
-                                      isDark
-                                          ? AppColors.primaryLight
-                                          : AppColors.primaryBlue,
+                                  color: textLight,
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -118,16 +117,56 @@ class ProductOnPalletCard extends StatelessWidget {
                           ],
                         ),
                       ),
-                      Checkbox(
-                        value: isSelected,
-                        onChanged: onSelectionChanged,
-                        activeColor:
-                            isDark
-                                ? AppColors.primaryLight
-                                : AppColors.primaryBlue,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
-                        ),
+                      Row(
+                        children: [
+                          // Delete button
+                          if (onRemove != null)
+                            IconButton(
+                              onPressed: onRemove,
+                              icon: Icon(
+                                Icons.delete_outline,
+                                color:
+                                    isDark
+                                        ? AppColors.error.withValues(alpha: 0.8)
+                                        : AppColors.error,
+                                size: 20,
+                              ),
+                              tooltip: 'Remove item',
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              visualDensity: VisualDensity.compact,
+                              splashRadius: 20,
+                            ),
+                          const SizedBox(width: 12),
+                          // Checkbox
+                          SizedBox(
+                            height: 24,
+                            width: 24,
+                            child: Checkbox(
+                              value: isSelected,
+                              onChanged: onSelectionChanged,
+                              activeColor:
+                                  isDark
+                                      ? AppColors.primaryLight
+                                      : AppColors.primaryBlue,
+                              checkColor: AppColors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              side: BorderSide(
+                                color:
+                                    isSelected
+                                        ? (isDark
+                                            ? AppColors.primaryLight
+                                            : AppColors.primaryBlue)
+                                        : (isDark
+                                            ? AppColors.grey600
+                                            : AppColors.grey400),
+                                width: 1.5,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

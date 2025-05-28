@@ -254,49 +254,184 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
   Widget _buildScannedItemsSection(bool isDark) {
     final cubit = LoadingCubit.get(context);
     final productOnPallets = cubit.productOnPallets;
+    final totalItems = cubit.totalItemsCount;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Fixed header section
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return BlocBuilder<LoadingCubit, LoadingState>(
+      builder: (context, state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Scanned Items (${productOnPallets.length})",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: isDark ? AppColors.textLight : AppColors.textDark,
+            // Header with item count and select all option
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Item count
+                  Text(
+                    "Items: ${cubit.totalSelectedItemsCount}/$totalItems (Max: ${cubit.salesInvoiceDetails?.quantity})",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? AppColors.textLight : AppColors.textDark,
+                    ),
+                  ),
+                  // Select All button
+                  BlocBuilder<LoadingCubit, LoadingState>(
+                    buildWhen:
+                        (previous, current) =>
+                            current is SelectionChanged ||
+                            current is ItemRemoved,
+                    builder: (context, state) {
+                      final bool allSelected = cubit.areAllItemsSelected();
+                      return GestureDetector(
+                        onTap: () {
+                          if (allSelected) {
+                            cubit.clearSelectedItems();
+                          } else {
+                            cubit.selectAllItems();
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color:
+                                allSelected
+                                    ? (isDark
+                                        ? AppColors.primaryDark.withValues(
+                                          alpha: 0.6,
+                                        )
+                                        : AppColors.primaryLight.withValues(
+                                          alpha: 0.1,
+                                        ))
+                                    : (isDark
+                                        ? AppColors.primaryLight.withValues(
+                                          alpha: 0.1,
+                                        )
+                                        : AppColors.primaryBlue.withValues(
+                                          alpha: 0.1,
+                                        )),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color:
+                                  isDark
+                                      ? AppColors.primaryLight.withValues(
+                                        alpha: 0.5,
+                                      )
+                                      : AppColors.primaryBlue.withValues(
+                                        alpha: 0.5,
+                                      ),
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                allSelected
+                                    ? Icons.deselect_outlined
+                                    : Icons.select_all_outlined,
+                                size: 16,
+                                color:
+                                    isDark
+                                        ? AppColors.primaryLight
+                                        : AppColors.primaryBlue,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                allSelected ? "Deselect All" : "Select All",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color:
+                                      isDark
+                                          ? AppColors.primaryLight
+                                          : AppColors.primaryBlue,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
-            TextButton(
-              onPressed: () {
-                LoadingCubit.get(context).clearScannedItems();
-              },
-              child: const Text(
-                "Clear All",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.error,
+            // Clear all button if there are items
+            if (totalItems > 0)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: GestureDetector(
+                  onTap: () => cubit.clearScannedItems(),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color:
+                          isDark
+                              ? AppColors.error.withValues(alpha: 0.1)
+                              : AppColors.error.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color:
+                            isDark
+                                ? AppColors.error.withValues(alpha: 0.5)
+                                : AppColors.error.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.delete_sweep_outlined,
+                          size: 16,
+                          color:
+                              isDark
+                                  ? AppColors.error.withValues(alpha: 0.9)
+                                  : AppColors.error,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          "Clear All",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color:
+                                isDark
+                                    ? AppColors.error.withValues(alpha: 0.9)
+                                    : AppColors.error,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
+            Expanded(
+              child:
+                  productOnPallets.isEmpty
+                      ? _buildEmptyScannedItems(isDark)
+                      : RefreshIndicator(
+                        onRefresh: () async {
+                          // Provide a way to refresh the list
+                          cubit.clearScannedItems();
+                        },
+                        child: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: _buildScannedItemsList(isDark),
+                        ),
+                      ),
             ),
           ],
-        ),
-
-        // Scrollable content area
-        Expanded(
-          child:
-              productOnPallets.isEmpty
-                  ? _buildEmptyScannedItems(isDark)
-                  : SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    child: _buildScannedItemsList(isDark),
-                  ),
-        ),
-      ],
+        );
+      },
     );
   }
 
@@ -310,44 +445,48 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
             final String keyCode = entry.key;
             final List<ProductOnPallet> items = entry.value;
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Text(
-                    "Package: $keyCode (${items.length} items)",
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color:
-                          isDark
-                              ? AppColors.primaryLight
-                              : AppColors.primaryBlue,
+            return BlocBuilder<LoadingCubit, LoadingState>(
+              buildWhen:
+                  (previous, current) =>
+                      current is SelectionChanged || current is ItemRemoved,
+              builder: (context, state) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Text(
+                        "Package: $keyCode (${items.length} items)",
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color:
+                              isDark
+                                  ? AppColors.primaryLight
+                                  : AppColors.primaryBlue,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                ...items.map((item) {
-                  // Generate a unique identifier for this item
-                  final String itemId =
-                      item.id ?? '${item.serialNumber}-${item.palletId}';
+                    ...items.map((item) {
+                      // Generate a unique identifier for this item
+                      final String itemId =
+                          item.id ?? '${item.serialNumber}-${item.palletId}';
 
-                  return BlocBuilder<LoadingCubit, LoadingState>(
-                    buildWhen:
-                        (previous, current) => current is SelectionChanged,
-                    builder: (context, state) {
                       return ProductOnPalletCard(
                         item: item,
                         isSelected: cubit.isItemSelected(keyCode, itemId),
                         onSelectionChanged: (selected) {
                           cubit.toggleItemSelection(keyCode, itemId);
                         },
+                        onRemove: () {
+                          cubit.removeItem(keyCode, item);
+                        },
                       );
-                    },
-                  );
-                }).toList(),
-                const SizedBox(height: 16),
-              ],
+                    }).toList(),
+                    const SizedBox(height: 16),
+                  ],
+                );
+              },
             );
           }).toList(),
     );
@@ -431,7 +570,7 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
           listener: (context, state) {
             if (state is ScanBinLocationLoaded) {
               AppSnackbars.success(context, state.message);
-              _binNumberController.clear();
+              //   _binNumberController.clear();
             }
           },
           builder: (context, state) {

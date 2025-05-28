@@ -97,3 +97,6 @@ class UnloadItemsError extends SalesState {
 
 // Selection states
 class SelectionChanged extends SalesState {}
+
+// Item states
+class ItemRemoved extends SalesState {}
