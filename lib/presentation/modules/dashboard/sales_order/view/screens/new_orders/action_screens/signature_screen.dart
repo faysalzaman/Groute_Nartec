@@ -25,7 +25,7 @@ class SignatureScreen extends StatefulWidget {
   });
 
   final LatLng salesOrderLocation;
-  final LatLng currentDeviceLocation; // Add this parameter
+  final LatLng currentDeviceLocation;
   final SalesOrderModel salesOrder;
 
   @override
@@ -40,7 +40,6 @@ class _SignatureScreenState extends State<SignatureScreen> {
   @override
   void initState() {
     super.initState();
-    // Request storage permission when the screen is initialized
     _checkAndRequestPermission();
   }
 
@@ -51,7 +50,6 @@ class _SignatureScreenState extends State<SignatureScreen> {
     });
 
     if (!hasPermission) {
-      // Show a message if permission was denied
       Future.delayed(Duration.zero, () {
         AppSnackbars.warning(
           context,
@@ -62,7 +60,6 @@ class _SignatureScreenState extends State<SignatureScreen> {
   }
 
   Future<void> saveSignature() async {
-    // If we haven't checked permissions yet, check them now
     if (!_permissionChecked) {
       final hasPermission = await _requestStoragePermission();
       if (!hasPermission) {
@@ -89,7 +86,6 @@ class _SignatureScreenState extends State<SignatureScreen> {
         imageFile = File(path);
         await imageFile!.writeAsBytes(buffer);
 
-        // If we have a saved image, upload it
         if (imageFile != null) {
           context.read<SalesCubit>().uploadSignature(
             widget.salesOrder.id.toString(),
@@ -106,7 +102,6 @@ class _SignatureScreenState extends State<SignatureScreen> {
   }
 
   Future<bool> _requestStoragePermission() async {
-    // For Android, we need different permissions depending on SDK version
     if (Platform.isAndroid) {
       if (await Permission.storage.request().isGranted) {
         return true;
@@ -114,13 +109,10 @@ class _SignatureScreenState extends State<SignatureScreen> {
         return true;
       }
       return false;
-    }
-    // For iOS, we generally don't need explicit permission for app document directory
-    else if (Platform.isIOS) {
+    } else if (Platform.isIOS) {
       return true;
     }
 
-    // For other platforms, default to checking storage permission
     return await Permission.storage.request().isGranted;
   }
 
@@ -141,79 +133,263 @@ class _SignatureScreenState extends State<SignatureScreen> {
       },
       builder: (context, state) {
         return CustomScaffold(
-          title: "Receiver Signature",
-          body: SafeArea(
+          title: "Delivery Signature",
+          body: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 24.0,
-              ),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Please sign below',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black87,
+                  // Header Information Card
+                  Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 2,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Colors.white, Colors.grey[50]!],
+                        ),
+                      ),
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Delivery Confirmation',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[600],
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Customer Signature Required',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+
+                  const SizedBox(height: 24),
+
+                  // Instructions Section
                   Container(
-                    height: MediaQuery.of(context).size.height * 0.5,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.blue[50],
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.blue[200]!),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.info_outline,
+                          color: Colors.blue[700],
+                          size: 20,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Instructions',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue[700],
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Please ask the customer to sign below\nto confirm delivery receipt',
+                                style: TextStyle(
+                                  color: Colors.blue[600],
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Signature Section Header
+                  Row(
+                    children: [
+                      Icon(Icons.draw, size: 20, color: Colors.grey[600]),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Signature Pad',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Signature Pad Container
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.45,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.grey.withOpacity(0.1),
                           spreadRadius: 2,
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
                         ),
                       ],
-                      border: Border.all(color: Colors.grey.shade300),
+                      border: Border.all(color: Colors.grey.shade200),
                     ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: SfSignaturePad(
-                        key: _signaturePadKey,
-                        backgroundColor: Colors.white,
-                        strokeColor: Colors.black,
-                        minimumStrokeWidth: 1.0,
-                        maximumStrokeWidth: 4.0,
-                      ),
+                    child: Column(
+                      children: [
+                        // Signature Pad Header
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[50],
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(16),
+                              topRight: Radius.circular(16),
+                            ),
+                            border: Border(
+                              bottom: BorderSide(color: Colors.grey[200]!),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.edit,
+                                size: 16,
+                                color: Colors.grey[600],
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Sign here',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              const Spacer(),
+                              Text(
+                                'Touch to sign',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[500],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Signature Pad
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(16),
+                              bottomRight: Radius.circular(16),
+                            ),
+                            child: SfSignaturePad(
+                              key: _signaturePadKey,
+                              backgroundColor: Colors.white,
+                              strokeColor: Colors.black,
+                              minimumStrokeWidth: 1.5,
+                              maximumStrokeWidth: 4.0,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+
                   const SizedBox(height: 24),
+
+                  // Action Buttons
                   Row(
                     children: [
+                      // Clear Button
                       Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed:
-                              () => _signaturePadKey.currentState?.clear(),
-                          icon: const Icon(
-                            Icons.refresh,
-                            color: Colors.black54,
+                        child: Container(
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Colors.grey[300]!),
                           ),
-                          label: const Text('Clear'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey[100],
-                            foregroundColor: Colors.black54,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(16),
+                              onTap:
+                                  () => _signaturePadKey.currentState?.clear(),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.refresh,
+                                      color: Colors.grey[600],
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Clear',
+                                      style: TextStyle(
+                                        color: Colors.grey[600],
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
+
                       const SizedBox(width: 16),
+
+                      // Save Button
                       Expanded(
-                        flex: 2,
+                        flex: 1,
                         child: CustomElevatedButton(
                           title: "Save Signature",
                           height: 40,
+                          fontSize: 12,
                           onPressed: saveSignature,
                           buttonState:
                               state is SalesOrderAddSignatureLoadingState
@@ -222,6 +398,37 @@ class _SignatureScreenState extends State<SignatureScreen> {
                         ),
                       ),
                     ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Footer Note
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.orange[50],
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.orange[200]!),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.lock_outline,
+                          size: 16,
+                          color: Colors.orange[700],
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Your signature is encrypted and stored securely',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.orange[700],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

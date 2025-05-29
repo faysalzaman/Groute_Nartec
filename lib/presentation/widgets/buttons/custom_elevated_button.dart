@@ -33,7 +33,7 @@ class CustomElevatedButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: height ?? 45,
+      height: height ?? 40,
       width: width ?? double.infinity,
       child: ElevatedButton(
         onPressed: buttonState == ButtonState.disabled ? null : onPressed,
@@ -97,7 +97,7 @@ class CustomElevatedButton extends StatelessWidget {
             Text(
               'Error',
               style: GoogleFonts.inter(
-                fontSize: fontSize ?? 14,
+                fontSize: fontSize ?? 12,
                 fontWeight: FontWeight.w600,
                 color: AppColors.white,
               ),
@@ -117,7 +117,7 @@ class CustomElevatedButton extends StatelessWidget {
               Text(
                 title,
                 style: GoogleFonts.inter(
-                  fontSize: fontSize ?? 14,
+                  fontSize: fontSize ?? 12,
                   fontWeight: FontWeight.w600,
                   color: AppColors.white,
                 ),
@@ -132,7 +132,7 @@ class CustomElevatedButton extends StatelessWidget {
         return Text(
           title,
           style: GoogleFonts.inter(
-            fontSize: fontSize ?? 14,
+            fontSize: fontSize ?? 12,
             fontWeight: FontWeight.w600,
             color: AppColors.white,
           ),
