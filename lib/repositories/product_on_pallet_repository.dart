@@ -21,11 +21,6 @@ class ProductOnPalletRepository {
     try {
       final path = '/api/v1/product-pallets/by-pallet-or-serial';
 
-      // final payload =
-      //     palletCode != null
-      //         ? {"searchTerm": palletCode, "searchType": "pallet", "gln": gln}
-      //         : {"searchTerm": serialNo, "searchType": "serial", "gln": gln};
-
       final payload = {
         "searchTerm": palletCode ?? serialNo,
         "gln": gln,
