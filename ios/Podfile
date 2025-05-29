@@ -48,16 +48,8 @@ post_install do |installer|
       if target.name == 'Google-Maps-iOS-Utils' || target.name.start_with?('GoogleMaps')
         config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = ''
       end
-    end
-  end
-end
-
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    flutter_additional_ios_build_settings(target)
-    
-    # Add the following line to specify the Google Maps SDK version
-    target.build_configurations.each do |config|
+      
+      # Set deployment target
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
       
       # Fix Google Maps and location background mode issues
