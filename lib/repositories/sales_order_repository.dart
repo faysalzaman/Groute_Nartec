@@ -18,7 +18,7 @@ class SalesOrderRepository {
     String? status,
   }) async {
     final token = await AppPreferences.getAccessToken();
-    String path = '/api//api/v1/sales-orders/driver?page=$page&limit=$limit';
+    String path = '/api/v1/sales-orders/driver?page=$page&limit=$limit';
     if (status != null) {
       path += "&status=$status";
     }
@@ -41,7 +41,7 @@ class SalesOrderRepository {
   Future<void> updateStatus(String id, Map<String, dynamic> body) async {
     final token = await AppPreferences.getAccessToken();
 
-    final path = '/api//api/v1/sales-orders/$id';
+    final path = '/api/v1/sales-orders/$id';
 
     final response = await _httpService.request(
       path,
@@ -59,9 +59,7 @@ class SalesOrderRepository {
   }
 
   Future<String> uploadSignature(File images, String id) async {
-    var url = Uri.parse(
-      "${kGrouteUrl}/api//api/v1/sales-orders/add-signature/$id",
-    );
+    var url = Uri.parse("${kGrouteUrl}/api/v1/sales-orders/add-signature/$id");
 
     final token = await AppPreferences.getAccessToken();
 
