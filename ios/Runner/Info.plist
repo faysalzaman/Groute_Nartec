@@ -45,6 +45,12 @@
     <true/>
     <key>UIApplicationSupportsIndirectInputEvents</key>
     <true/>
+    <!-- Background Modes for Location Updates -->
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>location</string>
+        <string>fetch</string>
+    </array>
     <!-- Google Maps API Key -->
     <key>io.flutter.embedded_views_preview</key>
     <true/>
