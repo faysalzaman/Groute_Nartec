@@ -1,469 +1,613 @@
-// import 'package:flutter/material.dart';
-// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-// import 'package:groute_nartec/core/constants/app_colors.dart';
-// import 'package:groute_nartec/core/utils/app_date_formatter.dart';
-// import 'package:groute_nartec/core/utils/app_navigator.dart';
-// import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
-// import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/screens/loading/new_orders_detail_screen.dart';
-// import 'package:groute_nartec/presentation/widgets/buttons/custom_outline_button.dart';
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:groute_nartec/core/constants/app_colors.dart';
+import 'package:groute_nartec/core/utils/app_date_formatter.dart';
+import 'package:groute_nartec/core/utils/app_navigator.dart';
+import 'package:groute_nartec/core/utils/app_snackbars.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/new_orders_map_screen.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/orders_details_screen.dart';
+import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 
-// class OrdersCard extends StatefulWidget {
-//   final SalesOrderModel salesOrder;
+class OrdersCard extends StatefulWidget {
+  final SalesOrderModel salesOrder;
 
-//   const OrdersCard({super.key, required this.salesOrder});
+  const OrdersCard({super.key, required this.salesOrder});
 
-//   @override
-//   State<OrdersCard> createState() => _OrdersCardState();
-// }
+  @override
+  State<OrdersCard> createState() => _OrdersCardState();
+}
 
-// class _OrdersCardState extends State<OrdersCard>
-//     with SingleTickerProviderStateMixin {
-//   late AnimationController _blinkController;
-//   late Animation<double> _blinkAnimation;
+class _OrdersCardState extends State<OrdersCard> with TickerProviderStateMixin {
+  bool _isProcessing = false; // State variable for loading indicator
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
 
-//   @override
-//   void initState() {
-//     super.initState();
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+  }
 
-//     // Set up proper animation controller for blinking effect
-//     _blinkController = AnimationController(
-//       duration: const Duration(milliseconds: 500),
-//       vsync: this,
-//     );
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
-//     _blinkAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-//       CurvedAnimation(parent: _blinkController, curve: Curves.easeInOut),
-//     );
+  // Function to handle location fetching and navigation
+  Future<void> _processOrder(BuildContext context) async {
+    if (!mounted) return; // Check if widget is still mounted
 
-//     // Start blinking animation if it's today's order
-//     if (_isCurrentDateOrder()) {
-//       _blinkController.repeat(reverse: true);
-//     }
-//   }
+    // Animate button press
+    _animationController.forward().then((_) {
+      _animationController.reverse();
+    });
 
-//   @override
-//   void dispose() {
-//     _blinkController.dispose();
-//     super.dispose();
-//   }
+    setState(() {
+      _isProcessing = true;
+    });
 
-//   // Function to check if the order date is the current date
-//   bool _isCurrentDateOrder() {
-//     if (widget.salesOrder.assignedTime == null) return false;
+    try {
+      // 1. Check Location Permissions & Services
+      bool serviceEnabled;
+      LocationPermission permission;
 
-//     try {
-//       final assignedTime = DateTime.parse(widget.salesOrder.assignedTime!);
-//       final now = DateTime.now();
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        if (mounted) {
+          AppSnackbars.danger(
+            context,
+            'Location services are disabled. Please enable them.',
+          );
+        }
+        setState(() {
+          _isProcessing = false;
+        });
+        return;
+      }
 
-//       return assignedTime.year == now.year &&
-//           assignedTime.month == now.month &&
-//           assignedTime.day == now.day;
-//     } catch (_) {
-//       return false;
-//     }
-//   }
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          if (mounted) {
+            AppSnackbars.danger(context, 'Location permissions are denied.');
+          }
+          setState(() {
+            _isProcessing = false;
+          });
+          return;
+        }
+      }
 
-//   // Helper method to handle card styling based on theme and order status
-//   CardStyle _getCardStyle(BuildContext context) {
-//     final theme = Theme.of(context);
-//     final isDarkMode = theme.brightness == Brightness.dark;
-//     final isCurrentDate = _isCurrentDateOrder();
+      if (permission == LocationPermission.deniedForever) {
+        if (mounted) {
+          AppSnackbars.danger(
+            context,
+            'Location permissions are permanently denied. Please enable them in settings.',
+          );
+        }
+        setState(() {
+          _isProcessing = false;
+        });
+        return;
+      }
 
-//     return CardStyle(
-//       shadowColor:
-//           isDarkMode
-//               ? AppColors.primaryDark.withValues(alpha: 0.4)
-//               : isCurrentDate
-//               ? AppColors.orange.withValues(alpha: 0.4)
-//               : AppColors.primaryBlue.withValues(alpha: 0.2),
-//       borderSide:
-//           isDarkMode
-//               ? BorderSide(
-//                 color: AppColors.primaryLight.withValues(alpha: 0.1),
-//                 width: 0.5,
-//               )
-//               : isCurrentDate
-//               ? BorderSide(
-//                 color: AppColors.orange.withValues(alpha: 0.3),
-//                 width: 1.0,
-//               )
-//               : BorderSide.none,
-//       backgroundColor:
-//           isDarkMode
-//               ? AppColors.darkBackground.withValues(alpha: 0.95)
-//               : AppColors.white,
-//     );
-//   }
+      // 2. Get Current Location
+      Position currentPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      LatLng currentDeviceLocation = LatLng(
+        currentPosition.latitude,
+        currentPosition.longitude,
+      );
 
-//   @override
-//   Widget build(BuildContext context) {
-//     final theme = Theme.of(context);
-//     final isDarkMode = theme.brightness == Brightness.dark;
-//     final isCurrentDate = _isCurrentDateOrder();
-//     final cardStyle = _getCardStyle(context);
+      // 3. Get Destination Location (Customer)
+      final customerLat = double.tryParse(
+        widget.salesOrder.customer?.latitude?.toString() ?? '',
+      );
+      final customerLng = double.tryParse(
+        widget.salesOrder.customer?.longitude?.toString() ?? '',
+      );
 
-//     // Get order information
-//     final itemCount = widget.salesOrder.salesInvoiceDetails?.length ?? 0;
-//     final customerName =
-//         widget.salesOrder.customer?.companyNameEnglish ?? 'Unknown Customer';
-//     final deliveryAddress =
-//         widget.salesOrder.customer?.address ?? 'No address provided';
+      if (customerLat == null || customerLng == null) {
+        if (mounted) {
+          AppSnackbars.danger(context, 'Invalid customer location data.');
+        }
+        setState(() {
+          _isProcessing = false;
+        });
+        return;
+      }
+      LatLng destinationLocation = LatLng(customerLat, customerLng);
 
-//     return Card(
-//       margin: const EdgeInsets.only(bottom: 16),
-//       elevation: isDarkMode ? 1 : 2,
-//       shadowColor: cardStyle.shadowColor,
-//       shape: RoundedRectangleBorder(
-//         borderRadius: BorderRadius.circular(12),
-//         side: cardStyle.borderSide,
-//       ),
-//       color: cardStyle.backgroundColor,
-//       child: Stack(
-//         children: [
-//           Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               // Status banner
-//               _buildStatusBanner(context, isCurrentDate),
+      // 4. Navigate to Map Screen
+      if (mounted) {
+        AppNavigator.push(
+          context,
+          NewOrdersMapScreen(
+            salesOrder: widget.salesOrder,
+            salesOrderLocation: destinationLocation,
+            currentDeviceLocation: currentDeviceLocation,
+          ),
+        );
+      }
+    } catch (e) {
+      // Handle potential errors during location fetching
+      if (mounted) {
+        AppSnackbars.danger(context, 'Failed to get location: $e');
+      }
+    } finally {
+      // Ensure the loading indicator is turned off
+      if (mounted) {
+        setState(() {
+          _isProcessing = false;
+        });
+      }
+    }
+  }
 
-//               // Order details
-//               Padding(
-//                 padding: const EdgeInsets.all(16),
-//                 child: Column(
-//                   crossAxisAlignment: CrossAxisAlignment.start,
-//                   children: [
-//                     _buildOrderInfoRow(
-//                       context,
-//                       icon: FontAwesomeIcons.cartShopping,
-//                       text:
-//                           'Order # ${widget.salesOrder.salesInvoiceNumber ?? 'N/A'}',
-//                       isDarkMode: isDarkMode,
-//                     ),
-//                     const SizedBox(height: 16),
+  @override
+  Widget build(BuildContext context) {
+    // Get item count
+    final itemCount = widget.salesOrder.salesInvoiceDetails?.length ?? 0;
 
-//                     _buildOrderInfoRow(
-//                       context,
-//                       icon: FontAwesomeIcons.truck,
-//                       text:
-//                           'PO # ${widget.salesOrder.purchaseOrderNumber ?? 'N/A'}',
-//                       isDarkMode: isDarkMode,
-//                     ),
-//                     const SizedBox(height: 16),
+    // Get customer name and address
+    final customerName =
+        widget.salesOrder.customer?.companyNameEnglish ?? 'Unknown Customer';
+    final deliveryAddress =
+        widget.salesOrder.customer?.address ?? 'No address provided';
 
-//                     _buildOrderInfoRow(
-//                       context,
-//                       icon: FontAwesomeIcons.calendar,
-//                       text:
-//                           'Delivery Date: ${widget.salesOrder.deliveryDate != null ? AppDateFormatter.fromString(widget.salesOrder.deliveryDate, showTime: true) : 'N/A'}',
-//                       isDarkMode: isDarkMode,
-//                     ),
-//                     const SizedBox(height: 16),
+    return AnimatedBuilder(
+      animation: _scaleAnimation,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _scaleAnimation.value,
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Material(
+                color: Colors.white,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Status banner with gradient
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 20,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            _getStatusColor(widget.salesOrder.status),
+                            _getStatusColor(
+                              widget.salesOrder.status,
+                            ).withValues(alpha: 0.8),
+                          ],
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Icon(
+                              _getStatusIcon(widget.salesOrder.status),
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            widget.salesOrder.status?.toUpperCase() ?? 'NEW',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
 
-//                     _buildOrderInfoRow(
-//                       context,
-//                       icon: FontAwesomeIcons.calendar,
-//                       text:
-//                           'Order Date: ${widget.salesOrder.orderDate != null ? AppDateFormatter.fromString(widget.salesOrder.orderDate, showTime: true) : 'N/A'}',
-//                       isDarkMode: isDarkMode,
-//                     ),
-//                     const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Order header with better typography
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.receipt_outlined,
+                                size: 16,
+                                color: AppColors.primaryBlue,
+                              ),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  'Order #${widget.salesOrder.salesInvoiceNumber ?? 'N/A'}',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                    color: Colors.grey[800],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.receipt_outlined,
+                                size: 16,
+                                color: AppColors.primaryBlue,
+                              ),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  'Ref #${widget.salesOrder.refNo ?? 'N/A'}',
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                    color: Colors.grey[800],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
 
-//                     _buildOrderInfoRow(
-//                       context,
-//                       icon: FontAwesomeIcons.hashtag,
-//                       text: 'Ref # ${widget.salesOrder.refNo ?? 'N/A'}',
-//                       isDarkMode: isDarkMode,
-//                     ),
-//                     const SizedBox(height: 16),
+                          const SizedBox(height: 20),
 
-//                     // Customer details
-//                     _buildCustomerInfo(
-//                       context,
-//                       customerName,
-//                       deliveryAddress,
-//                       isDarkMode,
-//                     ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryBlue.withValues(
+                                alpha: 0.1,
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              '$itemCount item${itemCount != 1 ? 's' : ''}',
+                              style: TextStyle(
+                                color: AppColors.primaryBlue,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
 
-//                     const SizedBox(height: 16),
+                          const SizedBox(height: 20),
 
-//                     // Order summary
-//                     _buildOrderSummary(context, itemCount, isDarkMode),
-//                   ],
-//                 ),
-//               ),
+                          // Customer info card
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[50],
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.grey[200]!),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.business,
+                                      size: 16,
+                                      color: AppColors.primaryBlue,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        customerName,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 15,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Icon(
+                                      Icons.location_on_outlined,
+                                      size: 16,
+                                      color: Colors.grey[600],
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        deliveryAddress,
+                                        style: TextStyle(
+                                          color: Colors.grey[700],
+                                          fontSize: 13,
+                                          height: 1.3,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
 
-//               // Action buttons
-//               _buildFooterSection(context, isDarkMode),
-//             ],
-//           ),
+                          const SizedBox(height: 16),
 
-//           // New badge for current date orders
-//           if (isCurrentDate) _buildNewBadge(),
-//         ],
-//       ),
-//     );
-//   }
+                          // Date information
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildDateInfo(
+                                  icon: Icons.calendar_today_outlined,
+                                  label: "Delivery",
+                                  date: widget.salesOrder.deliveryDate,
+                                  color: Colors.green[600]!,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: _buildDateInfo(
+                                  icon: Icons.schedule_outlined,
+                                  label: "Order",
+                                  date: widget.salesOrder.orderDate,
+                                  color: Colors.blue[600]!,
+                                ),
+                              ),
+                            ],
+                          ),
 
-//   Widget _buildStatusBanner(BuildContext context, bool isCurrentDate) {
-//     final theme = Theme.of(context);
+                          const SizedBox(height: 20),
 
-//     return Container(
-//       width: double.infinity,
-//       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-//       decoration: BoxDecoration(
-//         color:
-//             isCurrentDate
-//                 ? AppColors.orange
-//                 : _getStatusColor(widget.salesOrder.status),
-//         borderRadius: const BorderRadius.only(
-//           topLeft: Radius.circular(12),
-//           topRight: Radius.circular(12),
-//         ),
-//       ),
-//       child: Row(
-//         children: [
-//           Text(
-//             widget.salesOrder.status?.toUpperCase() ?? 'NEW',
-//             style: theme.textTheme.titleSmall?.copyWith(
-//               color: AppColors.white,
-//               fontWeight: FontWeight.bold,
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
+                          // Total amount with better styling
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  AppColors.primaryBlue.withValues(alpha: 0.1),
+                                  AppColors.primaryBlue.withValues(alpha: 0.05),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Total Amount',
+                                  style: TextStyle(
+                                    color: Colors.grey[700],
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                Text(
+                                  '${widget.salesOrder.totalAmount ?? 'N/A'}',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color: AppColors.primaryBlue,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
 
-//   Widget _buildOrderInfoRow(
-//     BuildContext context, {
-//     required IconData icon,
-//     required String text,
-//     required bool isDarkMode,
-//   }) {
-//     final theme = Theme.of(context);
+                    // Enhanced action buttons
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        border: Border(
+                          top: BorderSide(color: Colors.grey[200]!),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed:
+                                  _isProcessing
+                                      ? null
+                                      : () {
+                                        AppNavigator.push(
+                                          context,
+                                          OrdersDetailScreen(
+                                            salesOrder: widget.salesOrder,
+                                          ),
+                                        );
+                                      },
+                              icon: Icon(
+                                Icons.visibility_outlined,
+                                size: 18,
+                                color:
+                                    _isProcessing
+                                        ? Colors.grey
+                                        : AppColors.primaryBlue,
+                              ),
+                              label: Text(
+                                'View Details',
+                                style: TextStyle(
+                                  color:
+                                      _isProcessing
+                                          ? Colors.grey
+                                          : AppColors.primaryBlue,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                                side: BorderSide(
+                                  color:
+                                      _isProcessing
+                                          ? Colors.grey[300]!
+                                          : AppColors.primaryBlue,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            flex: 1,
+                            child: CustomElevatedButton(
+                              height: 48,
+                              onPressed:
+                                  _isProcessing
+                                      ? null
+                                      : () => _processOrder(context),
+                              backgroundColor: AppColors.primaryBlue,
+                              foregroundColor: Colors.white,
+                              title: 'Start Journey',
 
-//     return Row(
-//       children: [
-//         FaIcon(
-//           icon,
-//           size: 18,
-//           color: isDarkMode ? AppColors.primaryLight : AppColors.primaryBlue,
-//         ),
-//         const SizedBox(width: 8),
-//         Expanded(
-//           child: Text(
-//             text,
-//             style: theme.textTheme.titleSmall?.copyWith(
-//               fontWeight: FontWeight.bold,
-//               color: isDarkMode ? AppColors.textLight : AppColors.textDark,
-//             ),
-//             maxLines: 1,
-//             overflow: TextOverflow.ellipsis,
-//           ),
-//         ),
-//       ],
-//     );
-//   }
+                              buttonState:
+                                  _isProcessing
+                                      ? ButtonState.loading
+                                      : ButtonState.idle,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 
-//   Widget _buildCustomerInfo(
-//     BuildContext context,
-//     String customerName,
-//     String address,
-//     bool isDarkMode,
-//   ) {
-//     final theme = Theme.of(context);
+  Widget _buildDateInfo({
+    required IconData icon,
+    required String label,
+    required String? date,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 14, color: color),
+              const SizedBox(width: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  color: color,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            date != null
+                ? AppDateFormatter.fromString(date, showTime: true)
+                : 'N/A',
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.grey[700],
+              fontWeight: FontWeight.w500,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
 
-//     return Row(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         FaIcon(
-//           FontAwesomeIcons.user,
-//           size: 18,
-//           color: isDarkMode ? AppColors.primaryLight : AppColors.primaryBlue,
-//         ),
-//         const SizedBox(width: 8),
-//         Expanded(
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               Text(
-//                 customerName,
-//                 style: theme.textTheme.titleSmall?.copyWith(
-//                   fontWeight: FontWeight.w500,
-//                   color: isDarkMode ? AppColors.textLight : AppColors.textDark,
-//                 ),
-//               ),
-//               const SizedBox(height: 4),
-//               Text(
-//                 address,
-//                 style: theme.textTheme.bodyMedium?.copyWith(
-//                   color: isDarkMode ? AppColors.grey400 : AppColors.textMedium,
-//                 ),
-//                 maxLines: 2,
-//                 overflow: TextOverflow.ellipsis,
-//               ),
-//             ],
-//           ),
-//         ),
-//       ],
-//     );
-//   }
+  Color _getStatusColor(String? status) {
+    if (status == null) return Colors.grey;
+    switch (status.toLowerCase()) {
+      case 'new':
+        return Colors.blue;
+      case 'in progress':
+        return Colors.orange;
+      case 'completed':
+        return Colors.green;
+      case 'cancelled':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
 
-//   Widget _buildOrderSummary(
-//     BuildContext context,
-//     int itemCount,
-//     bool isDarkMode,
-//   ) {
-//     final theme = Theme.of(context);
-
-//     return Container(
-//       padding: const EdgeInsets.all(12),
-//       decoration: BoxDecoration(
-//         color:
-//             isDarkMode
-//                 ? AppColors.primaryDark.withValues(alpha: 0.3)
-//                 : AppColors.lightBackground,
-//         borderRadius: BorderRadius.circular(8),
-//       ),
-//       child: Row(
-//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//         children: [
-//           Row(
-//             children: [
-//               FaIcon(
-//                 FontAwesomeIcons.box,
-//                 size: 18,
-//                 color:
-//                     isDarkMode ? AppColors.primaryLight : AppColors.primaryBlue,
-//               ),
-//               const SizedBox(width: 6),
-//               Text(
-//                 '$itemCount item${itemCount != 1 ? 's' : ''}',
-//                 style: theme.textTheme.bodyMedium?.copyWith(
-//                   color: isDarkMode ? AppColors.grey300 : AppColors.textMedium,
-//                   fontWeight: FontWeight.w500,
-//                 ),
-//               ),
-//             ],
-//           ),
-//           Text(
-//             'Total: ${widget.salesOrder.totalAmount ?? '0'}',
-//             style: theme.textTheme.titleSmall?.copyWith(
-//               fontWeight: FontWeight.bold,
-//               color: AppColors.secondary,
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-
-//   Widget _buildFooterSection(BuildContext context, bool isDarkMode) {
-//     final formattedDate = AppDateFormatter.fromString(
-//       widget.salesOrder.assignedTime ?? '',
-//       showTime: true,
-//     );
-//     return Padding(
-//       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-//       child: Row(
-//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//         children: [
-//           // Assign date
-//           Container(
-//             padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-//             decoration: BoxDecoration(
-//               color:
-//                   isDarkMode
-//                       ? AppColors.primaryDark.withValues(alpha: 0.3)
-//                       : AppColors.lightBackground,
-//               borderRadius: BorderRadius.circular(8),
-//             ),
-//             child: Text(
-//               formattedDate,
-//               style: TextStyle(
-//                 color: isDarkMode ? AppColors.grey300 : AppColors.textMedium,
-//               ),
-//             ),
-//           ),
-//           CustomOutlineButton(
-//             title: "Start Picking",
-//             height: 30,
-//             width: 120,
-//             borderColor: AppColors.green,
-//             textColor: AppColors.green,
-//             onPressed: () {
-//               AppNavigator.push(
-//                 context,
-//                 NewOrdersDetailScreen(salesOrder: widget.salesOrder),
-//               );
-//             },
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-
-//   Widget _buildNewBadge() {
-//     return Positioned(
-//       top: 0,
-//       right: 0,
-//       child: AnimatedBuilder(
-//         animation: _blinkAnimation,
-//         builder: (context, child) {
-//           final blinkValue = _blinkAnimation.value;
-//           return Container(
-//             margin: const EdgeInsets.all(8),
-//             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-//             decoration: BoxDecoration(
-//               color: Color.lerp(Colors.transparent, Colors.red, blinkValue),
-//               borderRadius: BorderRadius.circular(12),
-//               border: Border.all(color: Colors.red, width: 1.5),
-//             ),
-//             child: Text(
-//               'New',
-//               style: TextStyle(
-//                 color: Color.lerp(Colors.red, Colors.white, blinkValue),
-//                 fontWeight: FontWeight.bold,
-//                 fontSize: 10,
-//               ),
-//             ),
-//           );
-//         },
-//       ),
-//     );
-//   }
-
-//   Color _getStatusColor(String? status) {
-//     if (status == null) return AppColors.primaryBlue;
-
-//     switch (status.toLowerCase()) {
-//       case 'new':
-//       case 'pending':
-//         return AppColors.primaryBlue;
-//       case 'processing':
-//       case 'in progress':
-//         return AppColors.orange;
-//       case 'completed':
-//       case 'delivered':
-//         return AppColors.success;
-//       case 'cancelled':
-//       case 'failed':
-//         return AppColors.error;
-//       default:
-//         return AppColors.primaryBlue;
-//     }
-//   }
-// }
-
-// /// Helper class to manage card styling based on theme and status
-// class CardStyle {
-//   final Color shadowColor;
-//   final BorderSide borderSide;
-//   final Color backgroundColor;
-
-//   CardStyle({
-//     required this.shadowColor,
-//     required this.borderSide,
-//     required this.backgroundColor,
-//   });
-// }
+  IconData _getStatusIcon(String? status) {
+    if (status == null)
+      return Icons.help_outline; // Default icon for unknown status
+    switch (status.toLowerCase()) {
+      case 'new':
+        return Icons.new_releases_outlined;
+      case 'in progress':
+        return Icons.hourglass_top_outlined;
+      case 'completed':
+        return Icons.check_circle_outline;
+      case 'cancelled':
+        return Icons.cancel_outlined;
+      default:
+        return Icons.help_outline; // Default icon for unknown status
+    }
+  }
+}
