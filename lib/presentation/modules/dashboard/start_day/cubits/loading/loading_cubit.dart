@@ -495,6 +495,7 @@ class LoadingCubit extends Cubit<LoadingState> {
         salesInvoiceDetailId: salesInvoiceDetails?.id.toString() ?? '',
         quantityPicked: quantityPicked,
         gln: "${selectedBinLocation?.gln}",
+        binNumber: "${selectedBinLocation?.binNumber}",
       );
 
       if (success) {

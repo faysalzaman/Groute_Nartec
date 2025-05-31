@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/loading/product_on_pallet.dart';
 
 import '../core/services/http_service.dart';
@@ -59,6 +61,35 @@ class StockOnVanRepository {
         "stocksOnVanIds": stocksOnVanIds,
         "salesInvoiceDetailId": salesInvoiceDetailId,
         "quantityPicked": quantityPicked.toString(),
+      };
+
+      // call the API
+      final response = await _httpService.request(
+        path,
+        method: HttpMethod.post,
+        payload: payload,
+      );
+
+      if (response.success) {
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      throw Exception('Failed to pick items');
+    }
+  }
+
+  FutureOr<bool> newUnloadItems({
+    required String gtin,
+    required String salesInvoiceDetailId,
+  }) async {
+    try {
+      final path = '/api/v1/stock-on-van/unload-products';
+
+      final payload = {
+        "salesInvoiceDetailId": salesInvoiceDetailId,
+        "gtin": gtin,
       };
 
       // call the API

@@ -418,15 +418,9 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
               child:
                   productOnPallets.isEmpty
                       ? _buildEmptyScannedItems(isDark)
-                      : RefreshIndicator(
-                        onRefresh: () async {
-                          // Provide a way to refresh the list
-                          cubit.clearScannedItems();
-                        },
-                        child: SingleChildScrollView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          child: _buildScannedItemsList(isDark),
-                        ),
+                      : SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: _buildScannedItemsList(isDark),
                       ),
             ),
           ],

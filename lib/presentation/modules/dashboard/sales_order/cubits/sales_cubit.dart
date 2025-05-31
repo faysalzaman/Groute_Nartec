@@ -250,40 +250,6 @@ class SalesCubit extends Cubit<SalesState> {
     }
   }
 
-  void unloadItems() async {
-    try {
-      if (state is UnloadItemsLoading) return;
-      if (isSaveButtonEnabled == false) {
-        emit(UnloadItemsError(message: 'Please select items to pick'));
-        return;
-      }
-
-      emit(UnloadItemsLoading());
-      if (selectedItems.isEmpty) {
-        emit(UnloadItemsError(message: 'No items selected'));
-        return;
-      }
-
-      final selectedItemsIds = selectedItems.values.expand((x) => x).toList();
-
-      final success = await StockOnVanRepository.instance.unloadItems(
-        stocksOnVanIds: selectedItemsIds,
-        salesInvoiceDetailId: selectedSalesInvoiceDetail?.id.toString() ?? '',
-        quantityPicked: quantityPicked,
-      );
-
-      if (success) {
-        // reset everything
-        init();
-        emit(UnloadItemsLoaded());
-      } else {
-        emit(UnloadItemsError(message: 'Failed to pick items'));
-      }
-    } catch (e) {
-      emit(UnloadItemsError(message: e.toString()));
-    }
-  }
-
   void clearScannedItems() {
     _scannedItems.clear();
     _productOnPallets.clear();
@@ -416,5 +382,72 @@ class SalesCubit extends Cubit<SalesState> {
     });
 
     return selectedProducts;
+  }
+
+  //###################### Unloading ######################
+  void updateSalesInvoiceDetail() async {
+    try {
+      if (state is ProductUpdateLoading) return;
+      emit(ProductUpdateLoading());
+
+      await SalesOrderRepository().updateSalesInvoiceDetail(
+        selectedSalesInvoiceDetail?.id.toString() ?? '',
+      );
+
+      emit(ProductUpdateLoaded());
+    } catch (e) {
+      emit(ProductUpdateError(message: e.toString()));
+    }
+  }
+
+  void unloadItems() async {
+    try {
+      if (state is UnloadItemsLoading) return;
+      if (isSaveButtonEnabled == false) {
+        emit(UnloadItemsError(message: 'Please select items to pick'));
+        return;
+      }
+
+      emit(UnloadItemsLoading());
+      if (selectedItems.isEmpty) {
+        emit(UnloadItemsError(message: 'No items selected'));
+        return;
+      }
+
+      final selectedItemsIds = selectedItems.values.expand((x) => x).toList();
+
+      final success = await StockOnVanRepository.instance.unloadItems(
+        stocksOnVanIds: selectedItemsIds,
+        salesInvoiceDetailId: selectedSalesInvoiceDetail?.id.toString() ?? '',
+        quantityPicked: quantityPicked,
+      );
+
+      if (success) {
+        // reset everything
+        init();
+        emit(UnloadItemsLoaded());
+      } else {
+        emit(UnloadItemsError(message: 'Failed to pick items'));
+      }
+    } catch (e) {
+      emit(UnloadItemsError(message: e.toString()));
+    }
+  }
+
+  void newUnloadItems() async {
+    try {
+      if (state is UnloadItemsLoading) return;
+
+      emit(UnloadItemsLoading());
+
+      await StockOnVanRepository.instance.newUnloadItems(
+        salesInvoiceDetailId: selectedSalesInvoiceDetail?.id.toString() ?? '',
+        gtin: selectedSalesInvoiceDetail?.productId.toString() ?? '',
+      );
+
+      emit(UnloadItemsLoaded());
+    } catch (e) {
+      emit(UnloadItemsError(message: e.toString()));
+    }
   }
 }

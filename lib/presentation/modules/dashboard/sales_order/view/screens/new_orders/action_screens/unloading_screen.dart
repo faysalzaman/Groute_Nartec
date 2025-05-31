@@ -10,7 +10,7 @@ import 'package:groute_nartec/core/utils/app_snackbars.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_state.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/unloading/product_details_screen.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/new_orders_screen.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 
@@ -50,7 +50,7 @@ class _PicklistDetailsScreenState extends State<PicklistDetailsScreen> {
       },
       builder: (context, state) {
         return CustomScaffold(
-          title: "Unloading",
+          title: "Unload Items",
           // bottomNavigationBar: Padding(
           //   padding: const EdgeInsets.all(16.0),
           //   child: CustomElevatedButton(
@@ -96,14 +96,19 @@ class _PicklistDetailsScreenState extends State<PicklistDetailsScreen> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: widget.salesOrder.salesInvoiceDetails!.length,
-                      itemBuilder: (context, index) {
-                        final item =
-                            widget.salesOrder.salesInvoiceDetails![index];
-                        return _buildSalesInvoiceDetailCard(item);
+                    BlocBuilder<SalesCubit, SalesState>(
+                      builder: (context, state) {
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount:
+                              widget.salesOrder.salesInvoiceDetails!.length,
+                          itemBuilder: (context, index) {
+                            final item =
+                                widget.salesOrder.salesInvoiceDetails![index];
+                            return _buildSalesInvoiceDetailCard(item);
+                          },
+                        );
                       },
                     ),
                   ],
@@ -117,19 +122,13 @@ class _PicklistDetailsScreenState extends State<PicklistDetailsScreen> {
   }
 
   Widget _buildSalesInvoiceDetailCard(SalesInvoiceDetails item) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 3,
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.white, Colors.grey[50]!],
-          ),
-        ),
+    final unload = item.quantityPicked == "0";
+    return Visibility(
+      // visible: item.quantityPicked != "0",
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        color: unload == true ? AppColors.grey400 : null,
+        margin: const EdgeInsets.only(bottom: 12),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -195,7 +194,8 @@ class _PicklistDetailsScreenState extends State<PicklistDetailsScreen> {
                           child: _buildInfoRow(
                             icon: Icons.attach_money,
                             label: 'Price',
-                            value: '\$${item.price ?? '0.00'}',
+                            value:
+                                '\$${(int.parse(item.price ?? '0') * int.parse(item.quantityPicked ?? '0'))}',
                             valueColor: AppColors.green,
                           ),
                         ),
@@ -209,7 +209,7 @@ class _PicklistDetailsScreenState extends State<PicklistDetailsScreen> {
                           child: _buildInfoRow(
                             icon: Icons.numbers,
                             label: 'Quantity',
-                            value: '${item.quantity ?? '0'} pcs',
+                            value: '${item.quantityPicked ?? '0'} pcs',
                             valueColor: AppColors.primaryBlue,
                           ),
                         ),
@@ -307,17 +307,76 @@ class _PicklistDetailsScreenState extends State<PicklistDetailsScreen> {
               const SizedBox(height: 16),
 
               // Action button
-              CustomElevatedButton(
-                onPressed: () {
-                  SalesCubit.get(context).selectedSalesInvoiceDetail = item;
-                  AppNavigator.push(
-                    context,
-                    ProductDetailsScreen(barcode: item.productId ?? ''),
+              BlocConsumer<SalesCubit, SalesState>(
+                listener: (context, state) {
+                  if (state is ProductUpdateLoaded) {
+                    AppSnackbars.success(
+                      context,
+                      'Unloading started successfully',
+                    );
+                  } else if (state is ProductUpdateError) {
+                    AppSnackbars.danger(context, state.message);
+                  } else if (state is UnloadItemsError) {
+                    AppSnackbars.danger(context, state.message);
+                  } else if (state is UnloadItemsLoaded) {
+                    AppSnackbars.success(
+                      context,
+                      'Unloading done successfully',
+                    );
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                    AppNavigator.pushReplacement(context, NewOrdersScreen());
+                  }
+                },
+                builder: (context, state) {
+                  return Visibility(
+                    visible: !unload,
+                    child: Row(
+                      spacing: 8.0,
+                      children: [
+                        Expanded(
+                          child: CustomElevatedButton(
+                            title: 'Start Unloading',
+                            buttonState:
+                                state is ProductUpdateLoading
+                                    ? ButtonState.loading
+                                    : ButtonState.idle,
+                            backgroundColor: AppColors.primaryLight,
+                            onPressed: () {
+                              SalesCubit.get(context)
+                                  .selectedSalesInvoiceDetail = item;
+                              SalesCubit.get(
+                                context,
+                              ).updateSalesInvoiceDetail();
+                            },
+                          ),
+                        ),
+                        Expanded(
+                          child: CustomElevatedButton(
+                            title: 'Unloading Done',
+                            backgroundColor: AppColors.green,
+                            buttonState:
+                                state is UnloadItemsLoading
+                                    ? ButtonState.loading
+                                    : ButtonState.idle,
+                            onPressed: () {
+                              SalesCubit.get(context)
+                                  .selectedSalesInvoiceDetail = item;
+                              SalesCubit.get(context).newUnloadItems();
+                              // AppNavigator.push(
+                              //   context,
+                              //   ProductDetailsScreen(
+                              //     barcode: item.productId ?? '',
+                              //   ),
+                              // );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 },
-                title: 'View Product Details',
-                height: 40,
-                fontSize: 12,
               ),
             ],
           ),

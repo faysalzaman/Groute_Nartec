@@ -53,6 +53,7 @@ class ProductOnPalletRepository {
     required String salesInvoiceDetailId,
     required int quantityPicked,
     required String gln,
+    required String binNumber,
   }) async {
     try {
       final path = '/api/v1/product-pallets/pick';
@@ -62,6 +63,7 @@ class ProductOnPalletRepository {
         "salesInvoiceDetailId": salesInvoiceDetailId,
         "quantityPicked": quantityPicked.toString(),
         "gln": gln,
+        "binNumber": binNumber,
       };
 
       // call the API

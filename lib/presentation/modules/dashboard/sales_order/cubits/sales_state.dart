@@ -86,6 +86,8 @@ class ScanBinLocationError extends SalesState {
   ScanBinLocationError({required this.message});
 }
 
+// Unloading items states
+
 class UnloadItemsLoading extends SalesState {}
 
 class UnloadItemsLoaded extends SalesState {}
@@ -100,3 +102,14 @@ class SelectionChanged extends SalesState {}
 
 // Item states
 class ItemRemoved extends SalesState {}
+
+// #################### Sales Invoice Details ####################
+
+class ProductUpdateLoading extends SalesState {}
+
+class ProductUpdateLoaded extends SalesState {}
+
+class ProductUpdateError extends SalesState {
+  final String message;
+  ProductUpdateError({required this.message});
+}

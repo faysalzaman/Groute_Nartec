@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -11,6 +12,20 @@ import 'package:mime/mime.dart';
 
 class SalesOrderRepository {
   final HttpService _httpService = HttpService();
+
+  FutureOr<void> updateSalesInvoiceDetail(String id) async {
+    final path = '/api/v1/sales-orders/update-sales-invoice-details';
+
+    final response = await _httpService.request(
+      path,
+      method: HttpMethod.put,
+      payload: {'id': id, 'deliveryDate': DateTime.now().toIso8601String()},
+    );
+
+    if (!response.success) {
+      throw Exception('Failed to update sales order status');
+    }
+  }
 
   Future<List<SalesOrderModel>> getSalesOrders(
     int page,

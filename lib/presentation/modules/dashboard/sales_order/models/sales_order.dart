@@ -1,3 +1,5 @@
+import 'package:groute_nartec/core/utils/app_date_formatter.dart';
+
 class SalesOrderModel {
   String? id;
   String? salesInvoiceNumber;
@@ -134,6 +136,7 @@ class SalesInvoiceDetails {
   String? updatedAt;
   String? vehicleId;
   String? salesInvoiceId;
+  String? deliveryDate;
 
   SalesInvoiceDetails({
     this.id,
@@ -150,6 +153,7 @@ class SalesInvoiceDetails {
     this.updatedAt,
     this.vehicleId,
     this.salesInvoiceId,
+    this.deliveryDate,
   });
 
   SalesInvoiceDetails.fromJson(Map<String, dynamic> json) {
@@ -167,6 +171,10 @@ class SalesInvoiceDetails {
     updatedAt = json['updatedAt'];
     vehicleId = json['vehicleId'];
     salesInvoiceId = json['salesInvoiceId'];
+    deliveryDate =
+        json['deliveryDate'] != null
+            ? AppDateFormatter.fromString(json['deliveryDate'])
+            : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -185,6 +193,7 @@ class SalesInvoiceDetails {
     data['updatedAt'] = updatedAt;
     data['vehicleId'] = vehicleId;
     data['salesInvoiceId'] = salesInvoiceId;
+    data['deliveryDate'] = deliveryDate;
     return data;
   }
 }
