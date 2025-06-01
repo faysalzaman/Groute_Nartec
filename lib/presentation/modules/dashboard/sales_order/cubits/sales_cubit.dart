@@ -90,6 +90,7 @@ class SalesCubit extends Cubit<SalesState> {
     List<String> salesInvoiceDetailIds,
     double totalPrice,
     int totalQuantity,
+    String salesOrderId,
   ) async {
     try {
       if (state is UnloadItemsLoading) return;
@@ -101,6 +102,7 @@ class SalesCubit extends Cubit<SalesState> {
         salesInvoiceDetailIds: salesInvoiceDetailIds,
         totalPrice: totalPrice,
         totalQuantity: totalQuantity,
+        salesOrderId: salesOrderId,
       );
 
       emit(UnloadItemsLoaded());

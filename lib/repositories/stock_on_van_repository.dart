@@ -86,6 +86,7 @@ class StockOnVanRepository {
     required List<String> salesInvoiceDetailIds,
     required double totalPrice,
     required int totalQuantity,
+    required String salesOrderId,
   }) async {
     final path = '/api/v1/stock-on-van/unload-products';
 
@@ -105,7 +106,10 @@ class StockOnVanRepository {
 
     if (response.success) {
       final deliveryId = response.data['data']['deliveryId'];
-      await AppPreferences.setDeliveryId(deliveryId);
+      await AppPreferences.setDeliveryId(
+        deliveryId,
+        salesOrderId: salesOrderId,
+      );
       return true;
     }
 

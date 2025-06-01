@@ -13,6 +13,7 @@ import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:groute_nartec/core/constants/app_preferences.dart';
 
 class ImageCaptureScreen extends StatefulWidget {
   const ImageCaptureScreen({
@@ -42,8 +43,10 @@ class _ImageCaptureScreenState extends State<ImageCaptureScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<SalesCubit, SalesState>(
-      listener: (context, state) {
+      listener: (context, state) async {
         if (state is SalesOrderUploadImageSuccess) {
+          // Mark the process as completed
+          await AppPreferences.setCaptureImagesCompleted(widget.salesOrder.id ?? '');
           Navigator.pop(context);
           Navigator.pop(context);
           AppSnackbars.success(context, "Images uploaded successfully.");

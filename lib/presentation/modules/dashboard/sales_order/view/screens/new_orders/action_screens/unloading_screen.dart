@@ -108,6 +108,7 @@ class _PicklistDetailsScreenState extends State<PicklistDetailsScreen> {
                     ids,
                     totalPrice * totalQuantity,
                     totalQuantity,
+                    widget.salesOrder.id.toString(),
                   );
                 },
                 title: 'Unloading Done',

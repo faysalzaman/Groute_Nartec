@@ -6,6 +6,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:groute_nartec/core/constants/app_preferences.dart';
 import 'package:groute_nartec/core/utils/app_snackbars.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_state.dart';
@@ -119,8 +120,13 @@ class _SignatureScreenState extends State<SignatureScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<SalesCubit, SalesState>(
-      listener: (context, state) {
+      listener: (context, state) async {
         if (state is SalesOrderAddSignatureSuccessState) {
+          // Mark the process as completed
+          await AppPreferences.setCaptureSignatureCompleted(
+            widget.salesOrder.id ?? '',
+          );
+          Navigator.pop(context);
           Navigator.pop(context);
           AppSnackbars.success(context, "Signature uploaded successfully");
         }

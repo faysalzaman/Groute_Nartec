@@ -34,6 +34,12 @@ class AppPreferences {
 
   static const String _deliveryId = 'deliveryId';
 
+  // Process completion keys
+  static const String _processUnloading = 'process_unloading_';
+  static const String _processCaptureImages = 'process_capture_images_';
+  static const String _processCaptureSignature = 'process_capture_signature_';
+  static const String _processPrintInvoice = 'process_print_invoice_';
+
   // setter for deliveryId
   static Future<void> setDeliveryId(
     String deliveryId, {
@@ -47,6 +53,12 @@ class AppPreferences {
   static Future<String?> getDeliveryId({String? salesOrderId}) async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_deliveryId + (salesOrderId ?? ''));
+  }
+
+  // Remove deliveryId
+  static Future<void> removeDeliveryId({String? salesOrderId}) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_deliveryId + (salesOrderId ?? ''));
   }
 
   // Access Token methods
@@ -273,5 +285,71 @@ class AppPreferences {
     final newValue = !currentValue;
     await prefs.setBool(_keyDriverIsNFCEnabled, newValue);
     return newValue;
+  }
+
+  // Process completion methods
+  static Future<void> setProcessCompleted(
+    String processType,
+    String salesOrderId,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('$processType$salesOrderId', true);
+  }
+
+  static Future<bool> isProcessCompleted(
+    String processType,
+    String salesOrderId,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('$processType$salesOrderId') ?? false;
+  }
+
+  static Future<void> clearProcessCompletion(
+    String processType,
+    String salesOrderId,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('$processType$salesOrderId');
+  }
+
+  // Specific process methods
+  static Future<void> setUnloadingCompleted(String salesOrderId) async {
+    await setProcessCompleted(_processUnloading, salesOrderId);
+  }
+
+  static Future<bool> isUnloadingCompleted(String salesOrderId) async {
+    return await isProcessCompleted(_processUnloading, salesOrderId);
+  }
+
+  static Future<void> setCaptureImagesCompleted(String salesOrderId) async {
+    await setProcessCompleted(_processCaptureImages, salesOrderId);
+  }
+
+  static Future<bool> isCaptureImagesCompleted(String salesOrderId) async {
+    return await isProcessCompleted(_processCaptureImages, salesOrderId);
+  }
+
+  static Future<void> setCaptureSignatureCompleted(String salesOrderId) async {
+    await setProcessCompleted(_processCaptureSignature, salesOrderId);
+  }
+
+  static Future<bool> isCaptureSignatureCompleted(String salesOrderId) async {
+    return await isProcessCompleted(_processCaptureSignature, salesOrderId);
+  }
+
+  static Future<void> setPrintInvoiceCompleted(String salesOrderId) async {
+    await setProcessCompleted(_processPrintInvoice, salesOrderId);
+  }
+
+  static Future<bool> isPrintInvoiceCompleted(String salesOrderId) async {
+    return await isProcessCompleted(_processPrintInvoice, salesOrderId);
+  }
+
+  // Clear all process completions for a sales order
+  static Future<void> clearAllProcessCompletions(String salesOrderId) async {
+    await clearProcessCompletion(_processUnloading, salesOrderId);
+    await clearProcessCompletion(_processCaptureImages, salesOrderId);
+    await clearProcessCompletion(_processCaptureSignature, salesOrderId);
+    await clearProcessCompletion(_processPrintInvoice, salesOrderId);
   }
 }
