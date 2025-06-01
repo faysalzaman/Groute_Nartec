@@ -125,8 +125,8 @@ class SalesCubit extends Cubit<SalesState> {
     emit(SalesOrderAddSignatureLoadingState());
 
     try {
-      final salesController = SalesOrderRepository();
-      await salesController.uploadSignature(image, id);
+      final salesController = DeliveryDetailsRepository();
+      await salesController.uploadSignature(image);
       emit(SalesOrderAddSignatureSuccessState());
     } catch (e) {
       emit(SalesOrderAddSignatureErrorState(e.toString()));

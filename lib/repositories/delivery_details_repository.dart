@@ -9,7 +9,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 
 class DeliveryDetailsRepository {
-  Future<String> uploadSignature(File images, String id) async {
+  Future<String> uploadSignature(File images) async {
     String? deliveryId = await AppPreferences.getDeliveryId();
 
     var url = Uri.parse(
