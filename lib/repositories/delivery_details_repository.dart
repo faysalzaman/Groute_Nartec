@@ -10,7 +10,11 @@ import 'package:mime/mime.dart';
 
 class DeliveryDetailsRepository {
   Future<String> uploadSignature(File images, String id) async {
-    var url = Uri.parse("${kGrouteUrl}/api/v1/sales-orders/add-signature/$id");
+    String? deliveryId = await AppPreferences.getDeliveryId();
+
+    var url = Uri.parse(
+      "${kGrouteUrl}/api/v1/delivery-details/upload-signature/KeQdO-MCr9",
+    );
 
     final token = await AppPreferences.getAccessToken();
 
@@ -52,6 +56,8 @@ class DeliveryDetailsRepository {
   }
 
   Future<void> uploadImages(List<File> images) async {
+    String? deliveryId = await AppPreferences.getDeliveryId();
+
     try {
       var url = Uri.parse(
         "${kGrouteUrl}/api/v1/delivery-details/upload-images/KeQdO-MCr9",
