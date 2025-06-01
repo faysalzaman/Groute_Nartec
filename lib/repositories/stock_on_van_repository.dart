@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:groute_nartec/core/constants/app_preferences.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/loading/product_on_pallet.dart';
@@ -106,6 +107,7 @@ class StockOnVanRepository {
 
     if (response.success) {
       final deliveryId = response.data['data']['deliveryId'];
+      log(deliveryId);
       await AppPreferences.setDeliveryId(
         deliveryId,
         salesOrderId: salesOrderId,

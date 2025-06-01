@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:groute_nartec/core/constants/app_preferences.dart';
@@ -10,9 +11,13 @@ import 'package:mime/mime.dart';
 
 class DeliveryDetailsRepository {
   Future<String> uploadSignature(File images, String salesOrderId) async {
-    String? deliveryId = await AppPreferences.getDeliveryId();
+    String? deliveryId = await AppPreferences.getDeliveryId(
+      salesOrderId: salesOrderId,
+    );
 
     deliveryId = deliveryId.toString().replaceAll(salesOrderId, "");
+
+    log(deliveryId.toString());
 
     if (images.path.isEmpty) {
       print("No image to upload");
@@ -20,7 +25,7 @@ class DeliveryDetailsRepository {
     }
 
     var url = Uri.parse(
-      "${kGrouteUrl}/api/v1/delivery-details/upload-signature/KeQdO-MCr9",
+      "${kGrouteUrl}/api/v1/delivery-details/upload-signature/$deliveryId",
     );
 
     final token = await AppPreferences.getAccessToken();
@@ -63,16 +68,19 @@ class DeliveryDetailsRepository {
   }
 
   Future<void> uploadImages(List<File> images, String salesOrderId) async {
-    String? deliveryId = await AppPreferences.getDeliveryId();
+    String? deliveryId = await AppPreferences.getDeliveryId(
+      salesOrderId: salesOrderId,
+    );
 
     deliveryId = deliveryId.toString().replaceAll(salesOrderId, "");
+
     if (images.isEmpty) {
       print("No images to upload");
       return;
     }
     try {
       var url = Uri.parse(
-        "${kGrouteUrl}/api/v1/delivery-details/upload-images/KeQdO-MCr9",
+        "${kGrouteUrl}/api/v1/delivery-details/upload-images/$deliveryId",
       );
 
       final token = await AppPreferences.getAccessToken();

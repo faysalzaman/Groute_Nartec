@@ -622,6 +622,7 @@ class _PickItemsScreenState extends State<PickItemsScreen> {
                   Navigator.pop(context); // go to gs1 details screen
                   Navigator.pop(context); // go to sales invoice details screen
                   Navigator.pop(context); // go to sales orders
+                  LoadingCubit.get(context).clearDeliveryDetails();
                   AppNavigator.pushReplacement(context, OrdersScreen());
                 } else if (state is PickItemsError) {
                   AppSnackbars.danger(context, state.message);

@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:groute_nartec/core/constants/app_preferences.dart';
 import 'package:groute_nartec/core/constants/constants.dart';
 import 'package:groute_nartec/core/services/http_service.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
@@ -507,5 +508,12 @@ class LoadingCubit extends Cubit<LoadingState> {
     } catch (e) {
       emit(PickItemsError(message: e.toString()));
     }
+  }
+
+  void clearDeliveryDetails() {
+    AppPreferences.clearAllProcessCompletions(
+      salesInvoiceDetails?.salesInvoiceId ?? '',
+    );
+    emit(ChangeScanType());
   }
 }

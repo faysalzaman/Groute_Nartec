@@ -7,10 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:groute_nartec/core/constants/app_preferences.dart';
+import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/core/utils/app_snackbars.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_state.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/action_screen.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
@@ -128,7 +130,15 @@ class _SignatureScreenState extends State<SignatureScreen> {
             widget.salesOrder.id ?? '',
           );
           Navigator.pop(context);
-          Navigator.pop(context);
+          // SalesCubit.get(context).rebuildActionScreen();
+          AppNavigator.pushReplacement(
+            context,
+            ActionScreen(
+              salesOrderLocation: widget.salesOrderLocation,
+              currentDeviceLocation: widget.currentDeviceLocation,
+              salesOrder: widget.salesOrder,
+            ),
+          );
           AppSnackbars.success(context, "Signature uploaded successfully");
         }
         if (state is SalesOrderAddSignatureErrorState) {
