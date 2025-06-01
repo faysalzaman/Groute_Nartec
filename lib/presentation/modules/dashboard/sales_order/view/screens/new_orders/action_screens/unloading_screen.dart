@@ -5,12 +5,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/utils/app_date_formatter.dart';
-import 'package:groute_nartec/core/utils/app_navigator.dart';
+import 'package:groute_nartec/core/utils/app_loading.dart';
 import 'package:groute_nartec/core/utils/app_snackbars.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_state.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/new_orders_screen.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 
@@ -34,6 +33,18 @@ class _PicklistDetailsScreenState extends State<PicklistDetailsScreen> {
   @override
   void initState() {
     super.initState();
+
+    Future.delayed(const Duration(milliseconds: 100), () {
+      context.read<SalesCubit>().getSalesInvoiceDetailsbySalesOrderId(
+        widget.salesOrder.id.toString(),
+      );
+    });
+  }
+
+  getSalesInvoiceDetails() {
+    context.read<SalesCubit>().getSalesInvoiceDetailsbySalesOrderId(
+      widget.salesOrder.id.toString(),
+    );
   }
 
   @override
@@ -46,28 +57,68 @@ class _PicklistDetailsScreenState extends State<PicklistDetailsScreen> {
           AppSnackbars.success(context, 'Unloading completed successfully');
         } else if (state is SalesStatusUpdateErrorState) {
           AppSnackbars.danger(context, state.error);
+        } else if (state is UnloadItemsError) {
+          AppSnackbars.danger(context, state.message);
+        } else if (state is UnloadItemsLoaded) {
+          AppSnackbars.success(context, 'Unloading done successfully');
+          context.read<SalesCubit>().getSalesInvoiceDetailsbySalesOrderId(
+            widget.salesOrder.id.toString(),
+          );
         }
       },
       builder: (context, state) {
         return CustomScaffold(
           title: "Unload Items",
-          // bottomNavigationBar: Padding(
-          //   padding: const EdgeInsets.all(16.0),
-          //   child: CustomElevatedButton(
-          //     onPressed: () async {
-          //       final now = DateTime.now();
-          //       await context.read<SalesCubit>().updateStatus(
-          //         widget.salesOrder.id!,
-          //         {"unloadingTime": now.toIso8601String()},
-          //       );
-          //     },
-          //     title: 'Start Unloading',
-          //     buttonState:
-          //         state is SalesStatusUpdateLoadingState
-          //             ? ButtonState.loading
-          //             : ButtonState.idle,
-          //   ),
-          // ),
+          bottomNavigationBar: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CustomElevatedButton(
+                onPressed: () {
+                  final salesInvoiceDetailsList =
+                      context.read<SalesCubit>().salesInvoiceDetailsList;
+
+                  final productIds =
+                      salesInvoiceDetailsList
+                          .map((item) => item.productId.toString())
+                          .toList();
+                  final ids =
+                      salesInvoiceDetailsList
+                          .map((item) => item.id.toString())
+                          .toList();
+                  final double totalPrice = salesInvoiceDetailsList
+                      .map((item) {
+                        final price = double.tryParse(item.price ?? '0') ?? 0.0;
+                        final quantity =
+                            double.tryParse(item.quantityPicked ?? '0') ?? 0.0;
+                        return price * quantity;
+                      })
+                      .fold<double>(
+                        0,
+                        (previousValue, itemTotal) => previousValue + itemTotal,
+                      );
+                  final totalQuantity = salesInvoiceDetailsList.fold<int>(
+                    0,
+                    (previousValue, item) =>
+                        previousValue +
+                        (int.parse(item.quantityPicked.toString())),
+                  );
+                  context.read<SalesCubit>().newUnloadItems(
+                    productIds,
+                    ids,
+                    totalPrice * totalQuantity,
+                    totalQuantity,
+                  );
+                },
+                title: 'Unloading Done',
+                backgroundColor: AppColors.green,
+                buttonState:
+                    state is UnloadItemsLoading
+                        ? ButtonState.loading
+                        : ButtonState.idle,
+              ),
+            ),
+          ),
           body: SingleChildScrollView(
             child: Card(
               shape: RoundedRectangleBorder(
@@ -96,21 +147,24 @@ class _PicklistDetailsScreenState extends State<PicklistDetailsScreen> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    BlocBuilder<SalesCubit, SalesState>(
-                      builder: (context, state) {
-                        return ListView.builder(
+                    state is SalesInvoiceDetailsLoading
+                        ? AppLoading(color: AppColors.primaryBlue, size: 30)
+                        : ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount:
-                              widget.salesOrder.salesInvoiceDetails!.length,
+                              context
+                                  .read<SalesCubit>()
+                                  .salesInvoiceDetailsList
+                                  .length,
                           itemBuilder: (context, index) {
                             final item =
-                                widget.salesOrder.salesInvoiceDetails![index];
+                                context
+                                    .read<SalesCubit>()
+                                    .salesInvoiceDetailsList[index];
                             return _buildSalesInvoiceDetailCard(item);
                           },
-                        );
-                      },
-                    ),
+                        ),
                   ],
                 ),
               ),
@@ -122,12 +176,10 @@ class _PicklistDetailsScreenState extends State<PicklistDetailsScreen> {
   }
 
   Widget _buildSalesInvoiceDetailCard(SalesInvoiceDetails item) {
-    final unload = item.quantityPicked == "0";
     return Visibility(
       // visible: item.quantityPicked != "0",
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        color: unload == true ? AppColors.grey400 : null,
         margin: const EdgeInsets.only(bottom: 12),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -192,10 +244,10 @@ class _PicklistDetailsScreenState extends State<PicklistDetailsScreen> {
                       children: [
                         Expanded(
                           child: _buildInfoRow(
-                            icon: Icons.attach_money,
+                            icon: Icons.label_important_outline_rounded,
                             label: 'Price',
                             value:
-                                '\$${(int.parse(item.price ?? '0') * int.parse(item.quantityPicked ?? '0'))}',
+                                '${(int.parse(item.price ?? '0') * int.parse(item.quantityPicked ?? '0'))}',
                             valueColor: AppColors.green,
                           ),
                         ),
@@ -302,81 +354,6 @@ class _PicklistDetailsScreenState extends State<PicklistDetailsScreen> {
                     ),
                   ),
                 ],
-              ),
-
-              const SizedBox(height: 16),
-
-              // Action button
-              BlocConsumer<SalesCubit, SalesState>(
-                listener: (context, state) {
-                  if (state is ProductUpdateLoaded) {
-                    AppSnackbars.success(
-                      context,
-                      'Unloading started successfully',
-                    );
-                  } else if (state is ProductUpdateError) {
-                    AppSnackbars.danger(context, state.message);
-                  } else if (state is UnloadItemsError) {
-                    AppSnackbars.danger(context, state.message);
-                  } else if (state is UnloadItemsLoaded) {
-                    AppSnackbars.success(
-                      context,
-                      'Unloading done successfully',
-                    );
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                    AppNavigator.pushReplacement(context, NewOrdersScreen());
-                  }
-                },
-                builder: (context, state) {
-                  return Visibility(
-                    visible: !unload,
-                    child: Row(
-                      spacing: 8.0,
-                      children: [
-                        Expanded(
-                          child: CustomElevatedButton(
-                            title: 'Start Unloading',
-                            buttonState:
-                                state is ProductUpdateLoading
-                                    ? ButtonState.loading
-                                    : ButtonState.idle,
-                            backgroundColor: AppColors.primaryLight,
-                            onPressed: () {
-                              SalesCubit.get(context)
-                                  .selectedSalesInvoiceDetail = item;
-                              SalesCubit.get(
-                                context,
-                              ).updateSalesInvoiceDetail();
-                            },
-                          ),
-                        ),
-                        Expanded(
-                          child: CustomElevatedButton(
-                            title: 'Unloading Done',
-                            backgroundColor: AppColors.green,
-                            buttonState:
-                                state is UnloadItemsLoading
-                                    ? ButtonState.loading
-                                    : ButtonState.idle,
-                            onPressed: () {
-                              SalesCubit.get(context)
-                                  .selectedSalesInvoiceDetail = item;
-                              SalesCubit.get(context).newUnloadItems();
-                              // AppNavigator.push(
-                              //   context,
-                              //   ProductDetailsScreen(
-                              //     barcode: item.productId ?? '',
-                              //   ),
-                              // );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
               ),
             ],
           ),

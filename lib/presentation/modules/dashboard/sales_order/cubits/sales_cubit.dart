@@ -6,6 +6,7 @@ import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/bi
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/gs1_product.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/loading/product_on_pallet.dart';
 import 'package:groute_nartec/repositories/bin_location_repository.dart';
+import 'package:groute_nartec/repositories/delivery_details_repository.dart';
 import 'package:groute_nartec/repositories/sales_order_repository.dart';
 import 'package:groute_nartec/repositories/stock_on_van_repository.dart';
 import 'package:groute_nartec/repositories/vehicle_repository.dart';
@@ -84,6 +85,30 @@ class SalesCubit extends Cubit<SalesState> {
     }
   }
 
+  void newUnloadItems(
+    List<String> gtins,
+    List<String> salesInvoiceDetailIds,
+    double totalPrice,
+    int totalQuantity,
+  ) async {
+    try {
+      if (state is UnloadItemsLoading) return;
+
+      emit(UnloadItemsLoading());
+
+      await StockOnVanRepository.instance.newUnloadItems(
+        gtins: gtins,
+        salesInvoiceDetailIds: salesInvoiceDetailIds,
+        totalPrice: totalPrice,
+        totalQuantity: totalQuantity,
+      );
+
+      emit(UnloadItemsLoaded());
+    } catch (e) {
+      emit(UnloadItemsError(message: e.toString()));
+    }
+  }
+
   Future<void> updateStatus(String id, Map<String, dynamic> body) async {
     emit(SalesStatusUpdateLoadingState());
 
@@ -108,15 +133,11 @@ class SalesCubit extends Cubit<SalesState> {
     }
   }
 
-  Future<void> uploadImages(
-    List<File> images,
-    String orderId,
-    String productId,
-  ) async {
+  Future<void> uploadImages(List<File> images) async {
     emit(SalesOrderUploadImageLoading());
     try {
-      final salesController = SalesOrderRepository();
-      await salesController.uploadImages(images, orderId, productId);
+      final deliveryDetailsRepository = DeliveryDetailsRepository();
+      await deliveryDetailsRepository.uploadImages(images);
       emit(SalesOrderUploadImageSuccess());
     } catch (e) {
       emit(SalesOrderUploadImageError(e.toString()));
@@ -434,20 +455,22 @@ class SalesCubit extends Cubit<SalesState> {
     }
   }
 
-  void newUnloadItems() async {
+  List<SalesInvoiceDetails> salesInvoiceDetailsList = [];
+
+  void getSalesInvoiceDetailsbySalesOrderId(String salesOrderId) async {
     try {
-      if (state is UnloadItemsLoading) return;
+      emit(SalesInvoiceDetailsLoading());
 
-      emit(UnloadItemsLoading());
+      final salesController = SalesOrderRepository();
 
-      await StockOnVanRepository.instance.newUnloadItems(
-        salesInvoiceDetailId: selectedSalesInvoiceDetail?.id.toString() ?? '',
-        gtin: selectedSalesInvoiceDetail?.productId.toString() ?? '',
-      );
+      salesInvoiceDetailsList = await salesController
+          .getSalesDetailsBySalesOrderId(salesOrderId);
 
-      emit(UnloadItemsLoaded());
+      if (salesInvoiceDetailsList.isNotEmpty) {
+        emit(SalesInvoiceDetailsLoaded(salesInvoiceDetailsList));
+      }
     } catch (e) {
-      emit(UnloadItemsError(message: e.toString()));
+      emit(SalesInvoiceDetailsError(message: e.toString()));
     }
   }
 }

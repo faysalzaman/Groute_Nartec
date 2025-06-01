@@ -4,98 +4,11 @@ import 'dart:io';
 
 import 'package:groute_nartec/core/constants/app_preferences.dart';
 import 'package:groute_nartec/core/constants/constants.dart';
-import 'package:groute_nartec/core/services/http_service.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 
-class SalesOrderRepository {
-  final HttpService _httpService = HttpService();
-
-  FutureOr<void> updateSalesInvoiceDetail(String id) async {
-    final path = '/api/v1/sales-orders/update-sales-invoice-details';
-
-    final response = await _httpService.request(
-      path,
-      method: HttpMethod.put,
-      payload: {'id': id, 'deliveryDate': DateTime.now().toIso8601String()},
-    );
-
-    if (!response.success) {
-      throw Exception('Failed to update sales order status');
-    }
-  }
-
-  Future<List<SalesOrderModel>> getSalesOrders(
-    int page,
-    int limit, {
-    String? status,
-  }) async {
-    final token = await AppPreferences.getAccessToken();
-    String path = '/api/v1/sales-orders/driver?page=$page&limit=$limit';
-    if (status != null) {
-      path += "&status=$status";
-    }
-
-    final response = await _httpService.request(
-      path,
-      method: HttpMethod.get,
-      headers: {'Authorization': 'Bearer $token'},
-    );
-
-    if (response.success) {
-      final data = response.data['data']['salesOrders'] as List;
-      return data.map((order) => SalesOrderModel.fromJson(order)).toList();
-    } else {
-      throw Exception('Failed to load sales orders');
-    }
-  }
-
-  // update sales order status
-  Future<void> updateStatus(String id, Map<String, dynamic> body) async {
-    final token = await AppPreferences.getAccessToken();
-
-    final path = '/api/v1/sales-orders/$id';
-
-    final response = await _httpService.request(
-      path,
-      method: HttpMethod.put,
-      payload: body,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-    );
-
-    if (!response.success) {
-      throw Exception('Failed to update sales order status');
-    }
-  }
-
-  Future<List<SalesInvoiceDetails>> getSalesDetailsBySalesOrderId(
-    String id,
-  ) async {
-    final token = await AppPreferences.getAccessToken();
-
-    final path = '/api/v1/sales-orders/sales-invoice-details/$id';
-
-    final response = await _httpService.request(
-      path,
-      method: HttpMethod.get,
-      headers: {'Authorization': 'Bearer $token'},
-    );
-
-    if (response.success) {
-      final data = response.data['data'] as List;
-      return data
-          .map((detail) => SalesInvoiceDetails.fromJson(detail))
-          .toList();
-    } else {
-      throw Exception('Failed to load sales order');
-    }
-  }
-
+class DeliveryDetailsRepository {
   Future<String> uploadSignature(File images, String id) async {
     var url = Uri.parse("${kGrouteUrl}/api/v1/sales-orders/add-signature/$id");
 
@@ -138,14 +51,10 @@ class SalesOrderRepository {
     }
   }
 
-  Future<void> uploadImages(
-    List<File> images,
-    String orderId,
-    String productId,
-  ) async {
+  Future<void> uploadImages(List<File> images) async {
     try {
       var url = Uri.parse(
-        "${kGrouteUrl}/api/v1/sales-orders/add-images/$orderId/product/$productId",
+        "${kGrouteUrl}/api/v1/delivery-details/upload-images/KeQdO-MCr9",
       );
 
       final token = await AppPreferences.getAccessToken();

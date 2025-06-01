@@ -44,6 +44,6 @@ class _AuthCheckState extends State<AuthCheck> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: AppLoading()));
+    return Scaffold(body: Center(child: AppLoading()));
   }
 }

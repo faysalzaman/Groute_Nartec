@@ -20,13 +20,11 @@ class ImageCaptureScreen extends StatefulWidget {
     required this.salesOrderLocation,
     required this.currentDeviceLocation,
     required this.salesOrder,
-    required this.index,
   });
 
   final LatLng salesOrderLocation;
   final LatLng currentDeviceLocation;
   final SalesOrderModel salesOrder;
-  final int index;
 
   @override
   State<ImageCaptureScreen> createState() => _ImageCaptureScreenState();
@@ -66,93 +64,6 @@ class _ImageCaptureScreenState extends State<ImageCaptureScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Product Information Card
-                  Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 2,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [Colors.white, Colors.grey[50]!],
-                        ),
-                      ),
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              color: AppColors.primaryBlue.withValues(
-                                alpha: 0.1,
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Icon(
-                              Icons.camera_alt,
-                              color: AppColors.primaryBlue,
-                              size: 20,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Product Documentation',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey[600],
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  widget
-                                          .salesOrder
-                                          .salesInvoiceDetails![widget.index]
-                                          .productDescription ??
-                                      'Product',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.green.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              '${_images.length}/$_maxImages',
-                              style: TextStyle(
-                                color: AppColors.green,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
                   // Preview Section
                   Row(
                     children: [
@@ -452,12 +363,6 @@ class _ImageCaptureScreenState extends State<ImageCaptureScreen> {
                                     _images
                                         .map((image) => File(image.path))
                                         .toList(),
-                                    widget.salesOrder.id ?? "",
-                                    widget
-                                            .salesOrder
-                                            .salesInvoiceDetails![widget.index]
-                                            .id ??
-                                        "",
                                   );
                                 }
                                 : null,

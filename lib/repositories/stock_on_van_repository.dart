@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:groute_nartec/core/constants/app_preferences.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/loading/product_on_pallet.dart';
 
 import '../core/services/http_service.dart';
@@ -81,31 +82,33 @@ class StockOnVanRepository {
   }
 
   FutureOr<bool> newUnloadItems({
-    required String gtin,
-    required String salesInvoiceDetailId,
+    required List<String> gtins,
+    required List<String> salesInvoiceDetailIds,
+    required double totalPrice,
+    required int totalQuantity,
   }) async {
-    try {
-      final path = '/api/v1/stock-on-van/unload-products';
+    final path = '/api/v1/stock-on-van/unload-products';
 
-      final payload = {
-        "salesInvoiceDetailId": salesInvoiceDetailId,
-        "gtin": gtin,
-      };
+    final payload = {
+      "salesInvoiceDetailIds": salesInvoiceDetailIds,
+      "gtins": gtins,
+      "totalPrice": totalPrice,
+      "totalQuantity": totalQuantity,
+    };
 
-      // call the API
-      final response = await _httpService.request(
-        path,
-        method: HttpMethod.post,
-        payload: payload,
-      );
+    // call the API
+    final response = await _httpService.request(
+      path,
+      method: HttpMethod.post,
+      payload: payload,
+    );
 
-      if (response.success) {
-        return true;
-      }
-
-      return false;
-    } catch (error) {
-      throw Exception('Failed to pick items');
+    if (response.success) {
+      final deliveryId = response.data['data']['deliveryId'];
+      await AppPreferences.setDeliveryId(deliveryId);
+      return true;
     }
+
+    return false;
   }
 }

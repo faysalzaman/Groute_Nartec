@@ -113,3 +113,17 @@ class ProductUpdateError extends SalesState {
   final String message;
   ProductUpdateError({required this.message});
 }
+
+class SalesInvoiceDetailsLoading extends SalesState {}
+
+class SalesInvoiceDetailsLoaded extends SalesState {
+  final List<SalesInvoiceDetails> salesInvoiceDetails;
+
+  SalesInvoiceDetailsLoaded(this.salesInvoiceDetails);
+}
+
+class SalesInvoiceDetailsError extends SalesState {
+  final String message;
+
+  SalesInvoiceDetailsError({required this.message});
+}

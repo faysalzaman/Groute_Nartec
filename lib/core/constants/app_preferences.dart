@@ -32,6 +32,20 @@ class AppPreferences {
   static const String _keyGTrackToken = 'gtrack_token';
   static const String _keyRememberMe = 'remember_me';
 
+  static const String _deliveryId = 'deliveryId';
+
+  // setter for deliveryId
+  static Future<void> setDeliveryId(String deliveryId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_deliveryId, deliveryId);
+  }
+
+  // getter for deliveryId
+  static Future<String?> getDeliveryId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_deliveryId);
+  }
+
   // Access Token methods
   static Future<void> setAccessToken(String token) async {
     final prefs = await SharedPreferences.getInstance();

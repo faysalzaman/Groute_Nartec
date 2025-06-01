@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/action_screens/capture_images/display_products_screen.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/action_screens/capture_images/image_capture_screen.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/action_screens/print_invoice_delivery_screen.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/action_screens/signature_screen.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/action_screens/unloading_screen.dart';
@@ -64,6 +66,7 @@ class _ActionScreenState extends State<ActionScreen> {
                         onPressed: () {
                           Navigator.pop(context);
                           Navigator.pop(context);
+                          Navigator.pop(context);
                         },
                         style: FilledButton.styleFrom(
                           backgroundColor: AppColors.primaryBlue,
@@ -92,89 +95,92 @@ class _ActionScreenState extends State<ActionScreen> {
         ),
       ],
       padding: const EdgeInsets.symmetric(horizontal: 0),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'What would you like to do?',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
+      body: BlocProvider(
+        create: (context) => SalesCubit(),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'What would you like to do?',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: textColor,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 24),
-              _buildActionButton(
-                title: 'Start Unloading',
-                subtitle: 'Begin the delivery process',
-                icon: Icons.local_shipping,
-                onPressed: () {
-                  AppNavigator.push(
-                    context,
-                    PicklistDetailsScreen(
-                      salesOrder: widget.salesOrder,
-                      salesOrderLocation: widget.salesOrderLocation,
-                      currentDeviceLocation: widget.currentDeviceLocation,
-                    ),
-                  );
-                },
-                color: Colors.green,
-              ),
-              const SizedBox(height: 16),
-              _buildActionButton(
-                title: 'Capture Images',
-                subtitle: 'Take photos of the delivery',
-                icon: Icons.camera_alt,
-                onPressed: () {
-                  AppNavigator.push(
-                    context,
-                    DisplayProductScreen(
-                      salesOrder: widget.salesOrder,
-                      salesOrderLocation: widget.salesOrderLocation,
-                      currentDeviceLocation: widget.currentDeviceLocation,
-                    ),
-                  );
-                },
-                color: Colors.blue,
-              ),
-              const SizedBox(height: 16),
-              _buildActionButton(
-                title: 'Capture Signature',
-                subtitle: 'Get customer confirmation',
-                icon: Icons.draw,
-                onPressed: () {
-                  AppNavigator.push(
-                    context,
-                    SignatureScreen(
-                      salesOrder: widget.salesOrder,
-                      salesOrderLocation: widget.salesOrderLocation,
-                      currentDeviceLocation: widget.currentDeviceLocation,
-                    ),
-                  );
-                },
-                color: Colors.purple,
-              ),
-              const SizedBox(height: 16),
-              _buildActionButton(
-                title: 'Print Delivery Invoice',
-                subtitle: 'Generate delivery documentation',
-                icon: Icons.receipt_long,
-                onPressed: () {
-                  AppNavigator.push(
-                    context,
-                    PrintDeliveryInvoiceScreen(
-                      salesOrder: widget.salesOrder,
-                      salesOrderLocation: widget.salesOrderLocation,
-                      currentDeviceLocation: widget.currentDeviceLocation,
-                    ),
-                  );
-                },
-                color: Colors.orange,
-              ),
-            ],
+                const SizedBox(height: 24),
+                _buildActionButton(
+                  title: 'Start Unloading',
+                  subtitle: 'Begin the delivery process',
+                  icon: Icons.local_shipping,
+                  onPressed: () {
+                    AppNavigator.push(
+                      context,
+                      PicklistDetailsScreen(
+                        salesOrder: widget.salesOrder,
+                        salesOrderLocation: widget.salesOrderLocation,
+                        currentDeviceLocation: widget.currentDeviceLocation,
+                      ),
+                    );
+                  },
+                  color: Colors.green,
+                ),
+                const SizedBox(height: 16),
+                _buildActionButton(
+                  title: 'Capture Images',
+                  subtitle: 'Take photos of the delivery',
+                  icon: Icons.camera_alt,
+                  onPressed: () {
+                    AppNavigator.push(
+                      context,
+                      ImageCaptureScreen(
+                        salesOrder: widget.salesOrder,
+                        salesOrderLocation: widget.salesOrderLocation,
+                        currentDeviceLocation: widget.currentDeviceLocation,
+                      ),
+                    );
+                  },
+                  color: Colors.blue,
+                ),
+                const SizedBox(height: 16),
+                _buildActionButton(
+                  title: 'Capture Signature',
+                  subtitle: 'Get customer confirmation',
+                  icon: Icons.draw,
+                  onPressed: () {
+                    AppNavigator.push(
+                      context,
+                      SignatureScreen(
+                        salesOrder: widget.salesOrder,
+                        salesOrderLocation: widget.salesOrderLocation,
+                        currentDeviceLocation: widget.currentDeviceLocation,
+                      ),
+                    );
+                  },
+                  color: Colors.purple,
+                ),
+                const SizedBox(height: 16),
+                _buildActionButton(
+                  title: 'Print Delivery Invoice',
+                  subtitle: 'Generate delivery documentation',
+                  icon: Icons.receipt_long,
+                  onPressed: () {
+                    AppNavigator.push(
+                      context,
+                      PrintDeliveryInvoiceScreen(
+                        salesOrder: widget.salesOrder,
+                        salesOrderLocation: widget.salesOrderLocation,
+                        currentDeviceLocation: widget.currentDeviceLocation,
+                      ),
+                    );
+                  },
+                  color: Colors.orange,
+                ),
+              ],
+            ),
           ),
         ),
       ),
