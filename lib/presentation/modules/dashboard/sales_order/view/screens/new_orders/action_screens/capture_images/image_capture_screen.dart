@@ -46,7 +46,9 @@ class _ImageCaptureScreenState extends State<ImageCaptureScreen> {
       listener: (context, state) async {
         if (state is SalesOrderUploadImageSuccess) {
           // Mark the process as completed
-          await AppPreferences.setCaptureImagesCompleted(widget.salesOrder.id ?? '');
+          await AppPreferences.setCaptureImagesCompleted(
+            widget.salesOrder.id ?? '',
+          );
           Navigator.pop(context);
           Navigator.pop(context);
           AppSnackbars.success(context, "Images uploaded successfully.");
@@ -366,6 +368,8 @@ class _ImageCaptureScreenState extends State<ImageCaptureScreen> {
                                     _images
                                         .map((image) => File(image.path))
                                         .toList(),
+
+                                    widget.salesOrder.id.toString(),
                                   );
                                 }
                                 : null,

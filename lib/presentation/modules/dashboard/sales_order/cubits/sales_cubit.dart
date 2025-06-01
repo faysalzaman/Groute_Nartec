@@ -123,23 +123,27 @@ class SalesCubit extends Cubit<SalesState> {
     }
   }
 
-  Future<void> uploadSignature(String id, File image) async {
+  Future<void> uploadSignature(
+    String id,
+    File image,
+    String salesOrderId,
+  ) async {
     emit(SalesOrderAddSignatureLoadingState());
 
     try {
       final salesController = DeliveryDetailsRepository();
-      await salesController.uploadSignature(image);
+      await salesController.uploadSignature(image, salesOrderId);
       emit(SalesOrderAddSignatureSuccessState());
     } catch (e) {
       emit(SalesOrderAddSignatureErrorState(e.toString()));
     }
   }
 
-  Future<void> uploadImages(List<File> images) async {
+  Future<void> uploadImages(List<File> images, String salesOrderId) async {
     emit(SalesOrderUploadImageLoading());
     try {
       final deliveryDetailsRepository = DeliveryDetailsRepository();
-      await deliveryDetailsRepository.uploadImages(images);
+      await deliveryDetailsRepository.uploadImages(images, salesOrderId);
       emit(SalesOrderUploadImageSuccess());
     } catch (e) {
       emit(SalesOrderUploadImageError(e.toString()));

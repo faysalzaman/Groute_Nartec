@@ -91,6 +91,7 @@ class _SignatureScreenState extends State<SignatureScreen> {
           context.read<SalesCubit>().uploadSignature(
             widget.salesOrder.id.toString(),
             imageFile!,
+            widget.salesOrder.id.toString(),
           );
         }
       } catch (e) {

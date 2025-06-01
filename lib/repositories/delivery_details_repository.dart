@@ -9,8 +9,15 @@ import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 
 class DeliveryDetailsRepository {
-  Future<String> uploadSignature(File images) async {
+  Future<String> uploadSignature(File images, String salesOrderId) async {
     String? deliveryId = await AppPreferences.getDeliveryId();
+
+    deliveryId = deliveryId.toString().replaceAll(salesOrderId, "");
+
+    if (images.path.isEmpty) {
+      print("No image to upload");
+      return "No image to upload";
+    }
 
     var url = Uri.parse(
       "${kGrouteUrl}/api/v1/delivery-details/upload-signature/KeQdO-MCr9",
@@ -55,9 +62,14 @@ class DeliveryDetailsRepository {
     }
   }
 
-  Future<void> uploadImages(List<File> images) async {
+  Future<void> uploadImages(List<File> images, String salesOrderId) async {
     String? deliveryId = await AppPreferences.getDeliveryId();
 
+    deliveryId = deliveryId.toString().replaceAll(salesOrderId, "");
+    if (images.isEmpty) {
+      print("No images to upload");
+      return;
+    }
     try {
       var url = Uri.parse(
         "${kGrouteUrl}/api/v1/delivery-details/upload-images/KeQdO-MCr9",
