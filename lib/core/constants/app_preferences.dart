@@ -35,15 +35,18 @@ class AppPreferences {
   static const String _deliveryId = 'deliveryId';
 
   // setter for deliveryId
-  static Future<void> setDeliveryId(String deliveryId) async {
+  static Future<void> setDeliveryId(
+    String deliveryId, {
+    String? salesOrderId,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_deliveryId, deliveryId);
+    await prefs.setString(_deliveryId + (salesOrderId ?? ''), deliveryId);
   }
 
   // getter for deliveryId
-  static Future<String?> getDeliveryId() async {
+  static Future<String?> getDeliveryId({String? salesOrderId}) async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_deliveryId);
+    return prefs.getString(_deliveryId + (salesOrderId ?? ''));
   }
 
   // Access Token methods
