@@ -4,12 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
+import 'package:groute_nartec/core/constants/app_preferences.dart';
 import 'package:groute_nartec/core/utils/app_date_formatter.dart';
 import 'package:groute_nartec/core/utils/app_loading.dart';
+import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/core/utils/app_snackbars.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_state.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/action_screens/action_screen.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 
@@ -50,8 +53,12 @@ class _PicklistDetailsScreenState extends State<PicklistDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<SalesCubit, SalesState>(
-      listener: (context, state) {
+      listener: (context, state) async {
         if (state is SalesStatusUpdateSuccessState) {
+          // Mark the unloading process as completed
+          await AppPreferences.setUnloadingCompleted(
+            widget.salesOrder.id ?? '',
+          );
           Navigator.pop(context);
           Navigator.pop(context);
           AppSnackbars.success(context, 'Unloading completed successfully');
@@ -60,9 +67,24 @@ class _PicklistDetailsScreenState extends State<PicklistDetailsScreen> {
         } else if (state is UnloadItemsError) {
           AppSnackbars.danger(context, state.message);
         } else if (state is UnloadItemsLoaded) {
+          // Mark the unloading process as completed
+          await AppPreferences.setUnloadingCompleted(
+            widget.salesOrder.id ?? '',
+          );
           AppSnackbars.success(context, 'Unloading done successfully');
+
           context.read<SalesCubit>().getSalesInvoiceDetailsbySalesOrderId(
             widget.salesOrder.id.toString(),
+          );
+          Navigator.pop(context);
+
+          AppNavigator.pushReplacement(
+            context,
+            ActionScreen(
+              salesOrderLocation: widget.salesOrderLocation,
+              currentDeviceLocation: widget.currentDeviceLocation,
+              salesOrder: widget.salesOrder,
+            ),
           );
         }
       },
