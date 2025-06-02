@@ -127,3 +127,14 @@ class SalesInvoiceDetailsError extends SalesState {
 
   SalesInvoiceDetailsError({required this.message});
 }
+
+// Upload Invoice states
+class SalesOrderUploadInvoiceLoadingState extends SalesState {}
+
+class SalesOrderUploadInvoiceSuccessState extends SalesState {}
+
+class SalesOrderUploadInvoiceErrorState extends SalesState {
+  final String error;
+
+  SalesOrderUploadInvoiceErrorState(this.error);
+}

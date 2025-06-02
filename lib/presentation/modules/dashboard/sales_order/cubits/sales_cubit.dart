@@ -150,6 +150,17 @@ class SalesCubit extends Cubit<SalesState> {
     }
   }
 
+  Future<void> uploadInvoice(String salesOrderId) async {
+    emit(SalesOrderUploadInvoiceLoadingState());
+    try {
+      final deliveryDetailsRepository = DeliveryDetailsRepository();
+      await deliveryDetailsRepository.uploadInvoice(salesOrderId);
+      emit(SalesOrderUploadInvoiceSuccessState());
+    } catch (e) {
+      emit(SalesOrderUploadInvoiceErrorState(e.toString()));
+    }
+  }
+
   /*
     !     Bin Location        !
   */

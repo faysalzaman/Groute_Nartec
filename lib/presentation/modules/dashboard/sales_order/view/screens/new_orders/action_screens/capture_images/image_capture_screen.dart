@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use, non_constant_identifier_names
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -12,7 +10,7 @@ import 'package:groute_nartec/core/utils/app_snackbars.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_state.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/action_screen.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/action_screens/action_screen.dart';
 import 'package:groute_nartec/presentation/widgets/buttons/custom_elevated_button.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 import 'package:image_picker/image_picker.dart';
@@ -104,7 +102,7 @@ class _ImageCaptureScreenState extends State<ImageCaptureScreen> {
                       border: Border.all(color: Colors.grey[200]!),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.1),
+                          color: Colors.grey.withValues(alpha: 0.1),
                           spreadRadius: 1,
                           blurRadius: 10,
                           offset: const Offset(0, 4),
@@ -131,7 +129,9 @@ class _ImageCaptureScreenState extends State<ImageCaptureScreen> {
                                         vertical: 6,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: Colors.black.withOpacity(0.7),
+                                        color: Colors.black.withValues(
+                                          alpha: 0.7,
+                                        ),
                                         borderRadius: BorderRadius.circular(20),
                                       ),
                                       child: Text(
@@ -240,7 +240,9 @@ class _ImageCaptureScreenState extends State<ImageCaptureScreen> {
                                       borderRadius: BorderRadius.circular(12),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.grey.withOpacity(0.2),
+                                          color: Colors.grey.withValues(
+                                            alpha: 0.2,
+                                          ),
                                           spreadRadius: 1,
                                           blurRadius: 4,
                                         ),
@@ -287,8 +289,8 @@ class _ImageCaptureScreenState extends State<ImageCaptureScreen> {
                                               vertical: 2,
                                             ),
                                             decoration: BoxDecoration(
-                                              color: Colors.black.withOpacity(
-                                                0.7,
+                                              color: Colors.black.withValues(
+                                                alpha: 0.7,
                                               ),
                                               borderRadius:
                                                   BorderRadius.circular(8),

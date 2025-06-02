@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -53,7 +52,6 @@ class AppPreferences {
   // getter for deliveryId
   static Future<String?> getDeliveryId({String? salesOrderId}) async {
     final prefs = await SharedPreferences.getInstance();
-    log(_deliveryId + (salesOrderId ?? ''));
     return prefs.getString(_deliveryId + (salesOrderId ?? ''));
   }
 

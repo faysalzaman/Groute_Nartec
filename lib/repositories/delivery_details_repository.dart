@@ -149,6 +149,39 @@ class DeliveryDetailsRepository {
     }
   }
 
+  Future<void> uploadInvoice(String salesOrderId) async {
+    String? deliveryId = await AppPreferences.getDeliveryId(
+      salesOrderId: salesOrderId,
+    );
+
+    deliveryId = deliveryId.toString().replaceAll(salesOrderId, '');
+
+    var url = Uri.parse('${kGrouteUrl}/api/v1/delivery-details/upload-invoice');
+
+    final token = await AppPreferences.getAccessToken();
+
+    // headers
+    final headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
+
+    final body = jsonEncode({'deliveryId': deliveryId});
+
+    final response = await http.post(url, headers: headers, body: body);
+
+    if (response.statusCode == 200 ||
+        response.statusCode == 201 ||
+        response.statusCode == 202) {
+      return;
+    } else {
+      var msg = jsonDecode(response.body);
+      throw Exception(
+        msg['message'] ?? msg['error'] ?? 'Failed to upload invoice',
+      );
+    }
+  }
+
   /// Helper function to get MIME type from file extension
   MediaType getMediaType(String path) {
     final mimeType = lookupMimeType(path);
