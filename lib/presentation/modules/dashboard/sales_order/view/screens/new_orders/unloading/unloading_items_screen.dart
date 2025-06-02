@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
+import 'package:groute_nartec/core/constants/app_preferences.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/core/utils/app_snackbars.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/cubits/sales_cubit.dart';
@@ -14,7 +15,9 @@ import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 import 'package:groute_nartec/presentation/widgets/text_fields/custom_textfield.dart';
 
 class UnloadItemsScreen extends StatefulWidget {
-  const UnloadItemsScreen({super.key});
+  const UnloadItemsScreen({super.key, required this.salesOrder});
+
+  final dynamic salesOrder; // Add salesOrder parameter
 
   @override
   State<UnloadItemsScreen> createState() => _UnloadItemsScreenState();
@@ -49,8 +52,11 @@ class _UnloadItemsScreenState extends State<UnloadItemsScreen> {
       body: BlocConsumer<SalesCubit, SalesState>(
         listenWhen:
             (previous, current) =>
-                current is ScanItemError || current is ScanItemLoaded,
-        listener: (context, state) {
+                current is ScanItemError ||
+                current is ScanItemLoaded ||
+                current is UnloadItemsLoaded ||
+                current is UnloadItemsError,
+        listener: (context, state) async {
           if (state is ScanItemError) {
             AppSnackbars.danger(context, state.message);
             // Clear the input field after error
@@ -58,6 +64,17 @@ class _UnloadItemsScreenState extends State<UnloadItemsScreen> {
           } else if (state is ScanItemLoaded) {
             // Clear the input field after successful scan
             _palletNumberController.clear();
+          } else if (state is UnloadItemsLoaded) {
+            // Mark the unloading process as completed
+            await AppPreferences.setUnloadingCompleted(
+              widget.salesOrder?.id ?? '',
+            );
+            AppSnackbars.success(context, "Items unloaded successfully");
+            // Navigate back to action screen or orders screen
+            Navigator.pop(context); // delivery action screen
+            AppNavigator.pushReplacement(context, NewOrdersScreen());
+          } else if (state is UnloadItemsError) {
+            AppSnackbars.danger(context, state.message);
           }
         },
         buildWhen:
@@ -83,7 +100,7 @@ class _UnloadItemsScreenState extends State<UnloadItemsScreen> {
                 // Scanned items section - only this part should scroll
                 Expanded(child: _buildScannedItemsSection(isDark)),
 
-                // // WIP Location input
+                // WIP Location input
                 _buildVehicleLocationScanInput(isDark),
                 const SizedBox(height: 8.0),
               ],
@@ -553,7 +570,7 @@ class _UnloadItemsScreenState extends State<UnloadItemsScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Scan Vehile Location",
+          "Scan Vehicle Location",
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
@@ -610,7 +627,6 @@ class _UnloadItemsScreenState extends State<UnloadItemsScreen> {
           Expanded(
             child: CustomElevatedButton(
               onPressed: () {
-                // Implement save functionality
                 Navigator.pop(context);
               },
               title: "Back",
@@ -620,20 +636,7 @@ class _UnloadItemsScreenState extends State<UnloadItemsScreen> {
             ),
           ),
           Expanded(
-            child: BlocConsumer<SalesCubit, SalesState>(
-              listener: (context, state) {
-                if (state is UnloadItemsLoaded) {
-                  AppSnackbars.success(context, "Items picked successfully");
-                  Navigator.pop(context); // go to bin location screen
-                  Navigator.pop(context); // go to product details screen
-                  Navigator.pop(context); // go to sales orders
-                  Navigator.pop(context); // delivery action screen
-                  Navigator.pop(context); // delivery action screen
-                  AppNavigator.pushReplacement(context, NewOrdersScreen());
-                } else if (state is UnloadItemsError) {
-                  AppSnackbars.danger(context, state.message);
-                }
-              },
+            child: BlocBuilder<SalesCubit, SalesState>(
               builder: (context, state) {
                 return CustomElevatedButton(
                   onPressed: () {

@@ -65,14 +65,100 @@ class _ActionScreenState extends State<ActionScreen> {
                 ),
                 child: const Text('OK', style: TextStyle(color: Colors.white)),
               ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _showResetConfirmation(processName);
+                },
+                child: const Text(
+                  'Reset & Redo',
+                  style: TextStyle(color: AppColors.primaryBlue),
+                ),
+              ),
             ],
           ),
     );
   }
 
+  void _showResetConfirmation(String processName) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text(
+              'Reset Process',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.red,
+              ),
+            ),
+            content: Text(
+              'Are you sure you want to reset the $processName process? This will allow you to redo it.',
+              style: const TextStyle(fontSize: 16, color: Colors.black87),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+              FilledButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  await _resetProcess(processName);
+                },
+                style: FilledButton.styleFrom(backgroundColor: Colors.red),
+                child: const Text(
+                  'Reset',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+    );
+  }
+
+  Future<void> _resetProcess(String processName) async {
+    final salesOrderId = widget.salesOrder.id ?? '';
+
+    switch (processName.toLowerCase()) {
+      case 'unloading':
+        await AppPreferences.clearProcessCompletion(
+          'process_unloading_',
+          salesOrderId,
+        );
+        break;
+      case 'capture images':
+        await AppPreferences.clearProcessCompletion(
+          'process_capture_images_',
+          salesOrderId,
+        );
+        break;
+      case 'capture signature':
+      case 'signature capture':
+        await AppPreferences.clearProcessCompletion(
+          'process_capture_signature_',
+          salesOrderId,
+        );
+        break;
+      case 'print invoice':
+        await AppPreferences.clearProcessCompletion(
+          'process_print_invoice_',
+          salesOrderId,
+        );
+        break;
+    }
+
+    setState(() {});
+  }
+
   Future<void> _handleUnloadingAction() async {
     final salesOrderId = widget.salesOrder.id ?? '';
     final isCompleted = await AppPreferences.isUnloadingCompleted(salesOrderId);
+
     if (isCompleted) {
       _showCompletedDialog('Unloading');
     } else {
@@ -92,6 +178,7 @@ class _ActionScreenState extends State<ActionScreen> {
     final isCompleted = await AppPreferences.isCaptureImagesCompleted(
       salesOrderId,
     );
+
     if (isCompleted) {
       _showCompletedDialog('Capture Images');
     } else {
@@ -111,6 +198,7 @@ class _ActionScreenState extends State<ActionScreen> {
     final isCompleted = await AppPreferences.isCaptureSignatureCompleted(
       salesOrderId,
     );
+
     if (isCompleted) {
       _showCompletedDialog('Signature Capture');
     } else {
@@ -130,6 +218,7 @@ class _ActionScreenState extends State<ActionScreen> {
     final isCompleted = await AppPreferences.isPrintInvoiceCompleted(
       salesOrderId,
     );
+
     if (isCompleted) {
       _showCompletedDialog('Print Invoice');
     } else {
