@@ -1,5 +1,4 @@
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/vehicle_check_model.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/view_asssigned_route_model.dart';
 
 class StartDayState {}
 
