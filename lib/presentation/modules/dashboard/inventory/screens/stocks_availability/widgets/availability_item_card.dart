@@ -119,9 +119,9 @@ class AvailabilityItemCard extends StatelessWidget {
                     // Picked Quantity
                     Expanded(
                       child: _buildDetailItem(
-                        FontAwesomeIcons.handHolding,
-                        'Picked',
-                        stock.salesInvoiceDetails?.quantityPicked ?? 'N/A',
+                        FontAwesomeIcons.circleCheck,
+                        'Total Stocks',
+                        stock.totalStocks.toString(),
                         Colors.green,
                       ),
                     ),
