@@ -22,4 +22,14 @@ class InventoryCubit extends Cubit<InventoryState> {
       emit(StocksOnVanError(e.toString()));
     }
   }
+
+  Future<void> getStocksAvailability() async {
+    emit(StocksAvailabilityLoading());
+    try {
+      final stocks = await _inventoryRepository.getStocksAvailibility();
+      emit(StocksAvailabilityLoaded(stocks));
+    } catch (e) {
+      emit(StocksAvailabilityError(e.toString()));
+    }
+  }
 }

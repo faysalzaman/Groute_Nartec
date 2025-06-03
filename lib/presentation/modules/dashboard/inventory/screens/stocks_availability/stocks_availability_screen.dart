@@ -4,36 +4,28 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/inventory/cubit/inventory_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/inventory/cubit/inventory_state.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/inventory/model/stocks_on_van_model.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/inventory/screens/stocks_on_van/widgets/empty_stock_state.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/inventory/screens/stocks_on_van/widgets/stock_item_card.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/inventory/model/stocks_availability_model.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/inventory/screens/stocks_availability/widgets/availability_item_card.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 import 'package:groute_nartec/presentation/widgets/shimmer_placeholder.dart';
 
-class StocksOnVanScreen extends StatefulWidget {
-  const StocksOnVanScreen({super.key});
+class StocksAvailabilityScreen extends StatefulWidget {
+  const StocksAvailabilityScreen({super.key});
 
   @override
-  State<StocksOnVanScreen> createState() => _StocksOnVanScreenState();
+  State<StocksAvailabilityScreen> createState() =>
+      _StocksAvailabilityScreenState();
 }
 
-class _StocksOnVanScreenState extends State<StocksOnVanScreen> {
+class _StocksAvailabilityScreenState extends State<StocksAvailabilityScreen> {
   final TextEditingController _searchController = TextEditingController();
-  List<StocksOnVanModel> _filteredStocks = [];
-  List<StocksOnVanModel> _allStocks = [];
-
-  int _currentPage = 1;
-  int _limitPerPage = 100000;
-  String _searchQuery = '';
+  List<StocksAvailablityModel> _filteredStocks = [];
+  List<StocksAvailablityModel> _allStocks = [];
 
   @override
   void initState() {
     super.initState();
-    context.read<InventoryCubit>().getStocksOnVan(
-      _currentPage,
-      _limitPerPage,
-      _searchQuery,
-    );
+    context.read<InventoryCubit>().getStocksAvailability();
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -55,15 +47,21 @@ class _StocksOnVanScreenState extends State<StocksOnVanScreen> {
       } else {
         _filteredStocks =
             _allStocks.where((stock) {
-              final itemCode = stock.itemCode?.toLowerCase() ?? '';
-              final itemDescription =
-                  stock.itemDescription?.toLowerCase() ?? '';
-              final batch = stock.batch?.toLowerCase() ?? '';
+              final purchaseOrderNumber =
+                  stock.purchaseOrderNumber?.toLowerCase() ?? '';
+              final refNo = stock.refNo?.toLowerCase() ?? '';
+              final productName =
+                  stock.salesInvoiceDetails?.productName?.toLowerCase() ?? '';
+              final productDescription =
+                  stock.salesInvoiceDetails?.productDescription
+                      ?.toLowerCase() ??
+                  '';
               final searchQuery = query.toLowerCase();
 
-              return itemCode.contains(searchQuery) ||
-                  itemDescription.contains(searchQuery) ||
-                  batch.contains(searchQuery);
+              return purchaseOrderNumber.contains(searchQuery) ||
+                  refNo.contains(searchQuery) ||
+                  productName.contains(searchQuery) ||
+                  productDescription.contains(searchQuery);
             }).toList();
       }
     });
@@ -72,28 +70,21 @@ class _StocksOnVanScreenState extends State<StocksOnVanScreen> {
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      title: 'Stocks on Van',
+      title: 'Stocks Availability',
       actions: [
         IconButton(
           onPressed:
-              () => context.read<InventoryCubit>().getStocksOnVan(
-                _currentPage,
-                _limitPerPage,
-                _searchQuery,
-              ),
+              () => context.read<InventoryCubit>().getStocksAvailability(),
           icon: Icon(Icons.refresh, color: AppColors.primaryBlue),
         ),
       ],
       body: Column(
         children: [
-          // Search Bar
-          // StockSearchBar(controller: _searchController),
-
           // Content
           Expanded(
             child: BlocConsumer<InventoryCubit, InventoryState>(
               listener: (context, state) {
-                if (state is StocksOnVanLoaded) {
+                if (state is StocksAvailabilityLoaded) {
                   setState(() {
                     _allStocks = state.stocks;
                     _filterStocks(_searchController.text);
@@ -101,11 +92,11 @@ class _StocksOnVanScreenState extends State<StocksOnVanScreen> {
                 }
               },
               builder: (context, state) {
-                if (state is StocksOnVanLoading) {
+                if (state is StocksAvailabilityLoading) {
                   return _buildLoadingState();
-                } else if (state is StocksOnVanError) {
+                } else if (state is StocksAvailabilityError) {
                   return _buildErrorState(state.error);
-                } else if (state is StocksOnVanLoaded) {
+                } else if (state is StocksAvailabilityLoaded) {
                   return _buildSuccessState();
                 }
                 return _buildLoadingState();
@@ -128,6 +119,8 @@ class _StocksOnVanScreenState extends State<StocksOnVanScreen> {
               Expanded(child: _buildSummaryCardPlaceholder()),
               const SizedBox(width: 12),
               Expanded(child: _buildSummaryCardPlaceholder()),
+              const SizedBox(width: 12),
+              Expanded(child: _buildSummaryCardPlaceholder()),
             ],
           ),
           const SizedBox(height: 20),
@@ -139,7 +132,7 @@ class _StocksOnVanScreenState extends State<StocksOnVanScreen> {
               itemBuilder:
                   (context, index) => Padding(
                     padding: const EdgeInsets.only(bottom: 12),
-                    child: _buildStockItemPlaceholder(),
+                    child: _buildAvailabilityItemPlaceholder(),
                   ),
             ),
           ),
@@ -202,7 +195,7 @@ class _StocksOnVanScreenState extends State<StocksOnVanScreen> {
     );
   }
 
-  Widget _buildStockItemPlaceholder() {
+  Widget _buildAvailabilityItemPlaceholder() {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -219,6 +212,7 @@ class _StocksOnVanScreenState extends State<StocksOnVanScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Header row
           Row(
             children: [
               ShimmerPlaceholder(
@@ -250,7 +244,7 @@ class _StocksOnVanScreenState extends State<StocksOnVanScreen> {
                     ShimmerPlaceholder(
                       child: Container(
                         height: 14,
-                        width: 100,
+                        width: 150,
                         decoration: BoxDecoration(
                           color: AppColors.grey300,
                           borderRadius: BorderRadius.circular(7),
@@ -272,7 +266,9 @@ class _StocksOnVanScreenState extends State<StocksOnVanScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
+
+          // Details row
           Row(
             children: List.generate(
               3,
@@ -319,7 +315,7 @@ class _StocksOnVanScreenState extends State<StocksOnVanScreen> {
             ),
             const SizedBox(height: 24),
             Text(
-              'Failed to Load Stocks',
+              'Failed to Load Availability',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -335,11 +331,7 @@ class _StocksOnVanScreenState extends State<StocksOnVanScreen> {
             const SizedBox(height: 32),
             ElevatedButton.icon(
               onPressed:
-                  () => context.read<InventoryCubit>().getStocksOnVan(
-                    _currentPage,
-                    _limitPerPage,
-                    _searchQuery,
-                  ),
+                  () => context.read<InventoryCubit>().getStocksAvailability(),
               icon: const Icon(Icons.refresh, size: 20),
               label: const Text('Retry'),
               style: ElevatedButton.styleFrom(
@@ -365,10 +357,6 @@ class _StocksOnVanScreenState extends State<StocksOnVanScreen> {
       return _buildNoSearchResults();
     }
 
-    if (_allStocks.isEmpty) {
-      return const EmptyStockState();
-    }
-
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -382,7 +370,7 @@ class _StocksOnVanScreenState extends State<StocksOnVanScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${_filteredStocks.length} Items Found',
+                '${_filteredStocks.length} Orders Found',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -393,7 +381,7 @@ class _StocksOnVanScreenState extends State<StocksOnVanScreen> {
           ),
           const SizedBox(height: 16),
 
-          // Stock Items List
+          // Availability Items List
           Expanded(
             child: ListView.builder(
               itemCount: _filteredStocks.length,
@@ -401,7 +389,7 @@ class _StocksOnVanScreenState extends State<StocksOnVanScreen> {
                 final stock = _filteredStocks[index];
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12),
-                  child: StockItemCard(stock: stock),
+                  child: AvailabilityItemCard(stock: stock),
                 );
               },
             ),
@@ -412,34 +400,29 @@ class _StocksOnVanScreenState extends State<StocksOnVanScreen> {
   }
 
   Widget _buildSummaryCards() {
-    final totalItems = _allStocks.length;
-    final totalQuantity = _allStocks.fold<int>(
+    final totalOrders = _allStocks.length;
+    final totalStocks = _allStocks.fold<int>(
       0,
-      (sum, stock) => sum + (stock.availableQty ?? 0),
+      (sum, stock) => sum + (stock.totalStocks ?? 0),
     );
-    final lowStockItems =
-        _allStocks.where((stock) => (stock.availableQty ?? 0) < 10).length;
-    final totalValue = _allStocks.fold<double>(
-      0,
-      (sum, stock) =>
-          sum + ((stock.itemPrice ?? 0) * (stock.availableQty ?? 0)),
-    );
+    final ordersWithStocks =
+        _allStocks.where((stock) => (stock.totalStocks ?? 0) > 0).length;
 
     return Row(
       children: [
         Expanded(
           child: _buildSummaryCard(
-            'Total Items',
-            totalItems.toString(),
-            FontAwesomeIcons.boxes,
+            'Total Orders',
+            totalOrders.toString(),
+            FontAwesomeIcons.clipboardList,
             AppColors.primaryBlue,
           ),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: _buildSummaryCard(
-            'Total Qty',
-            totalQuantity.toString(),
+            'Total Stocks',
+            totalStocks.toString(),
             FontAwesomeIcons.cubes,
             Colors.green,
           ),
@@ -447,19 +430,10 @@ class _StocksOnVanScreenState extends State<StocksOnVanScreen> {
         const SizedBox(width: 12),
         Expanded(
           child: _buildSummaryCard(
-            'Low Stock',
-            lowStockItems.toString(),
-            FontAwesomeIcons.triangleExclamation,
-            Colors.orange,
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildSummaryCard(
-            'Total Value',
-            '\$${totalValue.toStringAsFixed(0)}',
-            FontAwesomeIcons.dollarSign,
-            Colors.purple,
+            'With Stock',
+            ordersWithStocks.toString(),
+            FontAwesomeIcons.check,
+            Colors.blue,
           ),
         ),
       ],

@@ -1,4 +1,5 @@
 import 'package:groute_nartec/core/constants/app_preferences.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/inventory/model/stocks_availability_model.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/inventory/model/stocks_on_van_model.dart';
 
 import '../core/services/http_service.dart';
@@ -33,6 +34,25 @@ class InventoryRepository {
       return data.map((item) => StocksOnVanModel.fromJson(item)).toList();
     } else {
       throw Exception('Failed to load bin locations');
+    }
+  }
+
+  Future<List<StocksAvailablityModel>> getStocksAvailibility() async {
+    final path = '/api/v1/products/sales-orders';
+
+    final token = await AppPreferences.getAccessToken();
+
+    final response = await _httpService.request(
+      path,
+      method: HttpMethod.get,
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.success) {
+      final data = response.data['data'] as List;
+      return data.map((item) => StocksAvailablityModel.fromJson(item)).toList();
+    } else {
+      throw Exception('Failed to load stocks on van by pallet or serial');
     }
   }
 }

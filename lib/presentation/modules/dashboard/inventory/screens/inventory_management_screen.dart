@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/inventory/screens/stocks_availability/stocks_availability_screen.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/inventory/screens/stocks_on_van/stocks_on_van_screen.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 import 'package:groute_nartec/presentation/widgets/menu_card.dart';
@@ -115,7 +116,9 @@ class InventoryManagementScreen extends StatelessWidget {
                     title: 'Sales Stock Availability',
                     description: 'Check current stock levels',
                     color: AppColors.warning,
-                    onTap: () {},
+                    onTap: () {
+                      AppNavigator.push(context, StocksAvailabilityScreen());
+                    },
                   ),
                   MenuCard(
                     icon: FontAwesomeIcons.truckRampBox,
