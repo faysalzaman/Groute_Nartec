@@ -44,15 +44,11 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
 
   Widget _buildLoadingState() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: List.generate(
           2,
-          (index) => Padding(
-            padding: const EdgeInsets.only(bottom: 24),
-            child: _buildCustomerCardPlaceholder(index + 1),
-          ),
+          (index) => _buildCustomerCardPlaceholder(index + 1),
         ),
       ),
     );
@@ -74,6 +70,14 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: AppColors.grey200,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const SizedBox(height: 50), // Placeholder height
+          ),
           // Header placeholder with badges
           Container(
             padding: const EdgeInsets.all(24),
@@ -351,7 +355,6 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
     }
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -109,35 +109,32 @@ class _StocksAvailabilityScreenState extends State<StocksAvailabilityScreen> {
   }
 
   Widget _buildLoadingState() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          // Summary cards placeholders
-          Row(
-            children: [
-              Expanded(child: _buildSummaryCardPlaceholder()),
-              const SizedBox(width: 12),
-              Expanded(child: _buildSummaryCardPlaceholder()),
-              const SizedBox(width: 12),
-              Expanded(child: _buildSummaryCardPlaceholder()),
-            ],
-          ),
-          const SizedBox(height: 20),
+    return Column(
+      children: [
+        // Summary cards placeholders
+        Row(
+          children: [
+            Expanded(child: _buildSummaryCardPlaceholder()),
+            const SizedBox(width: 12),
+            Expanded(child: _buildSummaryCardPlaceholder()),
+            const SizedBox(width: 12),
+            Expanded(child: _buildSummaryCardPlaceholder()),
+          ],
+        ),
+        const SizedBox(height: 20),
 
-          // Stock items placeholders
-          Expanded(
-            child: ListView.builder(
-              itemCount: 6,
-              itemBuilder:
-                  (context, index) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: _buildAvailabilityItemPlaceholder(),
-                  ),
-            ),
+        // Stock items placeholders
+        Expanded(
+          child: ListView.builder(
+            itemCount: 6,
+            itemBuilder:
+                (context, index) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _buildAvailabilityItemPlaceholder(),
+                ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -357,45 +354,42 @@ class _StocksAvailabilityScreenState extends State<StocksAvailabilityScreen> {
       return _buildNoSearchResults();
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          // Summary Cards
-          _buildSummaryCards(),
-          const SizedBox(height: 20),
+    return Column(
+      children: [
+        // Summary Cards
+        _buildSummaryCards(),
+        const SizedBox(height: 20),
 
-          // Results Header
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                '${_filteredStocks.length} Orders Found',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textDark,
-                ),
+        // Results Header
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '${_filteredStocks.length} Orders Found',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textDark,
               ),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          // Availability Items List
-          Expanded(
-            child: ListView.builder(
-              itemCount: _filteredStocks.length,
-              itemBuilder: (context, index) {
-                final stock = _filteredStocks[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: AvailabilityItemCard(stock: stock),
-                );
-              },
             ),
+          ],
+        ),
+        const SizedBox(height: 16),
+
+        // Availability Items List
+        Expanded(
+          child: ListView.builder(
+            itemCount: _filteredStocks.length,
+            itemBuilder: (context, index) {
+              final stock = _filteredStocks[index];
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: AvailabilityItemCard(stock: stock),
+              );
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
