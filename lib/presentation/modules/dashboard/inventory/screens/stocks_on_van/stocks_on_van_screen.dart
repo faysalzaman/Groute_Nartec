@@ -7,7 +7,6 @@ import 'package:groute_nartec/presentation/modules/dashboard/inventory/cubit/inv
 import 'package:groute_nartec/presentation/modules/dashboard/inventory/model/stocks_on_van_model.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/inventory/screens/stocks_on_van/widgets/empty_stock_state.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/inventory/screens/stocks_on_van/widgets/stock_item_card.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/inventory/screens/stocks_on_van/widgets/stock_search_bar.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 import 'package:groute_nartec/presentation/widgets/shimmer_placeholder.dart';
 
