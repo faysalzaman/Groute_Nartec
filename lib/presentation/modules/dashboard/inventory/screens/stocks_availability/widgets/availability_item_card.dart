@@ -80,24 +80,6 @@ class AvailabilityItemCard extends StatelessWidget {
                     ),
 
                     // Stock Count Badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _getStockCountColor().withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        '${stock.totalStocks ?? 0}',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: _getStockCountColor(),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
 
@@ -131,7 +113,7 @@ class AvailabilityItemCard extends StatelessWidget {
                       child: _buildDetailItem(
                         FontAwesomeIcons.dollarSign,
                         'Price',
-                        '\$${stock.salesInvoiceDetails?.price ?? '0'}',
+                        '${stock.salesInvoiceDetails?.price ?? '0'}',
                         Colors.purple,
                       ),
                     ),
@@ -252,13 +234,6 @@ class AvailabilityItemCard extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  Color _getStockCountColor() {
-    final count = stock.totalStocks ?? 0;
-    if (count == 0) return Colors.red;
-    if (count < 5) return Colors.orange;
-    return Colors.green;
   }
 
   Color _getAvailabilityStatusColor() {
@@ -427,11 +402,11 @@ class AvailabilityItemCard extends StatelessWidget {
                               _buildDetailSection('Pricing Information', [
                                 _DetailItem(
                                   'Unit Price',
-                                  '\$${stock.salesInvoiceDetails!.price ?? '0'}',
+                                  '${stock.salesInvoiceDetails!.price ?? '0'}',
                                 ),
                                 _DetailItem(
                                   'Total Price',
-                                  '\$${stock.salesInvoiceDetails!.totalPrice ?? '0'}',
+                                  '${stock.salesInvoiceDetails!.totalPrice ?? '0'}',
                                 ),
                               ]),
 

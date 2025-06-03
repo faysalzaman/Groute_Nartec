@@ -110,7 +110,7 @@ class StockItemCard extends StatelessWidget {
                       child: _buildDetailItem(
                         FontAwesomeIcons.dollarSign,
                         'Price',
-                        '\$${stock.itemPrice ?? 0}',
+                        '${stock.itemPrice ?? 0}',
                         Colors.green,
                       ),
                     ),
@@ -382,7 +382,7 @@ class StockItemCard extends StatelessWidget {
                                 'Available Quantity',
                                 '${stock.availableQty ?? 0} ${stock.itemUnit ?? ''}',
                               ),
-                              _DetailItem('Price', '\$${stock.itemPrice ?? 0}'),
+                              _DetailItem('Price', '${stock.itemPrice ?? 0}'),
                               _DetailItem('Batch', stock.batch ?? 'N/A'),
                               _DetailItem(
                                 'Location',

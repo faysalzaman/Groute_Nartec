@@ -155,7 +155,7 @@
 //                           child: _buildInfoRow(
 //                             icon: Icons.attach_money,
 //                             label: 'Price',
-//                             value: '\$${item.price ?? '0.00'}',
+//                             value: '${item.price ?? '0.00'}',
 //                             valueColor: AppColors.green,
 //                           ),
 //                         ),

@@ -17,10 +17,50 @@ class CustomerProfileScreen extends StatefulWidget {
 }
 
 class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  List<CustomerProfileModel> _filteredProfiles = [];
+  List<CustomerProfileModel> _allProfiles = [];
+
   @override
   void initState() {
     super.initState();
     context.read<SalesCubit>().getCustomerProfile();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    setState(() {
+      _filteredProfiles = _filterProfiles(_searchController.text);
+    });
+  }
+
+  List<CustomerProfileModel> _filterProfiles(String query) {
+    if (query.isEmpty) {
+      return _allProfiles;
+    }
+
+    final lowercaseQuery = query.toLowerCase();
+    return _allProfiles.where((profile) {
+      final companyNameEnglish =
+          profile.companyNameEnglish?.toLowerCase() ?? '';
+      final companyNameArabic = profile.companyNameArabic?.toLowerCase() ?? '';
+      final customerId = profile.customerId?.toLowerCase() ?? '';
+      final contactPerson = profile.contactPerson?.toLowerCase() ?? '';
+      final email = profile.email?.toLowerCase() ?? '';
+
+      return companyNameEnglish.contains(lowercaseQuery) ||
+          companyNameArabic.contains(lowercaseQuery) ||
+          customerId.contains(lowercaseQuery) ||
+          contactPerson.contains(lowercaseQuery) ||
+          email.contains(lowercaseQuery);
+    }).toList();
   }
 
   @override
@@ -354,50 +394,221 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
       return _buildEmptyState();
     }
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header with count
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: AppColors.primaryBlue.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+    // Update the profiles lists
+    _allProfiles = profiles;
+    if (_searchController.text.isEmpty) {
+      _filteredProfiles = profiles;
+    } else {
+      _filteredProfiles = _filterProfiles(_searchController.text);
+    }
+
+    return Column(
+      children: [
+        // Search TextField
+        Container(
+          margin: const EdgeInsets.only(bottom: 20),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              hintText: 'Search by company name, customer ID, or contact...',
+              hintStyle: TextStyle(color: AppColors.textMedium, fontSize: 14),
+              prefixIcon: Icon(
+                FontAwesomeIcons.magnifyingGlass,
+                size: 16,
+                color: AppColors.textMedium,
+              ),
+              suffixIcon:
+                  _searchController.text.isNotEmpty
+                      ? IconButton(
+                        onPressed: () {
+                          _searchController.clear();
+                        },
+                        icon: Icon(
+                          FontAwesomeIcons.xmark,
+                          size: 16,
+                          color: AppColors.textMedium,
+                        ),
+                      )
+                      : null,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              filled: true,
+              fillColor: AppColors.grey50,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
             ),
-            child: Row(
+            style: TextStyle(fontSize: 14, color: AppColors.textDark),
+          ),
+        ),
+
+        // Results count and list
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  FontAwesomeIcons.users,
-                  size: 16,
-                  color: AppColors.primaryBlue,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  '${profiles.length} Customer${profiles.length > 1 ? 's' : ''} Found',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primaryBlue,
+                // Header with count
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryBlue.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        FontAwesomeIcons.users,
+                        size: 16,
+                        color: AppColors.primaryBlue,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _searchController.text.isNotEmpty
+                            ? '${_filteredProfiles.length} of ${profiles.length} Customer${_filteredProfiles.length != 1 ? 's' : ''} Found'
+                            : '${profiles.length} Customer${profiles.length > 1 ? 's' : ''} Found',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primaryBlue,
+                        ),
+                      ),
+                      if (_searchController.text.isNotEmpty) ...[
+                        const Spacer(),
+                        GestureDetector(
+                          onTap: () => _searchController.clear(),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryBlue.withValues(
+                                alpha: 0.1,
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  FontAwesomeIcons.xmark,
+                                  size: 12,
+                                  color: AppColors.primaryBlue,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Clear',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.primaryBlue,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
+                const SizedBox(height: 20),
+
+                // Customer cards or no results
+                if (_filteredProfiles.isEmpty &&
+                    _searchController.text.isNotEmpty)
+                  _buildNoResultsState()
+                else
+                  ..._filteredProfiles.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final profile = entry.value;
+                    return Padding(
+                      padding: EdgeInsets.only(
+                        bottom: index == _filteredProfiles.length - 1 ? 0 : 24,
+                      ),
+                      child: _buildCustomerCard(profile, index + 1),
+                    );
+                  }).toList(),
               ],
             ),
           ),
-          const SizedBox(height: 20),
+        ),
+      ],
+    );
+  }
 
-          // Customer cards
-          ...profiles.asMap().entries.map((entry) {
-            final index = entry.key;
-            final profile = entry.value;
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: index == profiles.length - 1 ? 0 : 24,
+  Widget _buildNoResultsState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(48),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: AppColors.textMedium.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
               ),
-              child: _buildCustomerCard(profile, index + 1),
-            );
-          }).toList(),
-        ],
+              child: Icon(
+                FontAwesomeIcons.magnifyingGlass,
+                size: 40,
+                color: AppColors.textMedium,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'No Results Found',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textDark,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'No customers match your search criteria.\nTry adjusting your search terms.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: AppColors.textMedium,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 24),
+            TextButton.icon(
+              onPressed: () => _searchController.clear(),
+              icon: const Icon(FontAwesomeIcons.arrowRotateLeft, size: 16),
+              label: const Text('Clear Search'),
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.primaryBlue,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

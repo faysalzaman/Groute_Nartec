@@ -451,7 +451,7 @@ class _StocksOnVanScreenState extends State<StocksOnVanScreen> {
         Expanded(
           child: _buildSummaryCard(
             'Total Value',
-            '\$${totalValue.toStringAsFixed(0)}',
+            '${totalValue.toStringAsFixed(0)}',
             FontAwesomeIcons.dollarSign,
             Colors.purple,
           ),
