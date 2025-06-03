@@ -1,3 +1,4 @@
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/customer_profile.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
 
 class SalesState {}
@@ -137,4 +138,18 @@ class SalesOrderUploadInvoiceErrorState extends SalesState {
   final String error;
 
   SalesOrderUploadInvoiceErrorState(this.error);
+}
+
+class CustomerProfileLoading extends SalesState {}
+
+class CustomerProfileLoaded extends SalesState {
+  final List<CustomerProfileModel> customerProfiles;
+
+  CustomerProfileLoaded(this.customerProfiles);
+}
+
+class CustomerProfileError extends SalesState {
+  final String error;
+
+  CustomerProfileError(this.error);
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/customer_profile/customer_profile_screen.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/view/screens/new_orders/new_orders_screen.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 import 'package:groute_nartec/presentation/widgets/menu_card.dart';
@@ -65,7 +66,9 @@ class SalesOrderManagementScreen extends StatelessWidget {
                     title: 'Customer Profile',
                     description: 'Manage customer information',
                     color: AppColors.secondary,
-                    onTap: () {},
+                    onTap: () {
+                      AppNavigator.push(context, CustomerProfileScreen());
+                    },
                   ),
                 ],
               ),

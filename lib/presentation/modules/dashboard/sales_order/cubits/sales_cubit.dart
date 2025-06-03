@@ -20,6 +20,7 @@ class SalesCubit extends Cubit<SalesState> {
 
   // Repositories
   final _binLocationRepository = BinLocationRepository();
+  final SalesOrderRepository _salesOrderRepository = SalesOrderRepository();
 
   // Selected
   SalesInvoiceDetails? selectedSalesInvoiceDetail;
@@ -488,6 +489,22 @@ class SalesCubit extends Cubit<SalesState> {
       }
     } catch (e) {
       emit(SalesInvoiceDetailsError(message: e.toString()));
+    }
+  }
+
+  /*
+  !     Customer Profile      !
+  */
+
+  Future<void> getCustomerProfile() async {
+    emit(CustomerProfileLoading());
+
+    try {
+      final customerProfile = await _salesOrderRepository.getCustomerProfile();
+
+      emit(CustomerProfileLoaded(customerProfile));
+    } catch (e) {
+      emit(CustomerProfileError(e.toString()));
     }
   }
 }

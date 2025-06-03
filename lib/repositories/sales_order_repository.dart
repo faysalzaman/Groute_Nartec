@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:groute_nartec/core/constants/app_preferences.dart';
 import 'package:groute_nartec/core/constants/constants.dart';
 import 'package:groute_nartec/core/services/http_service.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/customer_profile.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/sales_order/models/sales_order.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
@@ -93,6 +94,27 @@ class SalesOrderRepository {
           .toList();
     } else {
       throw Exception('Failed to load sales order');
+    }
+  }
+
+  Future<List<CustomerProfileModel>> getCustomerProfile() async {
+    final token = await AppPreferences.getAccessToken();
+
+    final path = '/api/v1/customers/driver';
+
+    final response = await _httpService.request(
+      path,
+      method: HttpMethod.get,
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.success) {
+      final data = response.data['data'] as List;
+      return data
+          .map((profile) => CustomerProfileModel.fromJson(profile))
+          .toList();
+    } else {
+      throw Exception('Failed to load customer profile');
     }
   }
 
