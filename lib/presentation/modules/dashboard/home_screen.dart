@@ -6,7 +6,7 @@ import 'package:groute_nartec/core/constants/app_colors.dart';
 import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/presentation/modules/auth/cubit/auth_cubit.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/about/about_screen.dart';
-import 'package:groute_nartec/presentation/modules/dashboard/inventory/inventory_management_screen.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/inventory/screens/inventory_management_screen.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/parameters/parameters_screen.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/profile_screen.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/promotions/dynamic_promotions_screen.dart';
