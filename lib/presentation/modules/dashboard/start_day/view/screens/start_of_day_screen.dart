@@ -5,6 +5,7 @@ import 'package:groute_nartec/core/utils/app_navigator.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/screens/loading/orders_screen.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/screens/vehicle_check/vehicle_check_screen.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/screens/vehicle_check/vehicle_information_screen.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/view/screens/view_assigned_route/view_assigned_route_screen.dart';
 import 'package:groute_nartec/presentation/widgets/custom_scaffold.dart';
 import 'package:groute_nartec/presentation/widgets/menu_card.dart';
 
@@ -70,7 +71,9 @@ class StartOfDayScreen extends StatelessWidget {
                     title: 'View Assigned Routes',
                     description: 'Check your delivery schedule',
                     color: AppColors.primaryBlue,
-                    onTap: () {},
+                    onTap: () {
+                      AppNavigator.push(context, ViewAssignedRouteScreen());
+                    },
                   ),
                 ],
               ),

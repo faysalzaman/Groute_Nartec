@@ -1,4 +1,5 @@
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/vehicle_check_model.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/view_asssigned_route_model.dart';
 
 class StartDayState {}
 
@@ -63,4 +64,22 @@ class GS1ProductErrorState extends StartDayState {
   final String error;
 
   GS1ProductErrorState(this.error);
+}
+
+/*
+##############################################################################
+! View Assigned Route Section
+############################################################################## 
+*/
+
+class ViewAssignedRouteLoading extends StartDayState {}
+
+class ViewAssignedRouteSuccess extends StartDayState {
+  final dynamic assignedRoute;
+  ViewAssignedRouteSuccess(this.assignedRoute);
+}
+
+class ViewAssignedRouteError extends StartDayState {
+  final String error;
+  ViewAssignedRouteError(this.error);
 }

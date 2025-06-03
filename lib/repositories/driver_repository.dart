@@ -1,6 +1,7 @@
 import 'package:groute_nartec/core/constants/app_preferences.dart';
 import 'package:groute_nartec/core/services/http_service.dart';
 import 'package:groute_nartec/presentation/modules/auth/models/driver_model.dart';
+import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/view_asssigned_route_model.dart';
 
 class DriverRepositry {
   final HttpService _httpService = HttpService();
@@ -176,4 +177,22 @@ class DriverRepositry {
     }
     throw Exception('Password reset failed');
   }
+
+  Future<ViewAssignedRouteModel> fetchViewAssignedRoute() async {
+    final path = '/api/v1/routes/driver';
+
+    final token = await AppPreferences.getAccessToken();
+
+    final response = await _httpService.request(
+      path,
+      method: HttpMethod.get,
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.success) {
+      return ViewAssignedRouteModel.fromJson(response.data['data']);
+    }
+    throw Exception('Failed to fetch assigned route');
+  }
 }
+// This method is currently a placeholder and should be implemented based on your requirements.

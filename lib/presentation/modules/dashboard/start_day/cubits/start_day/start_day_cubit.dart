@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/cubits/start_day/start_day_state.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/gs1_product.dart';
+import 'package:groute_nartec/repositories/driver_repository.dart';
 import 'package:groute_nartec/repositories/product_repository.dart';
 import 'package:groute_nartec/repositories/start_day_repository.dart';
 
@@ -12,6 +13,7 @@ class StartDayCubit extends Cubit<StartDayState> {
 
   final StartDayRepository _startDayRepository = StartDayRepository();
   final Gs1Repository _gs1Repository = Gs1Repository();
+  final DriverRepositry _driverRepository = DriverRepositry();
 
   Product? product;
   double? latitude;
@@ -131,6 +133,24 @@ class StartDayCubit extends Cubit<StartDayState> {
       emit(GS1ProductSuccessState());
     } catch (e) {
       emit(GS1ProductErrorState(e.toString()));
+    }
+  }
+
+  /*
+##############################################################################
+! View Assigned Route Section
+############################################################################## 
+*/
+
+  Future<void> fetchViewAssignedRoute() async {
+    emit(ViewAssignedRouteLoading());
+
+    try {
+      final assignedRoute = await _driverRepository.fetchViewAssignedRoute();
+
+      emit(ViewAssignedRouteSuccess(assignedRoute));
+    } catch (e) {
+      emit(ViewAssignedRouteError(e.toString()));
     }
   }
 }
