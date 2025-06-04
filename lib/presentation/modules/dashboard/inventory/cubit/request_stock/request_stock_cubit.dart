@@ -212,6 +212,28 @@ class RequestStockCubit extends Cubit<RequestStockState> {
     emit(RequestStockItemRemoved());
   }
 
+  // New method specifically for removing items from the request list
+  void removeItemFromRequestList(String packageCode, ProductOnPallet item) {
+    final String itemId = item.id ?? '${item.serialNumber}-${item.palletId}';
+
+    // Remove from added products list
+    if (_productOnPalletsAdded.containsKey(packageCode)) {
+      _productOnPalletsAdded[packageCode]!.removeWhere((palletItem) {
+        final currentItemId =
+            palletItem.id ??
+            '${palletItem.serialNumber}-${palletItem.palletId}';
+        return currentItemId == itemId;
+      });
+
+      // Remove empty package from added list
+      if (_productOnPalletsAdded[packageCode]!.isEmpty) {
+        _productOnPalletsAdded.remove(packageCode);
+      }
+    }
+
+    emit(RequestStockItemRemoved());
+  }
+
   void clearScannedItems() {
     _productOnPallets.clear();
     _selectedProductsOnPallet.clear();
