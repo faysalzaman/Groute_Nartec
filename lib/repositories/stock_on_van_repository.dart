@@ -51,6 +51,36 @@ class StockOnVanRepository {
     }
   }
 
+  Future<List<ProductOnPallet>> getByPalletOrSerial({
+    String? palletCode,
+    String? serialNo,
+  }) async {
+    try {
+      final path = '/api/v1/product-pallets/by-pallet-or-serial-only';
+
+      final payload = {"searchTerm": palletCode ?? serialNo};
+
+      // call the API
+      final response = await _httpService.request(
+        path,
+        method: HttpMethod.post,
+        payload: payload,
+      );
+
+      if (response.success) {
+        final productOnPallets =
+            (response.data['data'] as List)
+                .map((e) => ProductOnPallet.fromJson(e))
+                .toList();
+        return productOnPallets;
+      } else {
+        throw Exception('Failed to load product on pallets');
+      }
+    } catch (error) {
+      throw Exception('Failed to load product on pallets');
+    }
+  }
+
   Future<bool> unloadItems({
     required List<String> stocksOnVanIds,
     required String salesInvoiceDetailId,
