@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/loading/product_on_pallet.dart';
 import 'package:groute_nartec/repositories/stock_on_van_repository.dart';
+import 'package:groute_nartec/repositories/stock_request_repository.dart';
 
 part 'request_stock_state.dart';
 
@@ -19,6 +20,7 @@ class RequestStockCubit extends Cubit<RequestStockState> {
   // ==================== COLLECTIONS ====================
 
   final Map<String, List<ProductOnPallet>> _productOnPallets = {};
+  final Map<String, List<ProductOnPallet>> _productOnPalletsAdded = {};
   final Map<String, Set<String>> _selectedProductsOnPallet = {};
 
   // ==================== GETTERS ====================
@@ -26,6 +28,8 @@ class RequestStockCubit extends Cubit<RequestStockState> {
   bool get byPallet => _byPallet;
   bool get bySerial => _bySerial;
   Map<String, List<ProductOnPallet>> get productOnPallets => _productOnPallets;
+  Map<String, List<ProductOnPallet>> get productOnPalletsAdded =>
+      _productOnPalletsAdded;
   Map<String, Set<String>> get selectedItems => _selectedProductsOnPallet;
 
   int get totalItemsCount {
@@ -51,6 +55,7 @@ class RequestStockCubit extends Cubit<RequestStockState> {
     _bySerial = false;
     _productOnPallets.clear();
     _selectedProductsOnPallet.clear();
+    _productOnPalletsAdded.clear();
     quantityPicked = 0;
     emit(RequestStockChangeScanType());
   }
@@ -216,31 +221,72 @@ class RequestStockCubit extends Cubit<RequestStockState> {
 
   // ==================== REQUEST OPERATIONS ====================
 
+  void addItemsForRequest() async {
+    try {
+      if (state is RequestStockAddRequestItemLoading) return;
+
+      emit(RequestStockAddRequestItemLoading());
+
+      // add selected items to productOnPalletsAdded
+      _selectedProductsOnPallet.forEach((packageCode, selectedIds) {
+        final itemsForKey = _productOnPallets[packageCode] ?? [];
+        final selectedItems =
+            itemsForKey.where((item) {
+              final itemId = item.id ?? '${item.serialNumber}-${item.palletId}';
+              return selectedIds.contains(itemId);
+            }).toList();
+        if (selectedItems.isNotEmpty) {
+          _productOnPalletsAdded[packageCode] = selectedItems;
+        }
+      });
+
+      // Clear selected items after adding
+      _selectedProductsOnPallet.clear();
+      quantityPicked = 0;
+      emit(RequestStockAddRequestItemLoaded());
+    } catch (e) {
+      emit(RequestStockAddRequestItemError(message: e.toString()));
+    }
+  }
+
   void requestItems() async {
     try {
       if (state is RequestStockRequestItemsLoading) return;
 
+      if (_productOnPalletsAdded.isEmpty) {
+        emit(RequestStockRequestItemsError(message: 'No items to request'));
+        return;
+      }
+
       emit(RequestStockRequestItemsLoading());
 
-      if (selectedItems.isEmpty) {
+      if (productOnPalletsAdded.isEmpty) {
         emit(RequestStockRequestItemsError(message: 'No items selected'));
         return;
       }
 
-      final selectedItemsIds = selectedItems.values.expand((x) => x).toList();
+      final selectedItemsIds = <String>[];
+      _productOnPalletsAdded.forEach((packageCode, items) {
+        for (final item in items) {
+          final itemId = item.id ?? '${item.serialNumber}-${item.palletId}';
+          selectedItemsIds.add(itemId);
+        }
+      });
 
-      // // Call API to request van stock - you'll need to implement this in your repository
-      // final success = await StockOnVanRepository.instance.requestVanStock(
-      //   productOnPalletIds: selectedItemsIds,
-      //   quantityRequested: quantityPicked,
-      // );
+      if (selectedItemsIds.isEmpty) {
+        emit(RequestStockRequestItemsError(message: 'No items selected'));
+        return;
+      }
 
-      // if (success) {
-      //   init();
-      //   emit(RequestStockRequestItemsLoaded());
-      // } else {
-      //   emit(RequestStockRequestItemsError(message: 'Failed to request items'));
-      // }
+      print('Requesting van stock for items: ${selectedItemsIds.join(', ')}');
+
+      // Call API to request van stock - you'll need to implement this in your repository
+      final message = await StockRequestRepository.instance.requestStocks(
+        selectedItemsIds,
+      );
+
+      init();
+      emit(RequestStockRequestItemsLoaded());
     } catch (e) {
       emit(RequestStockRequestItemsError(message: e.toString()));
     }

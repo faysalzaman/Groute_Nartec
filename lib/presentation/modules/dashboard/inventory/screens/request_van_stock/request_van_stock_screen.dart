@@ -568,6 +568,8 @@ class _RequestVanStockScreenState extends State<RequestVanStockScreen> {
                   Navigator.pop(context);
                 } else if (state is RequestStockRequestItemsError) {
                   AppSnackbars.danger(context, state.message);
+                } else if (state is RequestStockAddRequestItemLoaded) {
+                  Navigator.pop(context);
                 }
               },
               builder: (context, state) {
@@ -583,17 +585,14 @@ class _RequestVanStockScreenState extends State<RequestVanStockScreen> {
                       );
                       return;
                     }
-
-                    Navigator.pop(context);
-
-                    // RequestStockCubit.get(context).requestItems();
+                    RequestStockCubit.get(context).addItemsForRequest();
                   },
-                  title: "Request Stock",
+                  title: "Add To Request",
                   width: double.infinity,
                   height: 40,
                   backgroundColor: AppColors.success,
                   buttonState:
-                      state is RequestStockRequestItemsLoading
+                      state is RequestStockAddRequestItemLoading
                           ? ButtonState.loading
                           : ButtonState.idle,
                 );

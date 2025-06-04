@@ -25,6 +25,16 @@ final class RequestStockSelectionChanged extends RequestStockState {}
 final class RequestStockItemRemoved extends RequestStockState {}
 
 // Request states
+final class RequestStockAddRequestItemLoading extends RequestStockState {}
+
+final class RequestStockAddRequestItemLoaded extends RequestStockState {}
+
+final class RequestStockAddRequestItemError extends RequestStockState {
+  final String message;
+
+  RequestStockAddRequestItemError({required this.message});
+}
+
 final class RequestStockRequestItemsLoading extends RequestStockState {}
 
 final class RequestStockRequestItemsLoaded extends RequestStockState {}
