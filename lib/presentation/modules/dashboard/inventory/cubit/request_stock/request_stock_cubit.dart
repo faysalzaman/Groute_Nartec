@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groute_nartec/presentation/modules/dashboard/start_day/models/loading/product_on_pallet.dart';
 import 'package:groute_nartec/repositories/stock_on_van_repository.dart';
-import 'package:groute_nartec/repositories/stock_request_repository.dart';
 
 part 'request_stock_state.dart';
 
@@ -303,9 +302,6 @@ class RequestStockCubit extends Cubit<RequestStockState> {
       print('Requesting van stock for items: ${selectedItemsIds.join(', ')}');
 
       // Call API to request van stock - you'll need to implement this in your repository
-      final message = await StockRequestRepository.instance.requestStocks(
-        selectedItemsIds,
-      );
 
       init();
       emit(RequestStockRequestItemsLoaded());

@@ -1,0 +1,26 @@
+{
+    "sourceFile": "lib/repositories/vehicle_repository.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1753944105207,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1753944114956,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,14 @@\n import '../core/services/http_service.dart';\n \n class VehicleRepository {\n+\n+  static final VehicleRepository instance = VehicleRepository._();\n+\n+  factory VehicleRepository() => instance;\n+\n+  VehicleRepository._();\n+\n   final _httpService = HttpService();\n \n   Future<String> scanDriverBinNumber(String binNumber) async {\n     final path = '/api/v1/vehicles/scanBin/$binNumber';\n"
+                },
+                {
+                    "date": 1753945527067,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,13 +1,15 @@\n import '../core/services/http_service.dart';\n \n class VehicleRepository {\n-  static final VehicleRepository instance = VehicleRepository._();\n+  static final VehicleRepository instance = VehicleRepository._(); // object created\n \n   factory VehicleRepository() => instance;\n \n   VehicleRepository._();\n \n+  final vehicleServices = VehicleServices();\n+\n   final _httpService = HttpService();\n \n   Future<String> scanDriverBinNumber(String binNumber) async {\n     final path = '/api/v1/vehicles/scanBin/$binNumber';\n"
+                }
+            ],
+            "date": 1753944105207,
+            "name": "Commit-0",
+            "content": "import '../core/services/http_service.dart';\n\nclass VehicleRepository {\n  \n  \n\n  final _httpService = HttpService();\n\n  Future<String> scanDriverBinNumber(String binNumber) async {\n    final path = '/api/v1/vehicles/scanBin/$binNumber';\n\n    final response = await _httpService.request(path);\n\n    if (response.success) {\n      return response.data['message'] as String;\n    } else {\n      throw Exception('Failed to load bin locations');\n    }\n  }\n}\n"
+        }
+    ]
+}

@@ -541,10 +541,6 @@ class _RequestVanStockListScreenState extends State<RequestVanStockListScreen>
                         child: Column(
                           children:
                               items.map((item) {
-                                final String itemId =
-                                    item.id ??
-                                    '${item.serialNumber}-${item.palletId}';
-
                                 return Container(
                                   margin: const EdgeInsets.only(bottom: 8),
                                   child: ProductOnPalletCard(
